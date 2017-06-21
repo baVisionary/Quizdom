@@ -2,3 +2,11 @@
 node_modules
 dist
 dev
+
+#visual studio specific files
+[Bb]in
+[Oo]bj
+launchSettings.json
+**/wwwroot/lib
+.vs
+.vscode

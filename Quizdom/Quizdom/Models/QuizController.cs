@@ -127,5 +127,32 @@ namespace Quizdom.Models
             }
             _context.SaveChanges();
         }
+
+        [HttpPut("{id}")]
+        public IActionResult Put(int id, [FromBody]Quiz quiz)
+        {
+
+            var record2 = _context.Quiz.Where(c => c.Id == id).Count();
+
+
+            if (record2 == 0)
+            {
+                return NotFound($"Quiz #{id} does not exist!");
+            }
+
+            quiz.Id = id;
+            _context.Quiz.Update(quiz);
+            _context.SaveChanges();
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public void Delete(int id, [FromBody]Quiz quiz)
+        {
+            _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));
+            _context.SaveChanges();
+        }
+
+
     }
 }

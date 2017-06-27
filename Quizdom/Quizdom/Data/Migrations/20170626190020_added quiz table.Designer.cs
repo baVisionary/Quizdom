@@ -8,9 +8,10 @@ using Quizdom.Data;
 namespace Quizdom.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170626190020_added quiz table")]
+    partial class addedquiztable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -177,13 +178,9 @@ namespace Quizdom.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<int?>("AvatarId");
-
                     b.Property<string>("Category");
 
                     b.Property<string>("Correct_Answer");
-
-                    b.Property<DateTime>("DateModified");
 
                     b.Property<string>("Difficulty");
 
@@ -197,11 +194,7 @@ namespace Quizdom.Data.Migrations
 
                     b.Property<string>("Question");
 
-                    b.Property<string>("Source");
-
                     b.Property<string>("Type");
-
-                    b.Property<string>("UserId");
 
                     b.HasKey("Id");
 

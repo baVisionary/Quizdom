@@ -10,3 +10,4 @@ launchSettings.json
 **/wwwroot/lib
 .vs
 .vscode
+*.user

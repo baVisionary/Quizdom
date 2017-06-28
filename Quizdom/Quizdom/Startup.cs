@@ -12,6 +12,7 @@ using Microsoft.Extensions.Logging;
 using Quizdom.Data;
 using Quizdom.Models;
 using Quizdom.Services;
+using Swashbuckle.AspNetCore.Swagger;
 
 namespace Quizdom
 {
@@ -54,6 +55,11 @@ namespace Quizdom
             services.AddTransient<ISmsSender, AuthMessageSender>();
             services.AddTransient<ApplicationRoles>();
 
+            // Register the Swagger generator, defining one or more Swagger documents
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new Info { Title = "My API", Version = "v1" });
+            });
 
         }
 
@@ -88,6 +94,15 @@ namespace Quizdom
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            });
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint.
+            app.UseSwagger();
+
+            // Enable middleware to serve swagger-ui (HTML, JS, CSS etc.), specifying the Swagger JSON endpoint.
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
         }
     }

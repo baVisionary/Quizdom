@@ -21,5 +21,6 @@ namespace Quizdom.Models
         public DateTime DateModified { get; set; } = DateTime.UtcNow;
         public string UserId { get; set; }
         public int? AvatarId { get; set; }
+        public int? CategoryId { get; set; }
     }
 }

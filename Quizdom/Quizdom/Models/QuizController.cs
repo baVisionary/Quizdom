@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using Quizdom.Data;
 using System;
 using System.Collections.Generic;
@@ -12,11 +14,35 @@ namespace Quizdom.Models
     {
         private ApplicationDbContext _context;
 
-        public QuizController(ApplicationDbContext context)
+        /* USER INFORMATION */
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly string _externalCookieScheme;
+
+        public QuizController(ApplicationDbContext context, 
+                              UserManager<ApplicationUser> userManager,
+                              SignInManager<ApplicationUser> signInManager,
+                              IOptions<IdentityCookieOptions> identityCookieOptions)
         {
             _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
         }
 
+
+        // GET CURRENT USER INFORMATION
+        [HttpGet("user")]
+        public async Task<IActionResult> GetUserInformationAsync()
+        {
+            var user = await GetCurrentUserAsync();
+            
+            if (user == null)
+            {
+                return NotFound("User is not logged in!");
+            }
+            return Ok(user);
+        }
 
         // GET: Quizes
         [HttpGet]
@@ -153,6 +179,9 @@ namespace Quizdom.Models
             _context.SaveChanges();
         }
 
-
+        private Task<ApplicationUser> GetCurrentUserAsync()
+        {
+            return _userManager.GetUserAsync(HttpContext.User);
+        }
     }
 }

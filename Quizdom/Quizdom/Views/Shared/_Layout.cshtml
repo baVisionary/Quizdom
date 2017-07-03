@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - Quizdom</title>
 
+    <base href="/">
     <environment names="Development">
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -27,54 +28,25 @@
 </head>
 
 <body ng-app="app">
-    <ui-view></ui-view>
-    <!--<nav class="navbar navbar-inverse navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">Quizdom</a>
-            </div>
-            <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="About">About</a></li>
-                    <li><a asp-area="" asp-controller="Home" asp-action="Contact">Contact</a></li>
-                </ul>
-                @await Html.PartialAsync("_LoginPartial")
-            </div>
-        </div>
-    </nav>
-    <div class="container body-content">
-        @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2017 - Quizdom</p>
-        </footer>
-    </div>-->
 
-    <environment names="Development">
+    <ui-view></ui-view>
+    
+    <!-- Must be present or app will not find linked Angular files
+        <div class="container body-content">@RenderBody()</div>
+    -->
+
         <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/js/materialize.min.js"></script>
+        <script src="~/lib/materialize/dist/js/materialize.js"></script>
         <script src="~/lib/angular/angular.js"></script>
-        <script src="~/js/site.js" asp-append-version="true"></script>
-    </environment>
-    <environment names="Staging,Production">
-        <script src="https://ajax.aspnetcdn.com/ajax/jquery/jquery-2.2.0.min.js" asp-fallback-src="~/../lib/jquery/dist/jquery.min.js"
-            asp-fallback-test="window.jQuery" crossorigin="anonymous" integrity="sha384-K+ctZQ+LL8q6tP7I94W+qzQsfRV2a+AfHIi9k8z8l9ggpc8X+Ytst4yBo/hH+8Fk">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/js/materialize.min.js" ap-fallback-src="~/../lib/js/materialize.min.js"></script>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.7/angular.min.js" asp-fallback-src="~/../lib/angular/angular.min.js"
-            asp-fallback-test="window.angular" crossorigin="anonymous">
-        </script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/1.0.3/angular-ui-router.js" asp-fallback-src="~/../lib/angular/angular.min.js" crossorigin="anonymous" ></script>
-        <script src"https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.4/angular-resource.min.js" asp-fallback-src="~/../lib/angular/angular-resource.min.js" crossorigin="anonymous" ></script>
-        <script src="~/../js/states.js" asp-append-version="true"></script>
-    </environment>
+        <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
+        <script src="~/lib/angular-resource/angular-resource.js"></script>
+
+        <!-- add controllers here -->
+        <script src="~/js/controllers/controller.js"></script>
+        <!-- add services here -->
+        <script src="~/js/services/questionService.js"></script>
+        <script src="~/js/states.js"></script>
+
 
     @RenderSection("Scripts", required: false)
 </body>

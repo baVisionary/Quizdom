@@ -2,42 +2,111 @@
 1 verbose cli [ '/usr/local/bin/node',
 1 verbose cli   '/usr/local/bin/npm',
 1 verbose cli   'i',
-1 verbose cli   '--save',
-1 verbose cli   'typescript' ]
+1 verbose cli   '--save-dev',
+1 verbose cli   '@types/materialize' ]
 2 info using npm@3.10.10
 3 info using node@v6.11.0
 4 silly loadCurrentTree Starting
 5 silly install loadCurrentTree
 6 silly install readLocalPackageData
-7 silly rollbackFailedOptional Starting
-8 silly rollbackFailedOptional Finishing
-9 silly runTopLevelLifecycles Finishing
-10 silly install printInstalled
-11 verbose stack Error: Failed to parse json
-11 verbose stack No data, empty input at 1:1
-11 verbose stack
-11 verbose stack ^
-11 verbose stack     at parseError (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:390:11)
-11 verbose stack     at parseJson (/usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:79:23)
-11 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/read-package-json/read-json.js:48:5
-11 verbose stack     at /usr/local/lib/node_modules/npm/node_modules/graceful-fs/graceful-fs.js:78:16
-11 verbose stack     at tryToString (fs.js:456:3)
-11 verbose stack     at FSReqWrap.readFileAfterClose [as oncomplete] (fs.js:443:12)
-12 verbose cwd /Users/davisionary/gitHub/Quizdom/Quizdom/Quizdom
-13 error Darwin 16.6.0
-14 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "i" "--save" "typescript"
-15 error node v6.11.0
-16 error npm  v3.10.10
-17 error file /Users/davisionary/gitHub/Quizdom/Quizdom/Quizdom/package.json
-18 error code EJSONPARSE
-19 error Failed to parse json
-19 error No data, empty input at 1:1
-19 error
-19 error ^
-20 error File: /Users/davisionary/gitHub/Quizdom/Quizdom/Quizdom/package.json
-21 error Failed to parse package.json data.
-21 error package.json must be actual JSON, not just JavaScript.
-21 error
-21 error This is not a bug in npm.
-21 error Tell the package author to fix their package.json file. JSON.parse
-22 verbose exit [ 1, true ]
+7 silly fetchPackageMetaData @types/materialize
+8 silly fetchNamedPackageData @types/materialize
+9 silly mapToRegistry name @types/materialize
+10 silly mapToRegistry scope (from package name) @types
+11 verbose mapToRegistry no registry URL found in name for scope @types
+12 silly mapToRegistry using default registry
+13 silly mapToRegistry registry https://registry.npmjs.org/
+14 silly mapToRegistry data Result {
+14 silly mapToRegistry   raw: '@types/materialize',
+14 silly mapToRegistry   scope: '@types',
+14 silly mapToRegistry   escapedName: '@types%2fmaterialize',
+14 silly mapToRegistry   name: '@types/materialize',
+14 silly mapToRegistry   rawSpec: '',
+14 silly mapToRegistry   spec: 'latest',
+14 silly mapToRegistry   type: 'tag' }
+15 silly mapToRegistry uri https://registry.npmjs.org/@types%2fmaterialize
+16 verbose request uri https://registry.npmjs.org/@types%2fmaterialize
+17 verbose request no auth needed
+18 info attempt registry request try #1 at 4:28:58 PM
+19 verbose request id f22bd23bd0c0a2fc
+20 http request GET https://registry.npmjs.org/@types%2fmaterialize
+21 http 404 https://registry.npmjs.org/@types%2fmaterialize
+22 verbose headers { 'content-type': 'application/json',
+22 verbose headers   'cache-control': 'max-age=0',
+22 verbose headers   'content-length': '2',
+22 verbose headers   'accept-ranges': 'bytes',
+22 verbose headers   date: 'Fri, 30 Jun 2017 23:28:58 GMT',
+22 verbose headers   via: '1.1 varnish',
+22 verbose headers   age: '0',
+22 verbose headers   connection: 'keep-alive',
+22 verbose headers   'x-served-by': 'cache-lax8638-LAX',
+22 verbose headers   'x-cache': 'MISS',
+22 verbose headers   'x-cache-hits': '0',
+22 verbose headers   'x-timer': 'S1498865338.439285,VS0,VE179',
+22 verbose headers   vary: 'Accept-Encoding' }
+23 silly get cb [ 404,
+23 silly get   { 'content-type': 'application/json',
+23 silly get     'cache-control': 'max-age=0',
+23 silly get     'content-length': '2',
+23 silly get     'accept-ranges': 'bytes',
+23 silly get     date: 'Fri, 30 Jun 2017 23:28:58 GMT',
+23 silly get     via: '1.1 varnish',
+23 silly get     age: '0',
+23 silly get     connection: 'keep-alive',
+23 silly get     'x-served-by': 'cache-lax8638-LAX',
+23 silly get     'x-cache': 'MISS',
+23 silly get     'x-cache-hits': '0',
+23 silly get     'x-timer': 'S1498865338.439285,VS0,VE179',
+23 silly get     vary: 'Accept-Encoding' } ]
+24 silly fetchPackageMetaData Error: Registry returned 404 for GET on https://registry.npmjs.org/@types%2fmaterialize
+24 silly fetchPackageMetaData     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:302:12)
+24 silly fetchPackageMetaData     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:280:14)
+24 silly fetchPackageMetaData     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:210:14)
+24 silly fetchPackageMetaData     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:187:22)
+24 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+24 silly fetchPackageMetaData     at Request.emit (events.js:191:7)
+24 silly fetchPackageMetaData     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1048:10)
+24 silly fetchPackageMetaData     at emitOne (events.js:96:13)
+24 silly fetchPackageMetaData     at Request.emit (events.js:188:7)
+24 silly fetchPackageMetaData     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:969:12)
+24 silly fetchPackageMetaData  error for @types/materialize { Error: Registry returned 404 for GET on https://registry.npmjs.org/@types%2fmaterialize
+24 silly fetchPackageMetaData     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:302:12)
+24 silly fetchPackageMetaData     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:280:14)
+24 silly fetchPackageMetaData     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:210:14)
+24 silly fetchPackageMetaData     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:187:22)
+24 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+24 silly fetchPackageMetaData     at Request.emit (events.js:191:7)
+24 silly fetchPackageMetaData     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1048:10)
+24 silly fetchPackageMetaData     at emitOne (events.js:96:13)
+24 silly fetchPackageMetaData     at Request.emit (events.js:188:7)
+24 silly fetchPackageMetaData     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:969:12) pkgid: '@types/materialize', statusCode: 404, code: 'E404' }
+25 silly rollbackFailedOptional Starting
+26 silly rollbackFailedOptional Finishing
+27 silly runTopLevelLifecycles Finishing
+28 silly install printInstalled
+29 verbose stack Error: Registry returned 404 for GET on https://registry.npmjs.org/@types%2fmaterialize
+29 verbose stack     at makeError (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:302:12)
+29 verbose stack     at CachingRegistryClient.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:280:14)
+29 verbose stack     at Request._callback (/usr/local/lib/node_modules/npm/node_modules/npm-registry-client/lib/request.js:210:14)
+29 verbose stack     at Request.self.callback (/usr/local/lib/node_modules/npm/node_modules/request/request.js:187:22)
+29 verbose stack     at emitTwo (events.js:106:13)
+29 verbose stack     at Request.emit (events.js:191:7)
+29 verbose stack     at Request.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:1048:10)
+29 verbose stack     at emitOne (events.js:96:13)
+29 verbose stack     at Request.emit (events.js:188:7)
+29 verbose stack     at IncomingMessage.<anonymous> (/usr/local/lib/node_modules/npm/node_modules/request/request.js:969:12)
+30 verbose statusCode 404
+31 verbose pkgid @types/materialize
+32 verbose cwd /Users/davisionary/gitHub/Quizdom/Quizdom/Quizdom
+33 error Darwin 16.6.0
+34 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "i" "--save-dev" "@types/materialize"
+35 error node v6.11.0
+36 error npm  v3.10.10
+37 error code E404
+38 error 404 Registry returned 404 for GET on https://registry.npmjs.org/@types%2fmaterialize
+39 error 404
+40 error 404 '@types/materialize' is not in the npm registry.
+41 error 404 You should bug the author to publish it (or use the name yourself!)
+42 error 404 Note that you can also install from a
+43 error 404 tarball, folder, http url, or git url.
+44 verbose exit [ 1, true ]

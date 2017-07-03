@@ -8,9 +8,22 @@ var app;
             function QuestionService($resource) {
                 this.$resource = $resource;
                 this._question_resource = this.$resource('/api/quiz');
+                this.questions = [];
+                this.getAllQs();
             }
             QuestionService.prototype.getAllQs = function () {
-                return this._question_resource.get();
+                var _this = this;
+                if (this.questions.length == 0) {
+                    this._question_resource.get().then(function (data) {
+                        console.log(data);
+                        return _this.questions = data;
+                    });
+                }
+                else {
+                    return this.questions;
+                }
+            };
+            QuestionService.prototype.getQsByCategory = function (categoryId) {
             };
             return QuestionService;
         }());

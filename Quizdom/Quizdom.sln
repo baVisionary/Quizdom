@@ -10,8 +10,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionIt
 		..\.gitignore = ..\.gitignore
 	EndProjectSection
 EndProject
-Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "QuizletService", "..\QuizletService\QuizletService.njsproj", "{995240CD-9C6A-46FC-B420-F7B3B22047A4}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -22,10 +20,6 @@ Global
 		{766DA4FA-BB36-4133-A637-D53706CBDB21}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{766DA4FA-BB36-4133-A637-D53706CBDB21}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{766DA4FA-BB36-4133-A637-D53706CBDB21}.Release|Any CPU.Build.0 = Release|Any CPU
-		{995240CD-9C6A-46FC-B420-F7B3B22047A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{995240CD-9C6A-46FC-B420-F7B3B22047A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{995240CD-9C6A-46FC-B420-F7B3B22047A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{995240CD-9C6A-46FC-B420-F7B3B22047A4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

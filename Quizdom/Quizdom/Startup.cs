@@ -94,8 +94,12 @@ namespace Quizdom
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
+            
+                routes.MapRoute(
+                    name: "CatchAll",
+                    template: "{*url}",
+                    defaults: new { controller = "Home", action = "Index" });
             });
-
             // Enable middleware to serve generated Swagger as a JSON endpoint.
             app.UseSwagger();
 

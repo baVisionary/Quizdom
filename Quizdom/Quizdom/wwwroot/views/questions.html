@@ -1,0 +1,9 @@
+<div id='questions'>
+  <h2>{{ vm.title }}</h2>
+  <ul id='question-list'>
+    <li ng-repeat="q in vm.controller.questions">
+      <h3>{{ q.category }} Type: {{ q.type }} </h3>
+      <p>{{ q.id }}. {{ q.question }}</p>
+    </li>
+  </ul>
+</div>

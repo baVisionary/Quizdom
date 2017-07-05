@@ -1,0 +1,24 @@
+{
+  "name": "quizdom",
+  "version": "1.0.0",
+  "description": "Social learning through competition",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "dotnet run"
+  },
+  "author": "Rick Cohen, Davin Nathanson",
+  "license": "MIT",
+  "dependencies": {},
+  "devDependencies": {
+    "@types/angular": "^1.6.25",
+    "@types/angular-resource": "^1.5.9",
+    "@types/angular-ui-router": "^1.1.37",
+    "@types/jquery": "^3.2.6",
+    "angular": "^1.6.5",
+    "angular-resource": "^1.6.5",
+    "angular-ui-router": "^1.0.3",
+    "jquery": "^3.2.1",
+    "materialize": "^1.0.0"
+  }
+}

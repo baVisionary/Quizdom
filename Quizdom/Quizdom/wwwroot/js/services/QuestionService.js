@@ -7,7 +7,7 @@ var app;
         var QuestionService = (function () {
             function QuestionService($resource) {
                 this.$resource = $resource;
-                this._question_resource = this.$resource('http://localhost:5000/api/quiz');
+                this._question_resource = this.$resource('/api/quiz');
                 this.questions = [];
                 this._data = {};
                 this.getAllQs();

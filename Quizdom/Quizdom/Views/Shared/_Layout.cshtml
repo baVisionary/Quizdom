@@ -1,6 +1,6 @@
 ﻿@inject Microsoft.ApplicationInsights.AspNetCore.JavaScriptSnippet JavaScriptSnippet
 <!DOCTYPE html>
-<html>
+<html ng-app="app">
 
 <head>
     <meta charset="utf-8" />
@@ -19,35 +19,40 @@
     <environment names="Staging,Production">
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-        <!--<link rel="stylesheet" href="https://ajax.aspnetcdn.com/ajax/bootstrap/3.3.7/css/bootstrap.min.css" asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
-            asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute" />-->
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
         <link rel="stylesheet" href="~/../dist/css/site.min.css" asp-append-version="true" />
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
 
-<body ng-app="app">
+<body>
+    <div class="container body-content">
+        <ui-view class="ng-scope"></ui-view>
+    </div>
 
-    <ui-view></ui-view>
-    
+    <!-- third-party libraries -->
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/lib/materialize/dist/js/materialize.js"></script>
+    <script src="~/lib/angular/angular.js"></script>
+    <!--<script src="~/lib/angular-route/angular-route.js"></script>-->
+    <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="~/lib/angular-resource/angular-resource.js"></script>
+
+    <!-- Angular starting point-->
+    <script src="~/js/app.js"></script>    
+
+    <!-- add controllers here -->
+    <script src="~/js/controllers/controller.js"></script>
+
+    <!-- add services here -->
+    <script src="~/js/services/questionService.js"></script>
+
+    <!-- declare states -->
+    <script src="~/js/states.js"></script>
+
     <!-- Must be present or app will not find linked Angular files
-        <div class="container body-content">@RenderBody()</div>
+        @RenderBody()
     -->
-
-        <script src="~/lib/jquery/dist/jquery.js"></script>
-        <script src="~/lib/materialize/dist/js/materialize.js"></script>
-        <script src="~/lib/angular/angular.js"></script>
-        <script src="~/lib/angular-route/angular-route.js"></script>
-        <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
-        <script src="~/lib/angular-resource/angular-resource.js"></script>
-
-        <!-- add controllers here -->
-        <script src="~/js/controllers/controller.js"></script>
-        <!-- add services here -->
-        <script src="~/js/services/questionService.js"></script>
-        <script src="~/js/states.js"></script>
-
 
     @RenderSection("Scripts", required: false)
 </body>

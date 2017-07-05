@@ -1,6 +1,6 @@
 var app;
 (function (app) {
-    angular.module('app', ['ui.router', 'ngResource']).config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
+    angular.module('app').config(function ($stateProvider, $urlRouterProvider, $locationProvider) {
         $stateProvider
             .state('home', {
             url: '/',

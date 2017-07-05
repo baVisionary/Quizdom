@@ -7,18 +7,16 @@ var app;
         var QuestionService = (function () {
             function QuestionService($resource) {
                 this.$resource = $resource;
-                this._question_resource = this.$resource('/api/quiz');
+                this._question_resource = this.$resource('http://localhost:5000/api/quiz');
                 this.questions = [];
+                this._data = {};
                 this.getAllQs();
             }
             QuestionService.prototype.getAllQs = function () {
-                var _this = this;
-                this._question_resource.get();
                 if (this.questions.length == 0) {
-                    this._question_resource.get().then(function (data) {
-                        console.log(data);
-                        return _this.questions = data;
-                    });
+                    this.questions = this._question_resource.query();
+                    console.log(this.questions);
+                    return this.questions;
                 }
                 else {
                     return this.questions;

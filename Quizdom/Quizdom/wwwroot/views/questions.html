@@ -1,9 +1,24 @@
 <div id='questions'>
   <h2>{{ vm.title }}</h2>
-  <ul id='question-list'>
+
+  <ul id='question-list' class="collapsible popout" data-collapsible="accordion">
     <li ng-repeat="q in vm.questions">
-      <h3>{{ q.category }}: {{ q.type }} </h3>
-      <p>{{ q.id }}. {{ q.question }}</p>
+      <div class="collapsible-header">
+        <h5>{{ q.id }}. {{ q.question }}</h5>
+      </div>
+      <div class="collapsible-body">
+        <ul id="answer-list" class="collection">
+          <li class="collection">1. {{ q.correct_Answer }}<span class="new badge green" data-badge-caption="Right"></span></li>
+          <li class="collection" ng-repeat="a in [q.incorrect_Answer1, q.incorrect_Answer2, q.incorrect_Answer3]">{{ $index+2 }}. {{ a }}<span class="new badge red" data-badge-caption="Wrong"></span></li>
+        </ul>
+        <p>{{ q.category }}: {{ q.difficulty }} </p>
+      </div>
     </li>
   </ul>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $('.collapsible').collapsible();
+  });
+</script>

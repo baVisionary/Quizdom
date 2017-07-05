@@ -13,6 +13,7 @@ var app;
             }
             QuestionService.prototype.getAllQs = function () {
                 var _this = this;
+                this._question_resource.get();
                 if (this.questions.length == 0) {
                     this._question_resource.get().then(function (data) {
                         console.log(data);
@@ -29,6 +30,6 @@ var app;
         }());
         QuestionService.$inject = ['$resource'];
         Services.QuestionService = QuestionService;
-        angular.module('app').service('questionService', QuestionService);
+        angular.module('app').service('QuestionService', QuestionService);
     })(Services = app.Services || (app.Services = {}));
 })(app || (app = {}));

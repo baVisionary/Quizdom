@@ -11,14 +11,14 @@ var app;
         }());
         Controllers.WelcomeController = WelcomeController;
         var QuestionController = (function () {
-            function QuestionController(questionService) {
-                this.questionService = questionService;
+            function QuestionController(QuestionService) {
+                this.QuestionService = QuestionService;
                 this.title = "Question form";
-                this.questions = this.questionService.getAllQs();
+                this.questions = this.QuestionService.getAllQs();
             }
             return QuestionController;
         }());
-        QuestionController.$inject = ['questionService'];
+        QuestionController.$inject = ['QuestionService'];
         Controllers.QuestionController = QuestionController;
     })(Controllers = app.Controllers || (app.Controllers = {}));
 })(app || (app = {}));

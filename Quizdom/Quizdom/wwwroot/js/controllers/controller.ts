@@ -11,14 +11,14 @@ namespace app.Controllers {
   }
 
   export class QuestionController {
-    public questions;
     public title;
+    public questions;
 
-    static $inject = ['questionService'];
+    static $inject = ['QuestionService'];
 
-    constructor(private questionService) {
+    constructor(private QuestionService) {
       this.title =  "Question form";
-      this.questions = this.questionService.getAllQs();
+      this.questions = this.QuestionService.getAllQs();
     }
 
 

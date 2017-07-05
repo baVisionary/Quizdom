@@ -1,6 +1,6 @@
 namespace app {
 
-  angular.module('app', ['ui.router', 'ngResource']).config((
+  angular.module('app').config((
     $stateProvider,
     $urlRouterProvider,
     $locationProvider
@@ -26,5 +26,6 @@ namespace app {
     $urlRouterProvider.otherwise('/404');
 
     $locationProvider.html5Mode(true);
-  })
+  });
+
 }

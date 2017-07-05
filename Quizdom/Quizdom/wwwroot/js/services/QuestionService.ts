@@ -4,7 +4,7 @@
 namespace app.Services {
 
   export class QuestionService {
-    private _question_resource = this.$resource('http://localhost:5000/api/quiz');
+    private _question_resource = this.$resource('/api/quiz');
     public questions = [];
     private _data = {};
 

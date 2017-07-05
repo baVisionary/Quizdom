@@ -4,8 +4,9 @@
 namespace app.Services {
 
   export class QuestionService {
-    private _question_resource = this.$resource('/api/quiz');
+    private _question_resource = this.$resource('http://localhost:5000/api/quiz');
     public questions = [];
+    private _data = {};
 
     static $inject = ['$resource'];
 
@@ -14,12 +15,10 @@ namespace app.Services {
     }
 
     public getAllQs() {
-      this._question_resource.get();
       if (this.questions.length == 0) {
-        this._question_resource.get().then((data) => {
-          console.log(data);
-          return this.questions = data;
-        });
+        this.questions = this._question_resource.query()
+          console.log(this.questions);
+          return this.questions;
       } else {
         return this.questions;
       }

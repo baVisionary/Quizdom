@@ -5,13 +5,13 @@ var app;
             .state('home', {
             url: '/',
             templateUrl: '/views/welcome.html',
-            controller: app.Controllers.WelcomeController,
+            controller: 'WelcomeController',
             controllerAs: 'vm'
         })
             .state('questions', {
             url: '/questions',
             templateUrl: '/views/questions.html',
-            controller: app.Controllers.QuestionController,
+            controller: 'QuestionController',
             controllerAs: 'vm'
         })
             .state('404', {

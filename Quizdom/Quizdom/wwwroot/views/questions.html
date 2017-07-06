@@ -1,23 +1,36 @@
 <div id='questions'>
-  <h2>{{ vm.title }}</h2>
-  <div class="">
-    <ul id='question-list' class="collapsible popout" data-collapsible="accordion">
-      <!--<li>
-        <div class="collapsible-header">Testing 1</div>
-        <div class="collapsible-body">Stuff</div>
-      </li>
-      <li>
-        <div class="collapsible-header">Testing 2</div>
-        <div class="collapsible-body">More stuff</div>
-      </li>-->
-      <li ng-cloak ng-repeat="q in vm.questions">
+  <div id="filters" class="row">
+    <div class="col s12">
+      <div class="card indigo lighten-2">
+        <div class="card-content white-text">
+          <span class="card-title">{{ vm.title }}</span>
+          <div class="row">
+            <div class="input-field col s5">
+              <select name="categorySelect" id="categorySelect" ng-model="vm.category">
+              <option value="" selected>Show all</option>
+              <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
+            </select>
+              <label>Category</label>
+            </div>
+          </div>
+          <div class="row">
+            <dir-pagination-controls></dir-pagination-controls>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <ul id='question-list' class="collapsible popout" data-collapsible="accordion" watch>
+      <li ng-cloak dir-paginate="q in vm.questions | filter: vm.category | itemsPerPage: 10">
         <div class="collapsible-header">
-          <h5>{{ q.id }}. {{ q.question }}</h5>
+          <div class="col s1">{{ q.id }}.</div>
+          <div>{{ q.question }}</div>
         </div>
         <div class="collapsible-body">
-          <ul id="answer-list" class="collection">
-            <li class="collection">1. {{ q.correct_Answer }}<span class="new badge green" data-badge-caption="Right"></span></li>
-            <li class="collection" ng-repeat="a in [q.incorrect_Answer1, q.incorrect_Answer2, q.incorrect_Answer3]">{{ $index+2 }}. {{ a }}<span class="new badge red" data-badge-caption="Wrong"></span></li>
+          <ul type="A" id="answer-list" class="collection alpha-list">
+            <li class="collection-item row"><span class="col s1">A.</span>{{ q.correct_Answer }}<span class="new badge green" data-badge-caption="Right"></span></li>
+            <li class="collection-item row" ng-repeat="a in [q.incorrect_Answer1, q.incorrect_Answer2, q.incorrect_Answer3]"><span class="col s1">{{ "BCD"[$index] }}.</span>{{ a }}<span class="new badge red" data-badge-caption="Wrong"></span></li>
           </ul>
           <p>{{ q.category }}: {{ q.difficulty }} </p>
         </div>
@@ -27,6 +40,9 @@
 </div>
 
 <script>
+  $(document).ready(function () {
+    $('select').material_select();
+  });
   $(document).ready(function () {
     $('.collapsible').collapsible();
   });

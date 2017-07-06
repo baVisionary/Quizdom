@@ -15,15 +15,14 @@ namespace app.Controllers {
   export class QuestionController {
     public title;
     public questions;
+    public category;
 
     static $inject = ['QuestionService'];
 
     constructor(private QuestionService) {
-      this.title = "Question form";
+      this.title = "Quiz Questions";
       this.questions = this.QuestionService.getAllQs();
-      // $(document).ready(function () {
-      //   $('.collapsible').collapsible();
-      // });
+      // this.categories = this.QuestionService.categories;
     }
 
   }

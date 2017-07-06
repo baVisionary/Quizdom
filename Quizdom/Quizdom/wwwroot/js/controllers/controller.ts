@@ -16,13 +16,25 @@ namespace app.Controllers {
     public title;
     public questions;
     public category;
+    public difficulty;
+    public questionToEdit;
 
     static $inject = ['QuestionService'];
 
     constructor(private QuestionService) {
       this.title = "Quiz Questions";
       this.questions = this.QuestionService.getAllQs();
-      // this.categories = this.QuestionService.categories;
+    }
+
+    public editQuestion = function (questionId: number): void {
+      this.questionToEdit = this.QuestionService.getOneQuestionId(questionId);
+      console.log(this.questionToEdit);
+    }
+
+    public saveQuestion = function (question: object): void {
+      console.log(question);
+      this.questionToEdit = this.QuestionService.updateOneQuestion(question);
+      console.log(this.questionToEdit);
     }
 
   }

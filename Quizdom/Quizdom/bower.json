@@ -11,13 +11,12 @@
     "angular-ui-router": "^1.0.5",
     "materialize": "^0.99.0",
     "font-awesome": "^4.7.0",
-    "angular-resource": "^1.6.4"
+    "angular-resource": "^1.6.4",
+    "angularUtils-pagination": "angular-utils-pagination#^0.11.1"
   },
   "resolutions": {
     "jquery": ">=3.2.1"
   },
   "devDependencies": {
-    "materialize": "^0.99.0",
-    "angularUtils-pagination": "angular-utils-pagination#^0.11.1"
   }
 }

@@ -14,9 +14,17 @@ var app;
         var QuestionController = (function () {
             function QuestionController(QuestionService) {
                 this.QuestionService = QuestionService;
+                this.editQuestion = function (questionId) {
+                    this.questionToEdit = this.QuestionService.getOneQuestionId(questionId);
+                    console.log(this.questionToEdit);
+                };
+                this.saveQuestion = function (question) {
+                    console.log(question);
+                    this.questionToEdit = this.QuestionService.updateOneQuestion(question);
+                    console.log(this.questionToEdit);
+                };
                 this.title = "Quiz Questions";
                 this.questions = this.QuestionService.getAllQs();
-                // this.categories = this.QuestionService.categories;
             }
             return QuestionController;
         }());

@@ -7,7 +7,7 @@ var app;
         var QuestionService = (function () {
             function QuestionService($resource) {
                 this.$resource = $resource;
-                this._question_resource = this.$resource('/api/quiz');
+                this._question_resource = this.$resource('/api/quiz/:questionId');
                 this.questions = [];
                 this.categories = [
                     "Animals",
@@ -21,8 +21,11 @@ var app;
                     "Vehicles",
                     "User Added"
                 ];
-                this._category = 0;
-                this._new_question = {};
+                this.difficulty = [
+                    "easy",
+                    "medium",
+                    "hard"
+                ];
                 this.getAllQs();
             }
             QuestionService.prototype.getAllQs = function () {
@@ -34,16 +37,14 @@ var app;
                     return this.questions;
                 }
             };
-            QuestionService.prototype.getQsByCategory = function (categoryId) {
-                if (this._category != categoryId) {
-                    this._category = categoryId;
-                    this._question_resource += "/category/" + categoryId;
-                    this.questions = this._question_resource.query();
-                    return this.questions;
-                }
-                else {
-                    return this.questions;
-                }
+            QuestionService.prototype.getOneQuestionId = function (questionId) {
+                this._new_question = this._question_resource.get({ questionId: questionId });
+                return this._new_question;
+            };
+            QuestionService.prototype.updateOneQuestion = function (question) {
+                this._new_question = this.$resource('/api/quiz/:questionId', { questionId: question.id }, question);
+                this._new_question.$save();
+                return this._new_question;
             };
             return QuestionService;
         }());

@@ -18,6 +18,8 @@ namespace app.Controllers {
     public category;
     public difficulty;
     public questionToEdit;
+    public categoryToEdit;
+    public difficultyToEdit;
 
     static $inject = ['QuestionService'];
 
@@ -27,14 +29,30 @@ namespace app.Controllers {
     }
 
     public editQuestion = function (questionId: number): void {
-      this.questionToEdit = this.QuestionService.getOneQuestionId(questionId);
+      let i = this.questions.findIndex( q => { return q.id == questionId } );
+      if ( i == undefined ) {
+        this.questionToEdit = this.QuestionService.getOneQuestion(questionId)
+      } else {
+        this.questionToEdit = this.questions[i];
+      }
+      this.categoryToEdit = this.questionToEdit.category;
+      this.difficultyToEdit = this.questionToEdit.difficulty;
       console.log(this.questionToEdit);
     }
 
-    public saveQuestion = function (question: object): void {
-      console.log(question);
-      this.questionToEdit = this.QuestionService.updateOneQuestion(question);
+    public saveQuestion = function (): void {
       console.log(this.questionToEdit);
+
+      this.QuestionService.updateOne(this.questionToEdit);
+      let i = this.questions.findIndex( q => { return q.id = this.questionToEdit.id } )
+      // .then((data) => {
+      //   this.questions.length = 0;
+      //   this.QuestionService.getAllQs().$promise.then((data) => {
+      //     for (let i = 0; i < data.length; i++ ) {
+      //       this.questions.push(data[i]);
+      //     }
+      //   });
+      // });
     }
 
   }

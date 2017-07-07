@@ -4,8 +4,12 @@
 namespace app.Services {
 
   export class QuestionService {
-    private _question_resource = this.$resource('/api/quiz/:questionId');
+    static $inject = ['$resource'];
+
+    private _Resource_question = this.$resource('/api/quiz/:questionId', null, {'update': {method: 'PUT'}});
+
     public questions = [];
+    private _oneQuestion = {};
     public categories = [
       "Animals",
       "Art",
@@ -23,17 +27,16 @@ namespace app.Services {
       "medium",
       "hard"
     ];
-    private _new_question;
 
-    static $inject = ['$resource'];
 
     constructor(private $resource) {
       this.getAllQs();
     }
 
+
     public getAllQs() {
       if (this.questions.length == 0) {
-        this.questions = this._question_resource.query();
+        this.questions = this._Resource_question.query();
         return this.questions;
       } else {
         return this.questions;
@@ -41,14 +44,11 @@ namespace app.Services {
     }
 
     public getOneQuestionId(questionId) {
-      this._new_question = this._question_resource.get({questionId: questionId});
-      return this._new_question;
+      return this._Resource_question.get({ questionId: questionId });
     }
 
-    public updateOneQuestion(question) {
-      this._new_question = this.$resource('/api/quiz/:questionId', {questionId: question.id}, question);
-      this._new_question.$save();
-      return this._new_question;
+    public updateOne(q) {
+      return this._Resource_question.update({questionId: q.id}, q).$promise;
     }
   }
 

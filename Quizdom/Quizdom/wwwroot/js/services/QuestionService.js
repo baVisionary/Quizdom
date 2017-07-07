@@ -7,8 +7,9 @@ var app;
         var QuestionService = (function () {
             function QuestionService($resource) {
                 this.$resource = $resource;
-                this._question_resource = this.$resource('/api/quiz/:questionId');
+                this._Resource_question = this.$resource('/api/quiz/:questionId', null, { 'update': { method: 'PUT' } });
                 this.questions = [];
+                this._oneQuestion = {};
                 this.categories = [
                     "Animals",
                     "Art",
@@ -30,7 +31,7 @@ var app;
             }
             QuestionService.prototype.getAllQs = function () {
                 if (this.questions.length == 0) {
-                    this.questions = this._question_resource.query();
+                    this.questions = this._Resource_question.query();
                     return this.questions;
                 }
                 else {
@@ -38,13 +39,10 @@ var app;
                 }
             };
             QuestionService.prototype.getOneQuestionId = function (questionId) {
-                this._new_question = this._question_resource.get({ questionId: questionId });
-                return this._new_question;
+                return this._Resource_question.get({ questionId: questionId });
             };
-            QuestionService.prototype.updateOneQuestion = function (question) {
-                this._new_question = this.$resource('/api/quiz/:questionId', { questionId: question.id }, question);
-                this._new_question.$save();
-                return this._new_question;
+            QuestionService.prototype.updateOne = function (q) {
+                return this._Resource_question.update({ questionId: q.id }, q).$promise;
             };
             return QuestionService;
         }());

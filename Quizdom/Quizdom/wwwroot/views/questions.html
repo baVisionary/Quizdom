@@ -1,3 +1,4 @@
+<!-- Heading with filter for questions -->
 <div id='questions'>
   <div id="filters" class="row">
     <div class="col s12">
@@ -30,6 +31,7 @@
       </div>
     </div>
   </div>
+  <!-- angular list of questions -->
   <div class="row">
     <ul id='question-list' class="collapsible popout" data-collapsible="accordion" watch>
       <li ng-cloak dir-paginate="q in vm.questions | filter: vm.category | filter: vm.difficulty | itemsPerPage: 10">
@@ -54,12 +56,13 @@
       </li>
     </ul>
   </div>
+  <!-- modal to edit one question -->
   <div id="question-modal" class="modal modal-fixed-footer">
     <div class="modal-content">
       <div class="row">
         <div class="col s1">{{ vm.questionToEdit.id }}.</div>
         <div class="input-field col s11">
-          <textarea id="question-text" class="materialize-textarea validate" required data-error="wrong" ng-model="vm.questionToEdit.question"></textarea>
+          <textarea id="question-text" class="materialize-textarea validate active" required data-error="wrong" ng-model="vm.questionToEdit.question"></textarea>
           <label for="question-text">Question Wording</label>
           <a class="modal-action modal-close btn-floating right orange" style="display: inline-block; position: relative; top: -20px; right: -5px"><i class="material-icons large">cancel</i></a>
         </div>
@@ -67,28 +70,28 @@
       <div class="row">
         <div class="col s1 offset-s1">A.</div>
         <div class="input-field col s10">
-          <input type="text" id="correct-answer" class="validate" required data-error="wrong" ng-model="vm.questionToEdit.correct_Answer">
+          <input type="text" id="correct-answer" class="validate active" required data-error="wrong" ng-model="vm.questionToEdit.correct_Answer">
           <label for="correct-answer" class="green-text">Correct Answer</label>
         </div>
       </div>
       <div class="row">
         <div class="col s1 offset-s1">B.</div>
         <div class="input-field col s10">
-          <input type="text" id="incorrect-answer1" class="validate" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer1">
+          <input type="text" id="incorrect-answer1" class="validate active" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer1">
           <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
         </div>
       </div>
       <div class="row">
         <div class="col s1 offset-s1">C.</div>
         <div class="input-field col s10">
-          <input type="text" id="incorrect-answer2" class="validate" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer2">
+          <input type="text" id="incorrect-answer2" class="validate active" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer2">
           <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
         </div>
       </div>
       <div class="row">
         <div class="col s1 offset-s1">D.</div>
         <div class="input-field col s10">
-          <input type="text" id="incorrect-answer3" class="validate" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer3">
+          <input type="text" id="incorrect-answer3" class="validate active" required data-error="wrong" ng-model="vm.questionToEdit.incorrect_Answer3">
           <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
         </div>
       </div>
@@ -98,20 +101,20 @@
             <option value="" disabled>Change</option>
             <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
           </select>
-          <label>Category: {{ vm.questionToEdit.category }}</label>
+          <label>Category: {{ vm.categoryToEdit }}</label>
         </div>
         <div class="input-field col s5 offset-s1">
           <select name="questionDifficulty" id="questionDifficulty" required ng-model="vm.questionToEdit.difficulty">
             <option value="" disabled>Change</option>
             <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
           </select>
-          <label>Difficulty: {{ vm.questionToEdit.difficulty }}</label>
+          <label>Difficulty: {{ vm.difficultyToEdit }}</label>
         </div>
       </div>
     </div>
     <div class="modal-footer">
       <a class="btn red left"><i class="material-icons left">delete</i>Delete</a>
-      <a class="modal-action modal-close green btn" ng-click="vm.saveQuestion(vm.questionToEdit)"><i class="material-icons left">assignment_returned</i>Save</a>
+      <a class="modal-action modal-close green btn" ng-click="vm.saveQuestion()"><i class="material-icons left">assignment_returned</i>Save</a>
     </div>
   </div>
 </div>

@@ -15,13 +15,30 @@ var app;
             function QuestionController(QuestionService) {
                 this.QuestionService = QuestionService;
                 this.editQuestion = function (questionId) {
-                    this.questionToEdit = this.QuestionService.getOneQuestionId(questionId);
+                    var i = this.questions.findIndex(function (q) { return q.id == questionId; });
+                    if (i == undefined) {
+                        this.questionToEdit = this.QuestionService.getOneQuestion(questionId);
+                    }
+                    else {
+                        this.questionToEdit = this.questions[i];
+                    }
+                    this.categoryToEdit = this.questionToEdit.category;
+                    this.difficultyToEdit = this.questionToEdit.difficulty;
                     console.log(this.questionToEdit);
                 };
-                this.saveQuestion = function (question) {
-                    console.log(question);
-                    this.questionToEdit = this.QuestionService.updateOneQuestion(question);
+                this.saveQuestion = function () {
+                    var _this = this;
                     console.log(this.questionToEdit);
+                    this.QuestionService.updateOne(this.questionToEdit);
+                    var i = this.questions.findIndex(function (q) { return q.id = _this.questionToEdit.id; });
+                    // .then((data) => {
+                    //   this.questions.length = 0;
+                    //   this.QuestionService.getAllQs().$promise.then((data) => {
+                    //     for (let i = 0; i < data.length; i++ ) {
+                    //       this.questions.push(data[i]);
+                    //     }
+                    //   });
+                    // });
                 };
                 this.title = "Quiz Questions";
                 this.questions = this.QuestionService.getAllQs();

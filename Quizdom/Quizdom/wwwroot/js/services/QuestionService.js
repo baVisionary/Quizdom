@@ -44,6 +44,12 @@ var app;
             QuestionService.prototype.updateOne = function (q) {
                 return this._Resource_question.update({ questionId: q.id }, q).$promise;
             };
+            QuestionService.prototype.deleteOne = function (questionId) {
+                return this._Resource_question.delete({ questionId: questionId }).$promise;
+            };
+            QuestionService.prototype.createOne = function (q) {
+                return this._Resource_question.save({ questionId: q.id }, q).$promise;
+            };
             return QuestionService;
         }());
         QuestionService.$inject = ['$resource'];

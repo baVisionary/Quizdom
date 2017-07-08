@@ -14,6 +14,30 @@ var app;
             controller: 'QuestionController',
             controllerAs: 'vm'
         })
+            .state('questions.view', {
+            url: '/view/:id',
+            views: {
+                'detail': {
+                    templateUrl: '/views/question-view.html'
+                }
+            }
+        })
+            .state('questions.edit', {
+            url: '/edit/:id',
+            views: {
+                'detail': {
+                    templateUrl: '/views/question-edit.html'
+                }
+            }
+        })
+            .state('questions.new', {
+            url: '/new/:id',
+            views: {
+                'detail': {
+                    templateUrl: '/views/question-new.html'
+                }
+            }
+        })
             .state('404', {
             url: '/404',
             templateUrl: '/views/404.html'

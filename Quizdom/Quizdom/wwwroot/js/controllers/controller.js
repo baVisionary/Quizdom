@@ -12,40 +12,39 @@ var app;
         Controllers.WelcomeController = WelcomeController;
         angular.module('app').controller('WelcomeController', WelcomeController);
         var QuestionController = (function () {
-            function QuestionController(QuestionService) {
+            function QuestionController(QuestionService, $state) {
                 this.QuestionService = QuestionService;
-                this.editQuestion = function (questionId) {
-                    var i = this.questions.findIndex(function (q) { return q.id == questionId; });
-                    if (i == undefined) {
-                        this.questionToEdit = this.QuestionService.getOneQuestion(questionId);
-                    }
-                    else {
-                        this.questionToEdit = this.questions[i];
-                    }
-                    this.categoryToEdit = this.questionToEdit.category;
-                    this.difficultyToEdit = this.questionToEdit.difficulty;
-                    console.log(this.questionToEdit);
-                };
-                this.saveQuestion = function () {
-                    var _this = this;
-                    console.log(this.questionToEdit);
-                    this.QuestionService.updateOne(this.questionToEdit);
-                    var i = this.questions.findIndex(function (q) { return q.id = _this.questionToEdit.id; });
-                    // .then((data) => {
-                    //   this.questions.length = 0;
-                    //   this.QuestionService.getAllQs().$promise.then((data) => {
-                    //     for (let i = 0; i < data.length; i++ ) {
-                    //       this.questions.push(data[i]);
-                    //     }
-                    //   });
-                    // });
-                };
+                this.$state = $state;
                 this.title = "Quiz Questions";
                 this.questions = this.QuestionService.getAllQs();
             }
+            QuestionController.prototype.onHideQuestion = function () {
+                this.$state.go('questions.view', { id: this.questionToEdit.id });
+            };
+            QuestionController.prototype.onViewQuestion = function (questionId) {
+                this.$state.go('questions.view', { id: questionId });
+            };
+            QuestionController.prototype.addQuestion = function () {
+                var i = Math.max.apply(Math, this.questions.map(function (o) { return o.id; }));
+                console.log("max id: " + i);
+                this.$state.go('questions.new', { id: i + 1 });
+            };
+            QuestionController.prototype.onEditQuestion = function (questionId) {
+                this.$state.go('questions.edit', { id: questionId });
+                this.questionToEdit = this.questions[this.questions.findIndex(function (q) { return q.id == questionId; })];
+                this.categoryToEdit = this.questions.find(function (q) { return q.id == questionId; }).category;
+                this.difficultyToEdit = this.questions.find(function (q) { return q.id == questionId; }).difficulty;
+            };
+            QuestionController.prototype.saveQuestion = function () {
+                this.QuestionService.updateOne(this.questionToEdit);
+                this.$state.go('questions.view', { id: this.questionToEdit.id });
+            };
+            QuestionController.prototype.deleteQuestion = function (questionId) {
+                this.QuestionService.deleteOne(questionId);
+            };
             return QuestionController;
         }());
-        QuestionController.$inject = ['QuestionService'];
+        QuestionController.$inject = ['QuestionService', '$state', '$stateParams'];
         Controllers.QuestionController = QuestionController;
         angular.module('app').controller('QuestionController', QuestionController);
     })(Controllers = app.Controllers || (app.Controllers = {}));

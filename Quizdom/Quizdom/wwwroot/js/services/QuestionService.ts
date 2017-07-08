@@ -50,6 +50,14 @@ namespace app.Services {
     public updateOne(q) {
       return this._Resource_question.update({questionId: q.id}, q).$promise;
     }
+
+    public deleteOne(questionId) {
+      return this._Resource_question.delete({ questionId: questionId }).$promise;
+    }
+
+    public createOne(q) {
+      return this._Resource_question.save({questionId: q.id}, q).$promise;
+    }
   }
 
   angular.module('app').service('QuestionService', QuestionService);

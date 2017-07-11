@@ -35,9 +35,9 @@ namespace app {
       }
     })
     .state('questions.new', {
-      url: '/new/:id',
+      url: '/new',
       views: {
-        'detail': {
+        'new': {
           templateUrl: '/views/question-new.html'
         }
       }

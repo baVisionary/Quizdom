@@ -1,3 +1,5 @@
+// import * as angular from '../../lib/angular/angular.min'
+
 namespace app.Controllers {
 
   export class WelcomeController {
@@ -29,18 +31,14 @@ namespace app.Controllers {
       this.questions = this.QuestionService.getAllQs();
     }
 
-    public onHideQuestion() {
-      this.$state.go('questions.view', { id: this.questionToEdit.id});
-    }
-
-    public onViewQuestion(questionId: number) {
+    public onViewQuestion(questionId: number, event) {
+      // let i = this.questions.findIndex( q => {return q.id == questionId} );
+      // console.log(event);
       this.$state.go('questions.view', { id: questionId });
+    
     }
 
-    public addQuestion() {
-      let i = Math.max.apply(Math,this.questions.map( o => {return o.id;}))
-      console.log(`max id: ${i}`)
-      this.$state.go('questions.new', { id: i+1 });
+    public onHideQuestion() {
     }
 
     public onEditQuestion(questionId: number) {
@@ -50,17 +48,47 @@ namespace app.Controllers {
       this.difficultyToEdit = this.questions.find( q => { return q.id == questionId }).difficulty;
     }
 
+    public addQuestion() {
+      let i = Math.max.apply(Math,this.questions.map( o => {return o.id;})) + 1;
+      // i = Math.max( 5000, i+1 );
+      // console.log(`max id: ${i}`);
+      this.questionToEdit = this.QuestionService.newQuestion();
+      this.questionToEdit.id = i;
+      this.questionToEdit.UserId = "Quizdom User";
+      console.log(this.questionToEdit);
+      this.$state.go('questions.new');
+    }
+
+    public saveNewQuestion() {
+      this.QuestionService.createOne(this.questionToEdit).$promise.then(() => {
+        this.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
+      });
+      this.$state.go('questions');
+    }
+
     public saveQuestion() {
+      console.log(this.questionToEdit);
       this.QuestionService.updateOne(this.questionToEdit);
       this.$state.go('questions.view', { id: this.questionToEdit.id});
     }
 
-    public deleteQuestion(questionId: number) {
-      this.QuestionService.deleteOne(questionId);
-    }
+    public deleteQuestion(q) {
+      return this.QuestionService.deleteOne(q).then(() => {
+        this.$state.go('questions');
+      });
 
+    }
   }
 
   angular.module('app').controller('QuestionController', QuestionController);
+
+    export class QuestionViewController {
+      static $inject = ['QuestionService', '$state', '$stateParams'];
+
+      
+    }
+
+    angular.module('app').controller('QuestionViewController', QuestionViewController);
+
 
 }

@@ -78,9 +78,9 @@ var app;
                     questionId: q.id
                 }, q).$promise;
             };
-            QuestionService.prototype.deleteOne = function (q) {
+            QuestionService.prototype.deleteOne = function (questionId) {
                 return this._Resource_question.delete({
-                    questionId: q.id
+                    questionId: questionId
                 }).$promise;
             };
             QuestionService.prototype.newQuestion = function () {

@@ -100,9 +100,9 @@ namespace app.Services {
       }, q).$promise;
     }
 
-    public deleteOne(q) {
+    public deleteOne(questionId) {
       return this._Resource_question.delete({
-        questionId: q.id
+        questionId: questionId
       }).$promise;
     }
 

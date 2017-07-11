@@ -73,10 +73,10 @@ namespace app.Controllers {
     }
 
     public deleteQuestion(questionId) {
+      let i = this.questions.findIndex( q => {return q.id == questionId});
+      console.log(`questionId: ${questionId} i: ${i}`);
+      this.questions.splice(i, 1);
       return this.QuestionService.deleteOne(questionId).then(() => {
-        let i = this.questions.findIndex( q => {q.id == questionId});
-        this.questions.splice(i-1, 1);
-        $('.collapsible').collapsible('close', i % 10);
         this.$state.go('questions');
       });
 

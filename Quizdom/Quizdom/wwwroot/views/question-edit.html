@@ -53,7 +53,7 @@
   <div class="col s6">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
 </div>
 <div class="row">
-  <button class="btn red left" ng-click="vm.deleteQuestion(vm.questionToEdit)"><i class="material-icons left">delete</i>Delete</button>
+  <button class="btn red left" ng-click="vm.deleteQuestion(vm.questionToEdit.id)"><i class="material-icons left">delete</i>Delete</button>
   <button class="btn-floating right orange" ng-click="vm.onViewQuestion(vm.questionToEdit.id)"><i class="material-icons large">cancel</i></button>
   <button class="btn green right" ng-click="vm.saveQuestion()" style="position: relative; right: 20px;"><i class="material-icons left">assignment_returned</i>Save</button>
 </div>

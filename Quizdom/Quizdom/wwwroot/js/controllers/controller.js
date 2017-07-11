@@ -56,10 +56,11 @@ var app;
             };
             QuestionController.prototype.deleteQuestion = function (questionId) {
                 var _this = this;
+                var i = this.questions.findIndex(function (q) { return q.id == questionId; });
+                console.log("questionId: " + questionId + " i: " + i);
+                this.questions.splice(i, 1);
+                // $('.collapsible').collapsible('close', i % 10);
                 return this.QuestionService.deleteOne(questionId).then(function () {
-                    var i = _this.questions.findIndex(function (q) { q.id == questionId; });
-                    _this.questions.splice(i - 1, 1);
-                    $('.collapsible').collapsible('close', i % 10);
                     _this.$state.go('questions');
                 });
             };

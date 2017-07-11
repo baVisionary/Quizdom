@@ -1,3 +1,4 @@
+// import * as angular from '../../lib/angular/angular.min'
 var app;
 (function (app) {
     var Controllers;
@@ -18,16 +19,12 @@ var app;
                 this.title = "Quiz Questions";
                 this.questions = this.QuestionService.getAllQs();
             }
-            QuestionController.prototype.onHideQuestion = function () {
-                this.$state.go('questions.view', { id: this.questionToEdit.id });
-            };
-            QuestionController.prototype.onViewQuestion = function (questionId) {
+            QuestionController.prototype.onViewQuestion = function (questionId, event) {
+                // let i = this.questions.findIndex( q => {return q.id == questionId} );
+                // console.log(event);
                 this.$state.go('questions.view', { id: questionId });
             };
-            QuestionController.prototype.addQuestion = function () {
-                var i = Math.max.apply(Math, this.questions.map(function (o) { return o.id; }));
-                console.log("max id: " + i);
-                this.$state.go('questions.new', { id: i + 1 });
+            QuestionController.prototype.onHideQuestion = function () {
             };
             QuestionController.prototype.onEditQuestion = function (questionId) {
                 this.$state.go('questions.edit', { id: questionId });
@@ -35,17 +32,46 @@ var app;
                 this.categoryToEdit = this.questions.find(function (q) { return q.id == questionId; }).category;
                 this.difficultyToEdit = this.questions.find(function (q) { return q.id == questionId; }).difficulty;
             };
+            QuestionController.prototype.addQuestion = function () {
+                var i = Math.max.apply(Math, this.questions.map(function (o) { return o.id; })) + 1;
+                // i = Math.max( 5000, i+1 );
+                // console.log(`max id: ${i}`);
+                this.questionToEdit = this.QuestionService.newQuestion();
+                this.questionToEdit.id = i;
+                this.questionToEdit.UserId = "Quizdom User";
+                console.log(this.questionToEdit);
+                this.$state.go('questions.new');
+            };
+            QuestionController.prototype.saveNewQuestion = function () {
+                var _this = this;
+                this.QuestionService.createOne(this.questionToEdit).$promise.then(function () {
+                    _this.questions.push(_this.QuestionService.getOneQuestionId(_this.questionToEdit.id));
+                });
+                this.$state.go('questions');
+            };
             QuestionController.prototype.saveQuestion = function () {
+                console.log(this.questionToEdit);
                 this.QuestionService.updateOne(this.questionToEdit);
                 this.$state.go('questions.view', { id: this.questionToEdit.id });
             };
-            QuestionController.prototype.deleteQuestion = function (questionId) {
-                this.QuestionService.deleteOne(questionId);
+            QuestionController.prototype.deleteQuestion = function (q) {
+                var _this = this;
+                return this.QuestionService.deleteOne(q).then(function () {
+                    _this.$state.go('questions');
+                });
             };
             return QuestionController;
         }());
         QuestionController.$inject = ['QuestionService', '$state', '$stateParams'];
         Controllers.QuestionController = QuestionController;
         angular.module('app').controller('QuestionController', QuestionController);
+        var QuestionViewController = (function () {
+            function QuestionViewController() {
+            }
+            return QuestionViewController;
+        }());
+        QuestionViewController.$inject = ['QuestionService', '$state', '$stateParams'];
+        Controllers.QuestionViewController = QuestionViewController;
+        angular.module('app').controller('QuestionViewController', QuestionViewController);
     })(Controllers = app.Controllers || (app.Controllers = {}));
 })(app || (app = {}));

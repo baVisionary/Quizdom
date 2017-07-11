@@ -1,58 +1,65 @@
-<div class="row">
-  <div class="input-field col s12">
-    <textarea id="question-text" class="materialize-textarea validate" required ng-model="vm.questionToEdit.question"></textarea>
-    <label for="question-text">Question Wording</label>
-  </div>
-</div>
-<div class="row">
-  <div class="col s1 offset-s1">A.</div>
-  <div class="input-field col s10">
-    <input type="text" id="correct-answer" class="validate" required ng-model="vm.questionToEdit.correct_Answer">
-    <label for="correct-answer" class="green-text">Correct Answer</label>
-  </div>
-</div>
-<div class="row">
-  <div class="col s1 offset-s1">B.</div>
-  <div class="input-field col s10">
-    <input type="text" id="incorrect-answer1" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer1">
-    <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
-  </div>
-</div>
-<div class="row">
-  <div class="col s1 offset-s1">C.</div>
-  <div class="input-field col s10">
-    <input type="text" id="incorrect-answer2" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer2">
-    <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
-  </div>
-</div>
-<div class="row">
-  <div class="col s1 offset-s1">D.</div>
-  <div class="input-field col s10">
-    <input type="text" id="incorrect-answer3" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer3">
-    <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
-  </div>
-</div>
-<div class="row">
-  <div class="input-field col s5">
-    <select name="questionCategory" id="questionCategory" required ng-model="vm.questionToEdit.category">
+<div class="card white">
+  <div class="card-content black-text">
+    <div class="row">
+      <div class="col s1">{{ vm.questionToEdit.id }}.</div>
+      <div class="input-field col s11">
+        <textarea id="question-text" class="materialize-textarea validate" required ng-model="vm.questionToEdit.question"></textarea>
+        <label for="question-text">Question Wording</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s1 offset-s1">A.</div>
+      <div class="input-field col s10">
+        <input type="text" id="correct-answer" class="validate" required ng-model="vm.questionToEdit.correct_Answer">
+        <label for="correct-answer" class="green-text">Correct Answer</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s1 offset-s1">B.</div>
+      <div class="input-field col s10">
+        <input type="text" id="incorrect-answer1" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer1">
+        <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s1 offset-s1">C.</div>
+      <div class="input-field col s10">
+        <input type="text" id="incorrect-answer2" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer2">
+        <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s1 offset-s1">D.</div>
+      <div class="input-field col s10">
+        <input type="text" id="incorrect-answer3" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer3">
+        <label for="incorrect-answer1" class="red-text">Wrong Answer</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="input-field col s5">
+        <select name="questionCategory" id="questionCategory" required ng-model="vm.questionToEdit.category">
       <option value="" disabled>Change</option>
       <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
     </select>
-    <label>Category: {{ vm.categoryToEdit }}</label>
-  </div>
-  <div class="input-field col s5 offset-s1">
-    <select name="questionDifficulty" id="questionDifficulty" required ng-model="vm.questionToEdit.difficulty">
+        <label>Category</label>
+      </div>
+      <div class="input-field col s5 offset-s1">
+        <select name="questionDifficulty" id="questionDifficulty" required ng-model="vm.questionToEdit.difficulty">
       <option value="" disabled>Change</option>
       <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
     </select>
-    <label>Difficulty: {{ vm.difficultyToEdit }}</label>
+        <label>Difficulty</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col s12">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
+    </div>
+    <div class="row card-actions">
+      <button class="btn-floating right orange" ui-sref="questions"><i class="material-icons large">cancel</i></button>
+      <button class="btn green right" ng-click="vm.saveNewQuestion(vm.questionToEdit)" style="position: relative; right: 20px;"><i class="material-icons left">assignment_returned</i>Save</button>
+    </div>
   </div>
 </div>
-<div class="row">
-  <button class="btn-floating right orange" ng-click="vm.onHideQuestion($index)"><i class="material-icons large">cancel</i></button>
-  <button class="btn green right" ng-click="vm.createQuestion(vm.questionToEdit)" style="position: relative; right: 20px;"><i class="material-icons left">assignment_returned</i>Save</button>
-</div>
-
 <script>
   $(document).ready(function () {
     Materialize.updateTextFields();

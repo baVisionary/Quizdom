@@ -54,9 +54,12 @@ var app;
                 this.QuestionService.updateOne(this.questionToEdit);
                 this.$state.go('questions.view', { id: this.questionToEdit.id });
             };
-            QuestionController.prototype.deleteQuestion = function (q) {
+            QuestionController.prototype.deleteQuestion = function (questionId) {
                 var _this = this;
-                return this.QuestionService.deleteOne(q).then(function () {
+                return this.QuestionService.deleteOne(questionId).then(function () {
+                    var i = _this.questions.findIndex(function (q) { q.id == questionId; });
+                    _this.questions.splice(i - 1, 1);
+                    $('.collapsible').collapsible('close', i % 10);
                     _this.$state.go('questions');
                 });
             };

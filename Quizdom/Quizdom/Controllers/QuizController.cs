@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Net;
 
 namespace Quizdom.Models
 {
@@ -63,6 +64,20 @@ namespace Quizdom.Models
             if (record == null)
             {
                 return NotFound($"Quiz #{id} does not exist!");
+            }
+
+            return Ok(record);
+        }
+
+        [HttpGet("categories")]
+        public IActionResult GetCategories()
+        {
+            var record = (from c in _context.Quiz                          
+                          select c.Category).Distinct();
+
+            if (record == null)
+            {
+                return NotFound($"No categories exist!");
             }
 
             return Ok(record);
@@ -140,18 +155,19 @@ namespace Quizdom.Models
             {
                 newQuiz = new Quiz();
                 newQuiz.Category = quiz.Category;
-                newQuiz.Correct_Answer = quiz.Correct_Answer;
+                newQuiz.Correct_Answer = WebUtility.HtmlDecode(quiz.Correct_Answer);
                 newQuiz.Difficulty = quiz.Difficulty;
-                newQuiz.Incorrect_Answer1 = quiz.Incorrect_Answers[0];
-                newQuiz.Incorrect_Answer2 = quiz.Incorrect_Answers[1];
-                newQuiz.Incorrect_Answer3 = quiz.Incorrect_Answers[2];
-                newQuiz.Question = quiz.Question;
+                newQuiz.Incorrect_Answer1 = WebUtility.HtmlDecode(quiz.Incorrect_Answers[0]);
+                newQuiz.Incorrect_Answer2 = WebUtility.HtmlDecode(quiz.Incorrect_Answers[1]);
+                newQuiz.Incorrect_Answer3 = WebUtility.HtmlDecode(quiz.Incorrect_Answers[2]);
+                newQuiz.Question = WebUtility.HtmlDecode(quiz.Question);
                 newQuiz.Source = "OpenTriviaDB";
                 newQuiz.Type = quiz.Type;
 
                 _context.Quiz.Add(newQuiz);
             }
             _context.SaveChanges();
+            
         }
 
         [HttpPut("{id}")]
@@ -177,6 +193,7 @@ namespace Quizdom.Models
         {
             _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));
             _context.SaveChanges();
+            return NoContent();
         }
 
         private Task<ApplicationUser> GetCurrentUserAsync()

@@ -189,7 +189,7 @@ namespace Quizdom.Models
         }
 
         [HttpDelete("{id}")]
-        public void Delete(int id, [FromBody]Quiz quiz)
+        public void Delete(int id)
         {
             _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));
             _context.SaveChanges();

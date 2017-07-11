@@ -72,8 +72,11 @@ namespace app.Controllers {
       this.$state.go('questions.view', { id: this.questionToEdit.id});
     }
 
-    public deleteQuestion(q) {
-      return this.QuestionService.deleteOne(q).then(() => {
+    public deleteQuestion(questionId) {
+      return this.QuestionService.deleteOne(questionId).then(() => {
+        let i = this.questions.findIndex( q => {q.id == questionId});
+        this.questions.splice(i-1, 1);
+        $('.collapsible').collapsible('close', i % 10);
         this.$state.go('questions');
       });
 

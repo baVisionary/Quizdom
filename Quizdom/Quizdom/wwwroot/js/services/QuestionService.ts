@@ -47,12 +47,12 @@ namespace app.Services {
       'update': {
         method: 'PUT'
       }
-      ,
-      'delete': {
-        method: 'DELETE'
-        // , transformRequest: []
-        , data: {'Content-Type': 'application/json'}
-      }
+      // ,
+      // 'delete': {
+      //   method: 'DELETE'
+      //   // , transformRequest: []
+      //   , data: {'Content-Type': 'application/json'}
+      // }
     });
 
     public questions = [];
@@ -103,7 +103,7 @@ namespace app.Services {
     public deleteOne(q) {
       return this._Resource_question.delete({
         questionId: q.id
-      }, q).$promise;
+      }).$promise;
     }
 
     public newQuestion() {

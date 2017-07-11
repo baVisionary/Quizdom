@@ -30,13 +30,13 @@ var app;
                 this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
                     'update': {
                         method: 'PUT'
-                    },
-                    'delete': {
-                        method: 'DELETE'
-                        // , transformRequest: []
-                        ,
-                        data: { 'Content-Type': 'application/json' }
                     }
+                    // ,
+                    // 'delete': {
+                    //   method: 'DELETE'
+                    //   // , transformRequest: []
+                    //   , data: {'Content-Type': 'application/json'}
+                    // }
                 });
                 this.questions = [];
                 this._oneQuestion = {};
@@ -81,7 +81,7 @@ var app;
             QuestionService.prototype.deleteOne = function (q) {
                 return this._Resource_question.delete({
                     questionId: q.id
-                }, q).$promise;
+                }).$promise;
             };
             QuestionService.prototype.newQuestion = function () {
                 return new Question();

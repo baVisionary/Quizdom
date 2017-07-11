@@ -59,7 +59,6 @@ var app;
                 var i = this.questions.findIndex(function (q) { return q.id == questionId; });
                 console.log("questionId: " + questionId + " i: " + i);
                 this.questions.splice(i, 1);
-                // $('.collapsible').collapsible('close', i % 10);
                 return this.QuestionService.deleteOne(questionId).then(function () {
                     _this.$state.go('questions');
                 });

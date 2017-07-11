@@ -76,7 +76,6 @@ namespace app.Controllers {
       let i = this.questions.findIndex( q => {return q.id == questionId});
       console.log(`questionId: ${questionId} i: ${i}`);
       this.questions.splice(i, 1);
-      // $('.collapsible').collapsible('close', i % 10);
       return this.QuestionService.deleteOne(questionId).then(() => {
         this.$state.go('questions');
       });

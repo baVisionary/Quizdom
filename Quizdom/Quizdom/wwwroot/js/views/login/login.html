@@ -1,0 +1,58 @@
+<h1>Login</h1>
+
+<div class="row" ng-submit="vm.loginUser()">
+  <div class="col m6">
+    <section>
+      <form name="loginForm" novalidate>
+        <h4>Use a local account to log in.</h4>
+        <hr />
+        <div class="row" ng-show="vm.loginError">
+          <label></label>
+          <div class="col offset-m2 m10">
+            <span class="red-text">Username and/or Password did not match any known records.</span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col m12">
+            <input id="email" ng-model="vm.formData.email" ng-required="true" class="validate" />
+            <label class="active" for="email" data-error="wrong" data-success="right">Email</label>
+            <ul>
+              <li class="red-text" ng-show="loginForm.email.$touched && loginForm.email.$error.required">
+                Please provide an Email to login
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col m12">
+            <input id="password" type="password" ng-model="vm.formData.password" ng-required="true" class="validate" />
+            <label for="password" data-error="wrong" data-success="right">Password</label>
+            <ul>
+              <li class="red-text" ng-show="loginForm.password.$touched && loginForm.password.$error.required">
+                Please provide a Password to login
+              </li>
+            </ul>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col offset-m2 m10">
+            <input type="checkbox" id="remember" ng-model="vm.formData.rememberMe" />
+            <label for="remember">Remember Me</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col offset-m2 m10">
+          <button type="submit" class="btn" ng-disabled="!vm.canLogin">Log in</button>
+        </div>
+      </div>
+      <p>
+        <a ui-sref="Register">Register as a new user?</a>
+      </p>
+      <!--<p>
+          <a ui-sref="ForgotPassword">Forgot your password?</a>
+      </p>-->
+      </form>
+    </section>
+  </div>
+</div>

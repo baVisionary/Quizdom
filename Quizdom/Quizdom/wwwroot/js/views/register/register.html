@@ -1,0 +1,55 @@
+<h1>Registration Page</h1>
+
+<form class="col s12" ng-submit="vm.registerUser()" name="registrationForm" novalidate>
+  <h4>Create a new account.</h4>
+  <hr />
+  <div class="row">
+    <div class="input-field col m6">
+      <input id="regemail" name="email" type="email" ng-model="vm.formData.email" ng-required="true" class="validate"/>
+      <label for="regemail" data-error="wrong" data-success="right">Email</label>
+    </div>
+    <ul>
+      <li class="red-text" ng-show="registrationForm.email.$touched && registrationForm.email.$error.required">
+        An email is required
+      </li>
+      <li class="red-text" ng-show="registrationForm.email.$invalid && !registrationForm.email.$pristine">
+        The email provided is not a valid email
+      </li>
+    </ul>
+  </div>
+  <div class="row">
+    <div class="input-field col s6">
+      <input id="regpassword" name="regpassword" type="password" ng-model="vm.formData.password" ng-required="true" ng-minlength="8"
+        ng-pattern="vm.pattern" class="validate"/>
+      <label for="regpassword" data-error="wrong" data-success="right">Password</label>
+      <ul>
+        <li class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">
+          A password is required
+        </li>
+        <li class="red-text" ng-show="registrationForm.regpassword.$error.minlength">
+          Password must be at least 8 characters long.
+        </li>
+        <li class="red-text" ng-show="registrationForm.password.$error.pattern">
+          Password needs at least one each of the following: Uppercase Letter, Lowercase Letter, Number
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field col s6">
+      <input id="regconfirmpassword" name="confirmPassword" type="password" ng-model="vm.formData.confirmPassword"
+        ng-required="true" class="validate"/>
+      <label for="regconfirmpassword" data-error="wrong" data-success="right">Confirm Password</label>
+      <ul>
+        <li class="red-text" ng-show="registrationForm.confirmPassword.$touched && registrationForm.confirmPassword.$error.required">
+          Need to confirm your password
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col offset-m2 m10">
+      <button type="submit" class="btn">Register</button>
+    </div>
+  </div>
+</form>

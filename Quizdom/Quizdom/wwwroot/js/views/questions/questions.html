@@ -1,0 +1,77 @@
+<!-- Heading with filter for questions -->
+<div id='questions'>
+  <div id="filters" class="row">
+    <div class="col s12">
+      <div class="card indigo lighten-4">
+        <div class="card-content black-text">
+          <span class="card-title">{{ vm.title }}</span>
+          <div class="row">
+            <div class="input-field col s12 m4">
+              <select name="categorySelect" id="categorySelect" ng-model="vm.category">
+                <option value="" selected>Show all</option>
+                <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
+              </select>
+              <label for="categorySelect">Category</label>
+            </div>
+            <div class="input-field col s12 m4">
+              <select name="difficultySelect" id="categorySelect" ng-model="vm.difficulty">
+                <option value="" selected>Show all</option>
+                <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
+              </select>
+              <label for="difficultySelect">Difficulty</label>
+            </div>
+            <div class="input-field col s12 m4">
+              <input type="text" id="search" ng-model="vm.search" class="validate">
+              <label for="search">Search</label>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col s12 m8 center-align">
+              <dir-pagination-controls></dir-pagination-controls>
+            </div>
+            <div class="col s12 m4">
+              <button class="btn blue right" ng-click="vm.addQuestion()"><i class="material-icons left">add</i>Add Question</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- new question form -->
+  <div ui-view="new"></div>
+  <!-- angular list of questions -->
+  <div class="row">
+    <ul id='question-list' class="collapsible popout" data-collapsible="accordion" watch>
+      <li ng-cloak dir-paginate="q in vm.questions | filter: vm.category | filter: vm.difficulty | filter: vm.search | itemsPerPage: 10">
+        <div class="collapsible-header" ng-click='vm.onViewQuestion(q.id)'>
+          <div class="col s1">{{ q.id }}.</div>
+          <div>{{ q.question }}</div>
+        </div>
+        <div class="collapsible-body" ng-class="{'red lighten-4': vm.preDelete}">
+          <div ui-view="detail">
+            <ul id="answer-list" class="collection">
+              <li class="collection-item row"><span class="col s1">A.</span>{{ q.correct_Answer }}<span class="new badge green" data-badge-caption="Right"></span></li>
+              <li class="collection-item row" ng-repeat="a in [q.incorrect_Answer1, q.incorrect_Answer2, q.incorrect_Answer3]"><span class="col s1">{{ "BCD"[$index] }}.</span>{{ a }}<span class="new badge red" data-badge-caption="Wrong"></span></li>
+            </ul>
+            <div class="row" style="position: relative; height: 48px;">
+              <div class="col m6 l4">{{ q.category }}: {{ q.difficulty }}</div>
+              <div class="col m6 l4">Source: {{ q.source }} </div>
+              <div class="col m6 l4">Modified on {{ q.dateModified | date : 'mediumDate' }} </div>
+              <div style="position: absolute; display: inline-block; right: 24px; bottom: 0;">
+                <button id="edit-question" class="btn-floating orange" ng-click="vm.onEditQuestion(q)">
+                  <i class="large material-icons">mode_edit</i>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <script>
+    $(document).ready(function () {
+      $('select').material_select();
+      $('.collapsible').collapsible();
+    });
+  </script>

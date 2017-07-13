@@ -27,29 +27,90 @@
 
 <body>
     <div class="container body-content">
-        <ui-view></ui-view>
+        <nav>
+            <div class="nav-wrapper">
+                <div class="col s12">
+                    <ul id="nav-mobile" class="align-center hide-on-sm-and-down">
+                        <li><a ui-sref="welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
+                        <li><a ui-sref="questions">Quiz Questions</a></li>
+                        <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Register">Register</a></li>
+                        <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Login">Log in</a></li>
+                        <li ng-if="vm.isUserLoggedIn"><a>{{vm.user.userName}}</a></li>
+                        <li ng-if="vm.isUserLoggedIn"><a href="" ng-click="vm.logOut()">Sign Out</a></li>
+                    </ul>
+                </div>
+                <!-- <ul class="side-nav" id="mobile-demo">
+                    <li><a ui-sref="Welcome">Quizdom</a></li>
+                    <li><a ui-sref="questions">Quiz Questions</a></li>
+                    <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Register">Register</a></li>
+                    <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Login">Log in</a></li>
+                    <li ng-if="vm.isUserLoggedIn"><a>{{vm.user.userName}}</a></li>
+                    <li ng-if="vm.isUserLoggedIn"><a href="" ng-click="vm.logOut()">Sign Out</a></li>
+                </ul> -->
+            </div>
+        </nav>
+
+         <ui-view></ui-view> 
     </div>
 
     <!-- third-party libraries -->
     <script src="~/lib/jquery/dist/jquery.js"></script>
     <script src="~/lib/materialize/dist/js/materialize.js"></script>
     <script src="~/lib/angular/angular.js"></script>
-    <!--<script src="~/lib/angular-route/angular-route.js"></script>-->
     <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="~/lib/angular-resource/angular-resource.js"></script>
     <script src="~/lib/angularUtils-pagination/dirPagination.js"></script>
 
-    <!-- Angular starting point-->
-    <script src="~/js/app.js"></script>    
+    <!-- Models -->
+    <script src="~/js/models/user.model.js"></script>
+    <script src="~/js/models/forgotpassword.model.js"></script>
+    <script src="~/js/models/login.model.js"></script>
+    <script src="~/js/models/register.model.js"></script>
+    <script src="~/js/models/question.js"></script>
 
-    <!-- add controllers here -->
-    <script src="~/js/controllers/controller.js"></script>
+    <!-- Factories  -->
+    <script src="~/js/factories/authenticationinterceptor.js"></script>
+    <script src="~/js/factories/factories.js"></script>
 
-    <!-- add services here -->
-    <script src="~/js/services/questionService.js"></script>
+    <!-- Services  -->
+    <script src="~/js/services/QuestionService.js"></script>
+    <script src="~/js/services/UserService.js"></script>
+    <script src="~/js/services/RegistrationService.js"></script>
+    <script src="~/js/services/Services.js"></script>
 
-    <!-- declare states -->
-    <script src="~/js/states.js"></script>
+    <!-- Application Views  -->
+    <script src="~/js/views/forgotpassword/forgotpassword.controller.js"></script>
+    <script src="~/js/views/forgotpassword/forgotpassword.config.js"></script>
+    <script src="~/js/views/forgotpassword/forgotpassword.js"></script>
+
+    <script src="~/js/views/login/login.controller.js"></script>
+    <script src="~/js/views/login/login.config.js"></script>
+    <script src="~/js/views/login/login.js"></script>
+
+    <script src="~/js/views/register/register.controller.js"></script>
+    <script src="~/js/views/register/register.config.js"></script>
+    <script src="~/js/views/register/register.js"></script>
+
+    <script src="~/js/views/welcome/welcome.controller.js"></script>
+    <script src="~/js/views/welcome/welcome.config.js"></script>
+    <script src="~/js/views/welcome/welcome.js"></script>
+
+    <script src="~/js/views/questions/questions.controller.js"></script>
+    <script src="~/js/views/questions/questions.config.js"></script>
+    <script src="~/js/views/questions/questions.js"></script>
+
+    <script src="~/js/views/views.js"></script>
+
+    <!-- Application  -->
+    <script src="~/js/app.controller.js"></script>
+    <script src="~/js/app.config.js"></script>
+    <script src="~/js/app.js"></script>
+
+    <!-- <script>
+        $(document).ready(function () {
+            $(".button-collapse").sideNav();
+        })
+    </script> -->
 
     <!-- Must be present or app will not find linked Angular files
         @RenderBody()

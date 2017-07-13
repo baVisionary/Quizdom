@@ -9,7 +9,7 @@ namespace Quizdom.Views.Error404 {
         $stateProvider
             .state('Error404', <ng.ui.IState>{
                 url: '/404',
-                templateUrl: 'js/views/404/404.html',
+                templateUrl: 'js/views/404/404.html'
             });
     }
 }

@@ -11,7 +11,7 @@ var Quizdom;
                 $stateProvider
                     .state('Error404', {
                     url: '/404',
-                    templateUrl: 'js/views/404/404.html',
+                    templateUrl: 'js/views/404/404.html'
                 });
             }
             Error404.Configuration = Configuration;

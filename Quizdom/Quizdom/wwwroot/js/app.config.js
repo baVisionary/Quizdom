@@ -10,7 +10,7 @@ var Quizdom;
         // Add Custom Interceptors
         $httpProvider.interceptors.push('AuthenticationInterceptor');
         // Handle Default Route
-        $urlRouterProvider.otherwise('/');
+        $urlRouterProvider.otherwise('/404');
         // Set HTML5 Mode
         $locationProvider.html5Mode({
             enabled: true,

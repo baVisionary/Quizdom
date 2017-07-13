@@ -5,6 +5,7 @@ namespace Quizdom.Views {
     'View.Register',
     'View.Login',
     'View.ForgotPassword',
-    'View.Questions'
+    'View.Questions',
+    'View.Error404'
   ]);
 }

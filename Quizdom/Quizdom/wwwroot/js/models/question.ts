@@ -1,30 +1,22 @@
-class Question {
+namespace Quizdom.Models {
 
-  public Id: number;
-  public Category: string;
-  public Difficulty: string;
-  public Question: string;
-  public Correct_Answer: string;
-  public Incorrect_Answer1: string;
-  public Incorrect_Answer2: string;
-  public Incorrect_Answer3: string;
-  public Incorrect_Answer4: string;
-  public Source: string;
-  public DateModified: object;
-  public UserId: number;
+  export class QuestionModel {
 
-  constructor (Id) {
-   this.Id = Id;
-   this.Category = "";
-   this.Difficulty = "";
-   this.Question = "";
-   this.Correct_Answer = "";
-   this.Incorrect_Answer1 = "";
-   this.Incorrect_Answer2 = "";
-   this.Incorrect_Answer3 = "";
-   this.Incorrect_Answer4 = "";
-   this.Source = "";
-   this.DateModified = new Date();
-   this.UserId = 0;
- }
+    public id: number = 0;
+    public category: string = 'User Added';
+    public type: string = 'multiple';
+    public difficulty: string = '';
+    public question: string = '';
+    public correct_Answer: string = '';
+    public incorrect_Answer1: string = '';
+    public incorrect_Answer2: string = '';
+    public incorrect_Answer3: string = '';
+    public incorrect_Answer4: string = '';
+    public source: string = 'UserId';
+    public dateModified: Date = new Date();
+    public userId: string = '';
+    public avatarId: number = 0;
+    public categoryId: number = 0;
+
+  }
 }

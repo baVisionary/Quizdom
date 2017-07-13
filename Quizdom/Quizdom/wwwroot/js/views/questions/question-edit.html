@@ -1,0 +1,67 @@
+<form>
+  <div class="row">
+    <div class="input-field col s12">
+      <textarea id="question-text" class="materialize-textarea validate" required ng-model="vm.questionToEdit.question"></textarea>
+      <label for="question-text" class="active">Question Wording</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s1 offset-s1">A.</div>
+    <div class="input-field col s10">
+      <input type="text" id="correct-answer" class="validate" required ng-model="vm.questionToEdit.correct_Answer">
+      <label for="correct-answer" class="green-text active">Correct Answer</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s1 offset-s1">B.</div>
+    <div class="input-field col s10">
+      <input type="text" id="incorrect-answer1" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer1">
+      <label for="incorrect-answer1" class="red-text active">Wrong Answer</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s1 offset-s1">C.</div>
+    <div class="input-field col s10">
+      <input type="text" id="incorrect-answer2" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer2">
+      <label for="incorrect-answer1" class="red-text active">Wrong Answer</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s1 offset-s1">D.</div>
+    <div class="input-field col s10">
+      <input type="text" id="incorrect-answer3" class="validate" required ng-model="vm.questionToEdit.incorrect_Answer3">
+      <label for="incorrect-answer1" class="red-text active">Wrong Answer</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field col s5">
+      <select name="questionCategory" id="questionCategory" required ng-model="vm.questionToEdit.category">
+      <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
+    </select>
+      <label>Category: {{ vm.categoryToEdit }}</label>
+    </div>
+    <div class="input-field col s5 offset-s1">
+      <select name="questionDifficulty" id="questionDifficulty" required ng-model="vm.questionToEdit.difficulty">
+      <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
+    </select>
+      <label>Difficulty: {{ vm.difficultyToEdit }}</label>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col s6">Source {{ vm.questionToEdit.source }} </div>
+    <div class="col s6">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
+  </div>
+  <div class="row">
+    <button class="btn red left" ng-click="vm.deleteQuestion(vm.questionToEdit.id)"><i class="material-icons left">delete</i>{{vm.deleteText}}</button>
+    <button class="btn-floating right orange" ng-click="vm.onViewQuestion(vm.questionToEdit.id)"><i class="material-icons large">cancel</i></button>
+    <button class="btn green right" ng-click="vm.saveQuestion()" style="position: relative; right: 20px;"><i class="material-icons left">assignment_returned</i>Save</button>
+  </div>
+</form>
+
+
+<script>
+  $(document).ready(function () {
+    Materialize.updateTextFields();
+    $('select').material_select();
+  });
+</script>

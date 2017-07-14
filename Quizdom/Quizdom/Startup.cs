@@ -13,6 +13,8 @@ using Quizdom.Data;
 using Quizdom.Models;
 using Quizdom.Services;
 using Swashbuckle.AspNetCore.Swagger;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using System.Net;
 
 namespace Quizdom
 {
@@ -50,6 +52,44 @@ namespace Quizdom
 
             services.AddMvc();
 
+            // Configure Identity
+            services.Configure<IdentityOptions>(options =>
+            {
+                // Password settings
+                options.Password.RequireDigit = true;
+                options.Password.RequiredLength = 8;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = true;
+                options.Password.RequireLowercase = false;
+
+                // Lockout settings
+                options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(0);
+                options.Lockout.MaxFailedAccessAttempts = Int32.MaxValue;
+                options.Lockout.AllowedForNewUsers = false;
+
+                // Cookie settings
+                options.Cookies.ApplicationCookie.ExpireTimeSpan = TimeSpan.FromDays(150);
+
+                options.Cookies.ApplicationCookie.Events = new CookieAuthenticationEvents
+                {
+                    OnRedirectToLogin = context =>
+                    {
+                        if (context.Request.Path.StartsWithSegments("/api") && context.Response.StatusCode == (int)HttpStatusCode.OK)
+                        {
+                            context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        }
+                        return Task.CompletedTask;
+                    },
+
+                };
+
+                // Sign In Settigns
+                options.SignIn.RequireConfirmedEmail = false;
+
+                // User settings
+                options.User.RequireUniqueEmail = true;
+            });
+
             // Add application services.
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
@@ -76,7 +116,6 @@ namespace Quizdom
             {
                 app.UseDeveloperExceptionPage();
                 app.UseDatabaseErrorPage();
-                app.UseBrowserLink();
             }
             else
             {
@@ -103,7 +142,7 @@ namespace Quizdom
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");
-            
+
                 routes.MapRoute(
                     name: "CatchAll",
                     template: "{*url}",

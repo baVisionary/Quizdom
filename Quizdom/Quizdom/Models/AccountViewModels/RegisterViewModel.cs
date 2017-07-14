@@ -26,5 +26,10 @@ namespace Quizdom.Models.AccountViewModels
 
         [Display(Name ="Admin User")]
         public bool Admin { get; set; }
+
+        [Required]        
+        [Display(Name = "UserName")]
+        public string UserName { get; set; }
+
     }
 }

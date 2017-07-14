@@ -26,6 +26,12 @@ namespace Quizdom.Data
         public DbSet<Quiz> Quiz { get; set; }
         public DbSet<Avatar> Avatars { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<Game> Games { get; set; }
+        public DbSet<GamePlayers> GamePlayers { get; set; }
+        public DbSet<GamePlayersEmail> GamePlayersEmail { get; set; }
+        public DbSet<GameBoard> GameBoards { get; set; }
+        public DbSet<GameCategories> GameCategories { get; set; }
+
 
     }
 }

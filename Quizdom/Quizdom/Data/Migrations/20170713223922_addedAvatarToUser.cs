@@ -39,7 +39,7 @@ namespace Quizdom.Data.Migrations
 
             migrationBuilder.DropColumn(
                 name: "AvatarId",
-                table: "AspNetUsers");
+                table: "AspNetUsers"); 
         }
     }
 }

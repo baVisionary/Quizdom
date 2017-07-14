@@ -4,25 +4,54 @@
   <h4>Create a new account.</h4>
   <hr />
   <div class="row">
-    <div class="input-field col m6">
-      <input id="regemail" name="email" type="email" ng-model="vm.formData.email" ng-required="true" class="validate"/>
-      <label for="regemail" data-error="wrong" data-success="right">Email</label>
+    <div class="input-field col s12 m8">
+      <input id="regemail" name="email" type="email" ng-model="vm.formData.email" ng-required="true" class="validate" />
+      <label for="regemail" ng-show="(!registrationForm.email.$touched || !registrationForm.email.$error.required) && (!registrationForm.email.$invalid || registrationForm.email.$pristine)">Email</label>
+      <label for="regemail" class="red-text" ng-show="(registrationForm.email.$touched && registrationForm.email.$error.required) || (registrationForm.email.$invalid && !registrationForm.email.$pristine)">Valid email is required</label>
     </div>
-    <ul>
+    <!-- <ul>
       <li class="red-text" ng-show="registrationForm.email.$touched && registrationForm.email.$error.required">
         An email is required
       </li>
       <li class="red-text" ng-show="registrationForm.email.$invalid && !registrationForm.email.$pristine">
         The email provided is not a valid email
       </li>
-    </ul>
+    </ul> -->
+    <div class="input-field col s12 m4">
+      <input id="username" name="username" type="text" ng-model="vm.formData.username" ng-required="true" class="validate" />
+      <label for="username" ng-show="(!loginForm.username.$touched || !loginForm.username.$error.required)">Username</label>
+      <label for="username" class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">Unique username to show other players</label>
+      <!-- <ul>
+        <li class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">
+          Unique username to show other players
+        </li>
+      </ul> -->
+    </div>
   </div>
   <div class="row">
-    <div class="input-field col s6">
+    <div class="col s12">
+      <ul style="columns: 3;">
+        <li><input type="radio" name="avatars" id="av-1" ng-required="true">
+          <label for="av-1"><img src="/images/avatar_01.png" alt="Avatar 1" class="circle"></label>
+        </li>
+        <li><input type="radio" name="avatars" id="av-2">
+          <label for="av-2"><img src="/images/avatar_02.png" alt="Avatar 2" class="circle"></label>
+        </li>
+        <li><input type="radio" name="avatars" id="av-3">
+          <label for="av-3"><img src="/images/avatar_03.png" alt="Avatar 3" class="circle"></label>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="row">
+    <div class="input-field col s12 m6">
       <input id="regpassword" name="regpassword" type="password" ng-model="vm.formData.password" ng-required="true" ng-minlength="8"
-        ng-pattern="vm.pattern" class="validate"/>
-      <label for="regpassword" data-error="wrong" data-success="right">Password</label>
-      <ul>
+        ng-pattern="vm.pattern" class="validate" />
+      <label for="regpassword" ng-show="(!registrationForm.regpassword.$touched || !registrationForm.regpassword.$error.required) && !registrationForm.regpassword.$error.minlength && !registrationForm.password.$error.pattern">Password</label>
+      <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">A password is required</label>
+      <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$error.minlength">Password must be at least 8 characters</label>
+      <label for="regpassword" class="red-text" ng-show="registrationForm.password.$error.pattern">Password needs at least one each of the following: Uppercase Letter, Lowercase Letter, Number</label>
+      <!-- <ul>
         <li class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">
           A password is required
         </li>
@@ -32,24 +61,18 @@
         <li class="red-text" ng-show="registrationForm.password.$error.pattern">
           Password needs at least one each of the following: Uppercase Letter, Lowercase Letter, Number
         </li>
-      </ul>
+      </ul> -->
+    </div>
+    <div class="input-field col s12 m6">
+      <input id="regconfirmpassword" name="confirmPassword" type="password" ng-model="vm.formData.confirmPassword" ng-required="true"
+        class="validate" />
+      <label for="regconfirmpassword" ng-show="!registrationForm.confirmPassword.$touched || !registrationForm.confirmPassword.$error.required">Confirm Password</label>
+      <label for="regconfirmpassword" class="red-text" ng-show="registrationForm.confirmPassword.$touched && registrationForm.confirmPassword.$error.required">Need to confirm your password</label>
     </div>
   </div>
   <div class="row">
-    <div class="input-field col s6">
-      <input id="regconfirmpassword" name="confirmPassword" type="password" ng-model="vm.formData.confirmPassword"
-        ng-required="true" class="validate"/>
-      <label for="regconfirmpassword" data-error="wrong" data-success="right">Confirm Password</label>
-      <ul>
-        <li class="red-text" ng-show="registrationForm.confirmPassword.$touched && registrationForm.confirmPassword.$error.required">
-          Need to confirm your password
-        </li>
-      </ul>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col offset-m2 m10">
-      <button type="submit" class="btn">Register</button>
+    <div class="col s12">
+      <button type="submit" class="btn right">Register</button>
     </div>
   </div>
 </form>

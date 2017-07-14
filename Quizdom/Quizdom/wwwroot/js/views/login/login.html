@@ -1,10 +1,10 @@
 <h1>Login</h1>
 
-<div class="row" ng-submit="vm.loginUser()">
+<div class="row">
   <div class="col m6">
     <section>
-      <form name="loginForm" novalidate>
-        <h4>Use a local account to log in.</h4>
+      <form name="loginForm" ng-submit="vm.loginUser()" novalidate>
+        <h4>Enter email to log in.</h4>
         <hr />
         <div class="row" ng-show="vm.loginError">
           <label></label>
@@ -40,16 +40,15 @@
             <label for="remember">Remember Me</label>
           </div>
         </div>
-      </div>
-      <div class="row">
-        <div class="col offset-m2 m10">
-          <button type="submit" class="btn" ng-disabled="!vm.canLogin">Log in</button>
+        <div class="row">
+          <div class="col offset-m2 m10">
+            <button type="submit" class="btn">Log in</button>
+          </div>
         </div>
-      </div>
-      <p>
-        <a ui-sref="Register">Register as a new user?</a>
-      </p>
-      <!--<p>
+        <p>
+          <a ui-sref="Register">Register as a new user?</a>
+        </p>
+        <!--<p>
           <a ui-sref="ForgotPassword">Forgot your password?</a>
       </p>-->
       </form>

@@ -33,15 +33,20 @@ namespace Quizdom.Controllers
         {
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
+                var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if (result.Succeeded)
+                if(user != null) 
                 {
-                    var user = await GetUser(model.Email);
+                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
 
-                    _logger.LogInformation(1, "User logged in.");
+                    if (result.Succeeded)
+                    {
+                        var authUser = await GetUser(user);
 
-                    return Ok(user);
+                        _logger.LogInformation(1, "User logged in.");
+
+                        return Ok(authUser);
+                    }
                 }
 
                 ModelState.AddModelError("Error", "Invalid login attempt.");
@@ -116,9 +121,9 @@ namespace Quizdom.Controllers
             }
         }
 
-        private async Task<AuthUserViewModel> GetUser(string userName)
+        private async Task<AuthUserViewModel> GetUser(ApplicationUser user)
         {
-            var user = await _userManager.FindByNameAsync(userName);
+            //var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
 
             var vm = new AuthUserViewModel()

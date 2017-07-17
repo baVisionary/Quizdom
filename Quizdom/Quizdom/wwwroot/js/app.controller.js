@@ -24,6 +24,9 @@ var Quizdom;
             this.UserService.logOut();
             this.$state.go('welcome');
         };
+        AppController.prototype.myState = function (current) {
+            return this.$state.current.name == current;
+        };
         return AppController;
     }());
     AppController.$inject = [

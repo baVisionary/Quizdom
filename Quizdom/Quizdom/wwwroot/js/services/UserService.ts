@@ -47,6 +47,7 @@ namespace Quizdom.Services {
                 this.$window.sessionStorage.setItem('user', encodedUser);
                 this.authUser = user;
                 this.isUserLoggedIn = true;
+                
                 return true;
             }
 
@@ -61,7 +62,7 @@ namespace Quizdom.Services {
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {
-            return this.$http.post<Models.UserModel>('api/account/login', user, <ng.IRequestShortcutConfig>{
+            return this.$http.post<Models.UserModel>('api/Account/Login', user, <ng.IRequestShortcutConfig>{
                 cache: false
             })
                 .then((response) => {
@@ -75,7 +76,7 @@ namespace Quizdom.Services {
         }
 
         public logOut(): void {
-            this.$http.post<Models.UserModel>('api/account/logout', <ng.IRequestShortcutConfig>{
+            this.$http.post<Models.UserModel>('api/Account/Logout', <ng.IRequestShortcutConfig>{
                 cache: false
             })
                 .then(() => {

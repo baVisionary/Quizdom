@@ -35,7 +35,7 @@
                         <li><a ui-sref="questions">Quiz Questions</a></li>
                         <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Register">Register</a></li>
                         <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Login">Log in</a></li>
-                        <li ng-if="vm.isUserLoggedIn"><a>{{vm.user.userName}}</a></li>
+                        <li ng-if="vm.isUserLoggedIn"><a>{{vm.UserService.authUser.userName}}</a></li>
                         <li ng-if="vm.isUserLoggedIn"><a href="" ng-click="vm.logOut()">Sign Out</a></li>
                     </ul>
                 </div>

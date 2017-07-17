@@ -32,7 +32,7 @@ namespace Quizdom.Models.AccountViewModels
         public string UserName { get; set; }
 
         [Required]
-        [Display(Name = "AvatarId")]
+        [Display(Name = "AvatarId")] 
         public int AvatarId { get; set; }
     }
 }

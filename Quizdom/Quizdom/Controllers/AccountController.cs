@@ -64,7 +64,7 @@ namespace Quizdom.Controllers
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Normal");
-                    if (user.Email.Contains("rickco@gmail.com"))
+                    if (user.Email.Contains("daVisionary") || user.Email.Contains("rickco"))
                     {
                         await _userManager.AddToRoleAsync(user, "Admin");
                     }

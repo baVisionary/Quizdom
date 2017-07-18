@@ -68,12 +68,12 @@ namespace Quizdom.Controllers
 
                 if (result.Succeeded)
                 {
-                    //await _userManager.AddToRoleAsync(user, "Normal");
-                    //if (user.Email.Contains("rickco@gmail.com"))
-                    //{
-                    //    await _userManager.AddToRoleAsync(user, "Admin");
-                    //}
-                    //await _signInManager.SignInAsync(user, isPersistent: false);
+                    await _userManager.AddToRoleAsync(user, "Normal");
+                    if (user.Email.Contains("daVisionary") || user.Email.Contains("rickco"))
+                    {
+                        await _userManager.AddToRoleAsync(user, "Admin");
+                    }
+                    await _signInManager.SignInAsync(user, isPersistent: false);
 
                     _logger.LogInformation(3, "User created a new account with password.");
 

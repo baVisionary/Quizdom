@@ -31,5 +31,8 @@ namespace Quizdom.Models.AccountViewModels
         [Display(Name = "UserName")]
         public string UserName { get; set; }
 
+        [Required]
+        [Display(Name = "AvatarId")] 
+        public int AvatarId { get; set; }
     }
 }

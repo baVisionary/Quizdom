@@ -6,16 +6,16 @@ var imagemin = require('gulp-imagemin');
 
 /* FILE SOURCES */
 
-var sources = [ ['app/frontend/sass/**/*.scss'], ['app/frontend/js/**/*.js'], ['app/frontend/jquery/**/*.js'] ];
+var sources = [ ['dist/sass/**/*.scss'], ['js/**/*.js'] ];
 
 /* SASS TASKS */
 
 gulp.task('sass', function() {
-  return gulp.src('app/frontend/sass/app.min.scss')
+  return gulp.src('dist/sass/app.min.scss')
   .pipe(sass({
     outputStyle: 'compressed'
   }))
-  .pipe(gulp.dest('app/frontend/dist/css'));
+  .pipe(gulp.dest('dist/css'));
 });
 
 gulp.task('sass:watch', function() {
@@ -33,9 +33,9 @@ gulp.task('js:uglify', function() {
 });
 
 gulp.task('js:concat', function() {
-  return gulp.src('app/frontend/tmp/js/**/*.js')
+  return gulp.src('js/**/*.js')
   .pipe(concat('app.min.js'))
-  .pipe(gulp.dest('app/frontend/dist/js'));
+  .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('js', ['js:uglify', 'js:concat']);
@@ -61,13 +61,13 @@ gulp.task('jquery', ['jquery:uglify', 'jquery:concat']);
 /* WATCH ALL JAVASCRIPT FILES */
 
 gulp.task('js:watch', function() {
-  return gulp.watch([sources[1], sources[2]], ['js', 'jquery']);
+  return gulp.watch([sources[1]], ['js', 'jquery']);
 });
 
 /* IMAGE COMPRESSION TASKS */
 
 gulp.task('imagemin', function() {
-  return gulp.src('app/frontend/assets/gfx/**/*')
+  return gulp.src('images/**/*')
   .pipe(imagemin())
-  .pipe(gulp.dest('app/frontend/assets/gfx-c'));
+  .pipe(gulp.dest('assets/gfx-c'));
 });

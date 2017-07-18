@@ -1,5 +1,3 @@
-<h1>Registration Page</h1>
-
 <form class="col s12" ng-submit="vm.registerUser()" name="registrationForm" novalidate>
   <h4>Create a new account.</h4>
   <hr />
@@ -20,7 +18,7 @@
     <div class="input-field col s12 m4">
       <input id="username" name="username" type="text" ng-model="vm.formData.username" ng-required="true" class="validate" />
       <label for="username" ng-show="(!loginForm.username.$touched || !loginForm.username.$error.required)">Username</label>
-      <label for="username" class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">Unique username to show other players</label>
+      <label for="username" class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">Unique username required</label>
       <!-- <ul>
         <li class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">
           Unique username to show other players
@@ -31,13 +29,13 @@
   <div class="row">
     <div class="col s12">
       <ul style="columns: 3;">
-        <li><input type="radio" name="avatars" id="av-1" ng-required="true">
+        <li><input type="radio" name="avatars" id="av-1" value="1" ng-required="true">
           <label for="av-1"><img src="/images/avatar_01.png" alt="Avatar 1" class="circle"></label>
         </li>
-        <li><input type="radio" name="avatars" id="av-2">
+        <li><input type="radio" name="avatars" id="av-2" value="2">
           <label for="av-2"><img src="/images/avatar_02.png" alt="Avatar 2" class="circle"></label>
         </li>
-        <li><input type="radio" name="avatars" id="av-3">
+        <li><input type="radio" name="avatars" id="av-3" value="3">
           <label for="av-3"><img src="/images/avatar_03.png" alt="Avatar 3" class="circle"></label>
         </li>
       </ul>
@@ -50,7 +48,7 @@
       <label for="regpassword" ng-show="(!registrationForm.regpassword.$touched || !registrationForm.regpassword.$error.required) && !registrationForm.regpassword.$error.minlength && !registrationForm.password.$error.pattern">Password</label>
       <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">A password is required</label>
       <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$error.minlength">Password must be at least 8 characters</label>
-      <label for="regpassword" class="red-text" ng-show="registrationForm.password.$error.pattern">Password needs at least one each of the following: Uppercase Letter, Lowercase Letter, Number</label>
+      <label for="regpassword" class="red-text" ng-show="registrationForm.password.$error.pattern">Password needs: Uppercase, Lowercase, Number, Symbol</label>
       <!-- <ul>
         <li class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">
           A password is required

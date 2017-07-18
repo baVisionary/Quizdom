@@ -11,20 +11,23 @@ namespace Quizdom.Services {
         method: 'PUT'
       }
     });
+    private _Resource_categories = this.$resource('/api/quiz/categories');
+
 
     public questions = [];
-    public categories = [
-      "Animals",
-      "Art",
-      "Celebrities",
-      "General Knowledge",
-      "Geography",
-      "History",
-      "Science & Nature",
-      "Sports",
-      "Vehicles",
-      "User Added"
-    ];
+    public categories = [];
+    // public categories = [
+    //   "Animals",
+    //   "Art",
+    //   "Celebrities",
+    //   "General Knowledge",
+    //   "Geography",
+    //   "History",
+    //   "Science & Nature",
+    //   "Sports",
+    //   "Vehicles",
+    //   "User Added"
+    // ];
     public difficulty = [
       "easy",
       "medium",
@@ -33,18 +36,33 @@ namespace Quizdom.Services {
     private _Question: Models.QuestionModel = new Models.QuestionModel();
 
     constructor(
-      private $resource,
+      private $resource
     ) {
       this.getAllQs();
+      this.getAllCats();
     }
 
     public getAllQs() {
       if (this.questions.length == 0) {
-        this.questions = this._Resource_question.query();
-        return this.questions;
+        return this.questions = this._Resource_question.query();
       } else {
         return this.questions;
       }
+    }
+
+    public getAllCats() {
+      if (this.categories.length == 0) {
+        this._Resource_categories.query().$promise.then((data) => {
+          this.categories = data.sort();
+          return this.categories;
+        });
+      } else {
+        return this.categories;
+      }
+    }
+    
+    public sortCategories(a, b): number {
+      return ( a == "User Added" ) ? 1 : a - b;
     }
 
     public getOneQuestionId(questionId: number) {

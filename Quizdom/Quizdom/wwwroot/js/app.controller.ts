@@ -18,12 +18,16 @@ namespace Quizdom {
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService
         ) {
-
+            this.UserService = UserService;            
         }
 
         public logOut(): void {
             this.UserService.logOut();
             this.$state.go('welcome');
+        }
+
+        public myState(current): boolean {
+            return this.$state.current.name == current;
         }
     }
 }

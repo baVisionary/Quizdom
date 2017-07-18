@@ -6,7 +6,7 @@ var Quizdom;
             function RegisterModel() {
                 this.email = '';
                 this.username = '';
-                this.avatarId = '';
+                this.avatarId = 0;
                 this.password = '';
                 this.confirmPassword = '';
             }

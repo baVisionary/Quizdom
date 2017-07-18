@@ -15,6 +15,8 @@ namespace Quizdom.Data
         {
         }
 
+        public DbSet<Message> Message { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
@@ -22,6 +24,7 @@ namespace Quizdom.Data
             // For example, you can rename the ASP.NET Identity table names and more.
             // Add your customizations after calling base.OnModelCreating(builder);
         }
+
 
         public DbSet<Quiz> Quiz { get; set; }
         public DbSet<Avatar> Avatars { get; set; }

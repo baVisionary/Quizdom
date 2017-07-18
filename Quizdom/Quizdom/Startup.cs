@@ -15,6 +15,7 @@ using Quizdom.Services;
 using Swashbuckle.AspNetCore.Swagger;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using System.Net;
+using Newtonsoft.Json;
 
 namespace Quizdom
 {
@@ -49,6 +50,19 @@ namespace Quizdom
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+
+            // SIGNALR
+            var settings = new JsonSerializerSettings();
+            settings.ContractResolver = new SignalRContractResolver();
+
+            var serializer = JsonSerializer.Create(settings);
+
+            services.Add(new ServiceDescriptor(typeof(JsonSerializer),
+                                            provider => serializer,
+                                            ServiceLifetime.Transient));
+
+            services.AddSignalR(options => options.Hubs.EnableDetailedErrors = true);
+            // END SIGNALR
 
             services.AddMvc();
 
@@ -148,6 +162,11 @@ namespace Quizdom
                     template: "{*url}",
                     defaults: new { controller = "Home", action = "Index" });
             });
+
+            // SIGNALR
+            app.UseWebSockets();
+            app.UseSignalR();
+            // END SIGNALR
         }
     }
 }

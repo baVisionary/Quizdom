@@ -31,7 +31,7 @@ namespace Quizdom.Views.Questions {
     public onViewQuestion() {
       this.preDelete = false;
       this.deleteText = 'Delete';
-      this.$state.go('questions');
+      this.$state.go('Questions');
     }
 
     public addQuestion() {
@@ -40,14 +40,14 @@ namespace Quizdom.Views.Questions {
       this.questionToEdit.id = i;
       this.questionToEdit.UserId = "Quizdom User";
       console.log(this.questionToEdit);
-      this.$state.go('questions.new');
+      this.$state.go('Questions.new');
     }
 
     public onEditQuestion(q: object) {
       this.questionToEdit = angular.copy(q);
       this.preDelete = false;
       console.log(this.questionToEdit);
-      this.$state.go('questions.edit', { id: this.questionToEdit.id });
+      this.$state.go('Questions.edit', { id: this.questionToEdit.id });
     }
 
     public saveQuestion() {
@@ -56,7 +56,7 @@ namespace Quizdom.Views.Questions {
       this.QuestionService.updateOne(this.questionToEdit).then(() => {
         let i = this.questions.findIndex(q => { return q.id == this.questionToEdit.id })
         this.questions[i] = angular.copy(this.questionToEdit);
-        this.$state.go('questions');
+        this.$state.go('Questions');
       });
     }
 
@@ -67,7 +67,7 @@ namespace Quizdom.Views.Questions {
           console.log(`questionId: ${questionId} i: ${i}`);
           this.questions.splice(i, 1);
           this.preDelete = false;
-          this.$state.go('questions');
+          this.$state.go('Questions');
         });
       } else {
         this.preDelete = true;
@@ -84,7 +84,7 @@ namespace Quizdom.Views.Questions {
       this.QuestionService.createOne(this.questionToEdit).$promise.then(() => {
         this.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
         this.search = this.questionToEdit.id;
-        this.$state.go('questions');
+        this.$state.go('Questions');
       });
     }
   }

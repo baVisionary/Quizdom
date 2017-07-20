@@ -15,7 +15,7 @@ var Quizdom;
                     controller: 'QuestionsController',
                     controllerAs: 'vm'
                 })
-                    .state('questions.edit', {
+                    .state('Questions.edit', {
                     url: '/edit/:id',
                     views: {
                         'detail': {
@@ -23,7 +23,7 @@ var Quizdom;
                         }
                     }
                 })
-                    .state('questions.new', {
+                    .state('Questions.new', {
                     url: '/new',
                     views: {
                         'new': {

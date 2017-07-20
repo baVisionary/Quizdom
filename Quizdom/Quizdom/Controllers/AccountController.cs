@@ -33,20 +33,15 @@ namespace Quizdom.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = await _userManager.FindByEmailAsync(model.Email);
+                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, isPersistent: false, lockoutOnFailure: false);
 
-                if(user != null) 
+                if (result.Succeeded)
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
+                    var user = await GetUser(model.Email);
 
-                    if (result.Succeeded)
-                    {
-                        var authUser = await GetUser(user);
+                    _logger.LogInformation(1, "User logged in.");
 
-                        _logger.LogInformation(1, "User logged in.");
-
-                        return Ok(authUser);
-                    }
+                    return Ok(user);
                 }
 
                 ModelState.AddModelError("Error", "Invalid login attempt.");
@@ -68,12 +63,12 @@ namespace Quizdom.Controllers
 
                 if (result.Succeeded)
                 {
-                    await _userManager.AddToRoleAsync(user, "Normal");
-                    if (user.Email.Contains("daVisionary") || user.Email.Contains("rickco"))
-                    {
-                        await _userManager.AddToRoleAsync(user, "Admin");
-                    }
-                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    //await _userManager.AddToRoleAsync(user, "Normal");
+                    //if (user.Email.Contains("rickco@gmail.com"))
+                    //{
+                    //    await _userManager.AddToRoleAsync(user, "Admin");
+                    //}
+                    //await _signInManager.SignInAsync(user, isPersistent: false);
 
                     _logger.LogInformation(3, "User created a new account with password.");
 
@@ -121,10 +116,9 @@ namespace Quizdom.Controllers
             }
         }
 
-        private async Task<AuthUserViewModel> GetUser(ApplicationUser user)
+        private async Task<AuthUserViewModel> GetUser(string userName)
         {
-            //var user = await _userManager.FindByNameAsync(userName);
-
+            var user = await _userManager.FindByNameAsync(userName);
             var roles = await _userManager.GetRolesAsync(user);
 
             var vm = new AuthUserViewModel()

@@ -24,8 +24,6 @@ namespace Quizdom.Views.Questions {
       this.title = "Quiz Questions";
       this.questions = this.QuestionService.getAllQs();
       this.categories = this.QuestionService.getAllCats();
-      // console.log(this.questions);
-      // console.log(this.categories);
       this.preDelete = false;
       this.deleteText = "Delete";
     }
@@ -75,6 +73,11 @@ namespace Quizdom.Views.Questions {
         this.preDelete = true;
         this.deleteText = 'Really Delete';
       }
+    }
+
+    public doNotDelete() {
+      this.preDelete = false;
+      this.deleteText = "Delete";
     }
 
     public saveNewQuestion() {

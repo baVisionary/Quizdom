@@ -1,4 +1,4 @@
-namespace Quizdom.Views.Welcome {
+namespace Quizdom.Views.User {
     Configuration.$inject = [
         '$stateProvider'
     ];
@@ -7,10 +7,10 @@ namespace Quizdom.Views.Welcome {
         $stateProvider: ng.ui.IStateProvider
     ) {
         $stateProvider
-            .state('Welcome', <ng.ui.IState>{
-                url: '/',
-                templateUrl: 'js/views/welcome/welcome.html',
-                controller: 'WelcomeController',
+            .state('User', <ng.ui.IState>{
+                url: '/:userName',
+                templateUrl: 'js/views/user/user.html',
+                controller: 'UserController',
                 controllerAs: 'vm'
             });
     }

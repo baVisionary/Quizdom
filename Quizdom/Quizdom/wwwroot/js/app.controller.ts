@@ -23,7 +23,7 @@ namespace Quizdom {
 
         public logOut(): void {
             this.UserService.logOut();
-            this.$state.go('welcome');
+            this.$state.go('Welcome');
         }
 
         public myState(current): boolean {

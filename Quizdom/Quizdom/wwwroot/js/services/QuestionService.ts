@@ -16,18 +16,6 @@ namespace Quizdom.Services {
 
     public questions = [];
     public categories = [];
-    // public categories = [
-    //   "Animals",
-    //   "Art",
-    //   "Celebrities",
-    //   "General Knowledge",
-    //   "Geography",
-    //   "History",
-    //   "Science & Nature",
-    //   "Sports",
-    //   "Vehicles",
-    //   "User Added"
-    // ];
     public difficulty = [
       "easy",
       "medium",

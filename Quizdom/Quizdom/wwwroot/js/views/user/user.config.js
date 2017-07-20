@@ -2,21 +2,21 @@ var Quizdom;
 (function (Quizdom) {
     var Views;
     (function (Views) {
-        var Welcome;
-        (function (Welcome) {
+        var User;
+        (function (User) {
             Configuration.$inject = [
                 '$stateProvider'
             ];
             function Configuration($stateProvider) {
                 $stateProvider
-                    .state('Welcome', {
-                    url: '/',
-                    templateUrl: 'js/views/welcome/welcome.html',
-                    controller: 'WelcomeController',
+                    .state('User', {
+                    url: '/:userName',
+                    templateUrl: 'js/views/user/user.html',
+                    controller: 'UserController',
                     controllerAs: 'vm'
                 });
             }
-            Welcome.Configuration = Configuration;
-        })(Welcome = Views.Welcome || (Views.Welcome = {}));
+            User.Configuration = Configuration;
+        })(User = Views.User || (Views.User = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));
 })(Quizdom || (Quizdom = {}));

@@ -22,7 +22,7 @@ var Quizdom;
         });
         AppController.prototype.logOut = function () {
             this.UserService.logOut();
-            this.$state.go('welcome');
+            this.$state.go('Welcome');
         };
         AppController.prototype.myState = function (current) {
             return this.$state.current.name == current;

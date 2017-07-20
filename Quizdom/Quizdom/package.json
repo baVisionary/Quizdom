@@ -19,6 +19,11 @@
     "angular-resource": "^1.6.5",
     "angular-ui-router": "^1.0.3",
     "angular-utils-pagination": "^0.11.1",
+    "gulp": "^3.9.1",
+    "gulp-concat": "^2.6.1",
+    "gulp-imagemin": "^3.3.0",
+    "gulp-sass": "^3.1.0",
+    "gulp-uglify": "^3.0.0",
     "jquery": "^3.2.1",
     "materialize": "^1.0.0"
   }

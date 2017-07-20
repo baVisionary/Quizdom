@@ -15,18 +15,6 @@ var Quizdom;
                 this._Resource_categories = this.$resource('/api/quiz/categories');
                 this.questions = [];
                 this.categories = [];
-                // public categories = [
-                //   "Animals",
-                //   "Art",
-                //   "Celebrities",
-                //   "General Knowledge",
-                //   "Geography",
-                //   "History",
-                //   "Science & Nature",
-                //   "Sports",
-                //   "Vehicles",
-                //   "User Added"
-                // ];
                 this.difficulty = [
                     "easy",
                     "medium",

@@ -28,25 +28,25 @@
 <body>
     <div class="container body-content">
         <nav>
-            <div class="nav-wrapper">
-                <div class="col s12">
-                    <ul id="nav-mobile" class="align-center hide-on-sm-and-down">
-                        <li><a ui-sref="welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
-                        <li><a ui-sref="questions">Quiz Questions</a></li>
-                        <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Register">Register</a></li>
-                        <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Login">Log in</a></li>
-                        <li ng-if="vm.isUserLoggedIn"><a>{{vm.user.userName}}</a></li>
-                        <li ng-if="vm.isUserLoggedIn"><a href="" ng-click="vm.logOut()">Sign Out</a></li>
-                    </ul>
-                </div>
-                <!-- <ul class="side-nav" id="mobile-demo">
-                    <li><a ui-sref="Welcome">Quizdom</a></li>
-                    <li><a ui-sref="questions">Quiz Questions</a></li>
-                    <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Register">Register</a></li>
-                    <li ng-if="!vm.isUserLoggedIn"><a ui-sref="Login">Log in</a></li>
-                    <li ng-if="vm.isUserLoggedIn"><a>{{vm.user.userName}}</a></li>
-                    <li ng-if="vm.isUserLoggedIn"><a href="" ng-click="vm.logOut()">Sign Out</a></li>
-                </ul> -->
+            <div class="nav-wrapper" ng-controller="AppController as vm">
+                <a href="#!" class="brand-logo hide-on-med-and-up"><i class="large material-icons left">question_answer</i>Quizdom</a> 
+                <a href="#" data-activates="mobile-demo" class="button-collapse hide-on-med-and-up"><i class="material-icons">menu</i></a>
+                <ul class="align-center hide-on-small-only">
+                    <li ng-class="{active: vm.myState('welcome')}"><a ui-sref="Welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
+                    <li ng-class="{active: vm.myState('questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
+                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
+                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
+                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}"git c><a ui-sref="Login">Log in</a></li>
+                    <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
+                </ul>
+                 <ul class="side-nav" id="mobile-demo">
+                    <li ng-class="{active: vm.myState('welcome')}"><a ui-sref="Welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
+                    <li ng-class="{active: vm.myState('questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
+                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
+                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}"><a ui-sref="Login">Log in</a></li>
+                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
+                    <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
+                </ul> 
             </div>
         </nav>
 

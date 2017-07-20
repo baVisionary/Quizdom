@@ -9,7 +9,7 @@ var Quizdom;
             ];
             function Configuration($stateProvider) {
                 $stateProvider
-                    .state('questions', {
+                    .state('Questions', {
                     url: '/questions',
                     templateUrl: 'js/views/questions/questions.html',
                     controller: 'QuestionsController',

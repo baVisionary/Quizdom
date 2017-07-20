@@ -7,7 +7,7 @@ namespace Quizdom.Views.Welcome {
         $stateProvider: ng.ui.IStateProvider
     ) {
         $stateProvider
-            .state('welcome', <ng.ui.IState>{
+            .state('Welcome', <ng.ui.IState>{
                 url: '/',
                 templateUrl: 'js/views/welcome/welcome.html',
                 controller: 'WelcomeController',

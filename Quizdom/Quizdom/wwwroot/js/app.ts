@@ -7,6 +7,7 @@ namespace Quizdom {
     'angularUtils.directives.dirPagination',
 
     // Modules
+    // 'Quizdom.Directives',
     'Quizdom.Factories',
     'Quizdom.Services',
     'Quizdom.Views'

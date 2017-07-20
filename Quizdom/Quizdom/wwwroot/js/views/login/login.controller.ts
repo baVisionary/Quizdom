@@ -26,7 +26,7 @@ namespace Quizdom.Views.Login {
                 .then((result: boolean) => {
                     if (result) {
                         this.loginError = false;
-                        this.$state.go('welcome');
+                        this.$state.go('user');
                     }
                     this.loginError = true;
                 });

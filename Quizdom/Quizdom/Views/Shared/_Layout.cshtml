@@ -20,7 +20,7 @@
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
-        <link rel="stylesheet" href="~/../dist/css/site.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true" />
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
@@ -35,18 +35,18 @@
                         <li ng-class="{active: vm.myState('questions')}"><a ui-sref="questions">Quiz Questions</a></li>
                         <li ng-if="!vm.UserService.isUserLoggedIn" ng-class="{active: vm.myState('register')}"><a ui-sref="Register">Register</a></li>
                         <li ng-if="!vm.UserService.isUserLoggedIn" ng-class="{active: vm.myState('login')}"><a ui-sref="Login">Log in</a></li>
-                        <li ng-if="vm.UserService.isUserLoggedIn"><a>{{vm.UserService.authUser.userName}}</a></li>
+                        <li ng-if="vm.UserService.isUserLoggedIn"><a ui-sref="user">{{vm.UserService.authUser.userName}}</a></li>
                         <li ng-if="vm.UserService.isUserLoggedIn"><a href="" ng-click="vm.UserService.logOut()">Sign Out</a></li>
                     </ul>
                 </div>
-                 <ul class="side-nav" id="mobile-demo">
+                <!-- <ul class="side-nav" id="mobile-demo">
                     <li ng-class="{active: vm.myState('welcome')}"><a ui-sref="welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
                     <li ng-class="{active: vm.myState('questions')}"><a ui-sref="questions">Quiz Questions</a></li>
                     <li ng-if="!vm.UserService.isUserLoggedIn" ng-class="{active: vm.myState('register')}"><a ui-sref="Register">Register</a></li>
                     <li ng-if="!vm.UserService.isUserLoggedIn" ng-class="{active: vm.myState('login')}"><a ui-sref="Login">Log in</a></li>
                     <li ng-if="vm.UserService.isUserLoggedIn"><a>{{vm.UserService.authUser.userName}}</a></li>
                     <li ng-if="vm.UserService.isUserLoggedIn"><a href="" ng-click="vm.UserService.logOut()">Sign Out</a></li>
-                </ul> 
+                </ul> -->
             </div>
         </nav>
 
@@ -100,6 +100,10 @@
     <script src="~/js/views/questions/questions.controller.js"></script>
     <script src="~/js/views/questions/questions.config.js"></script>
     <script src="~/js/views/questions/questions.js"></script>
+
+    <script src="~/js/views/user/user.controller.js"></script>
+    <script src="~/js/views/user/user.config.js"></script>
+    <script src="~/js/views/user/user.js"></script>
 
     <script src="~/js/views/404/404.config.js"></script>
     <script src="~/js/views/404/404.js"></script>

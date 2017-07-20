@@ -19,47 +19,36 @@
       <input id="username" name="username" type="text" ng-model="vm.formData.username" ng-required="true" class="validate" />
       <label for="username" ng-show="(!loginForm.username.$touched || !loginForm.username.$error.required)">Username</label>
       <label for="username" class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">Unique username required</label>
-      <!-- <ul>
-        <li class="red-text" ng-show="loginForm.username.$touched && loginForm.username.$error.required">
-          Unique username to show other players
-        </li>
-      </ul> -->
     </div>
   </div>
   <div class="row">
-    <div class="col s12">
-      <ul style="columns: 3;">
-        <li><input type="radio" name="avatars" id="av-1" value="1" ng-required="true">
-          <label for="av-1"><img src="/images/avatar_01.png" alt="Avatar 1" class="circle"></label>
-        </li>
-        <li><input type="radio" name="avatars" id="av-2" value="2">
-          <label for="av-2"><img src="/images/avatar_02.png" alt="Avatar 2" class="circle"></label>
-        </li>
-        <li><input type="radio" name="avatars" id="av-3" value="3">
-          <label for="av-3"><img src="/images/avatar_03.png" alt="Avatar 3" class="circle"></label>
-        </li>
-      </ul>
-    </div>
+    <ul class="col s12 center-align" id="avatars">
+      <li ng-repeat="avatar in vm.avatars">
+        <label>
+          <input type="radio" name="avatarId" id="av{{avatar.id}}" ng-value={{avatar.id}} ng-model="vm.formData.avatarId">
+          <img ng-src="/images/{{avatar.imageUrl}}" alt="Avatar {{avatar.id}}" class="circle">
+        </label>
+      </li>
+    </ul>
   </div>
   <div class="row">
     <div class="input-field col s12 m6">
       <input id="regpassword" name="regpassword" type="password" ng-model="vm.formData.password" ng-required="true" ng-minlength="8"
         ng-pattern="vm.pattern" class="validate" />
-      <label for="regpassword" ng-show="(!registrationForm.regpassword.$touched || !registrationForm.regpassword.$error.required) && !registrationForm.regpassword.$error.minlength && !registrationForm.password.$error.pattern">Password</label>
+      <label for="regpassword" ng-show="(!registrationForm.regpassword.$touched || !registrationForm.regpassword.$error.required) && !registrationForm.regpassword.$error.minlength && !registrationForm.regpassword.$error.pattern">Password</label>
       <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">A password is required</label>
-      <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$error.minlength">Password must be at least 8 characters</label>
-      <label for="regpassword" class="red-text" ng-show="registrationForm.password.$error.pattern">Password needs: Uppercase, Lowercase, Number, Symbol</label>
-      <!-- <ul>
-        <li class="red-text" ng-show="registrationForm.regpassword.$touched && registrationForm.regpassword.$error.required">
-          A password is required
-        </li>
-        <li class="red-text" ng-show="registrationForm.regpassword.$error.minlength">
-          Password must be at least 8 characters long.
-        </li>
-        <li class="red-text" ng-show="registrationForm.password.$error.pattern">
-          Password needs at least one each of the following: Uppercase Letter, Lowercase Letter, Number
-        </li>
-      </ul> -->
+      <label for="regpassword" class="red-text" ng-show="registrationForm.regpassword.$error.pattern">Password: 8+ Characters, Number, Symbol, Upper, Lower</label>
+      <div class="feedback">
+        <span ng-class="{'grey-text': vm.checkRegExp('8plus', registrationForm.regpassword.$viewValue)}">8+ Characters</span>
+        <span class="grey-text">&nbsp;|&nbsp;</span>
+        <span ng-class="{'grey-text': vm.checkRegExp('Number', registrationForm.regpassword.$viewValue)}">Number</span>
+        <span class="grey-text">&nbsp;|&nbsp;</span>
+        <span ng-class="{'grey-text': vm.checkRegExp('Symbol', registrationForm.regpassword.$viewValue)}">Symbol</span>
+        <span class="grey-text">&nbsp;|&nbsp;</span>
+        <span ng-class="{'grey-text': vm.checkRegExp('Upper', registrationForm.regpassword.$viewValue)}">Upper</span>
+        <span class="grey-text">&nbsp;|&nbsp;</span>
+        <span ng-class="{'grey-text': vm.checkRegExp('Lower', registrationForm.regpassword.$viewValue)}">Lower</span>
+      </div>
     </div>
     <div class="input-field col s12 m6">
       <input id="regconfirmpassword" name="confirmPassword" type="password" ng-model="vm.formData.confirmPassword" ng-required="true"
@@ -74,3 +63,18 @@
     </div>
   </div>
 </form>
+
+<script>
+  $(document).on('click','#avatars li',function () {
+    $(this).siblings().find('input').removeAttr('checked');
+    $(this).siblings().find('img').removeClass('selected');
+    $(this).find('input').attr('checked', true)
+    $(this).find('img').addClass('selected');
+  });
+  // $('#registrationForm').click(function () {
+  //   let inputs = $('#registrationForm input')
+  //   inputs.forEach(function(element) {
+  //     console.log(element.value);
+  //   });
+  // });
+</script>

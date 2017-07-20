@@ -6,16 +6,16 @@ var imagemin = require('gulp-imagemin');
 
 /* FILE SOURCES */
 
-var sources = [ ['dist/sass/**/*.scss'], ['js/**/*.js'] ];
+var sources = [ ['wwwroot/sass/**/*.scss'], ['wwwroot/js/**/*.js'] ];
 
 /* SASS TASKS */
 
 gulp.task('sass', function() {
-  return gulp.src('dist/sass/app.min.scss')
+  return gulp.src('wwwroot/sass/components/extra.scss')
   .pipe(sass({
     outputStyle: 'compressed'
-  }))
-  .pipe(gulp.dest('dist/css'));
+  }).on('error', sass.logError))
+  .pipe(gulp.dest('wwwroot/dist/css'));
 });
 
 gulp.task('sass:watch', function() {
@@ -29,7 +29,7 @@ gulp.task('js:uglify', function() {
   .pipe(uglify({
     mangle: false
   }))
-  .pipe(gulp.dest('app/frontend/tmp/js'));
+  .pipe(gulp.dest('dist/js'));
 });
 
 gulp.task('js:concat', function() {

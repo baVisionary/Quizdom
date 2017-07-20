@@ -14,13 +14,13 @@
         <!--Import materialize.css-->
         <link rel="stylesheet" href="~/lib/materialize/dist/css/materialize.min.css" media="screen,projection" />
         <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
-        <link rel="stylesheet" href="~/css/site.css" />
+        <link rel="stylesheet" href="~/../dist/css/extra.css">
     </environment>
     <environment names="Staging,Production">
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
-        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true" />
+        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true" >
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>

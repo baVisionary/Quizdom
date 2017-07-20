@@ -1,0 +1,19 @@
+<div id="userview">
+  <div class="row player">
+    <div class="col s12 offset-m2 m8">
+      <div class="card horizontal purple lighten-3">
+        <div class="avatar">
+          <img ng-src="/images/avatar_01.png" alt="Avatar" class="circle">
+        </div>
+        <div class="card-stacked">
+          <div class="card-content black-text">
+            <span class="card-title">{{vm.UserService.user.userName}}</span>
+            <p>Role: <span ng-show="vm.UserService.user.isAdmin">Admin</span><span ng-show="!vm.UserService.user.isAdmin">Normal</span></p>
+            <p>Email: {{vm.UserService.user.email}}</p>
+          </div>
+          <div class="card-action">Testing</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

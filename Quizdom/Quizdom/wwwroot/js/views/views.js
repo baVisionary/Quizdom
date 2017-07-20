@@ -9,7 +9,8 @@ var Quizdom;
             'View.Login',
             'View.ForgotPassword',
             'View.Questions',
-            'View.Error404'
+            'View.Error404',
+            'View.User'
         ]);
     })(Views = Quizdom.Views || (Quizdom.Views = {}));
 })(Quizdom || (Quizdom = {}));

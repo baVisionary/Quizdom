@@ -12,19 +12,9 @@ var Quizdom;
                         method: 'PUT'
                     }
                 });
+                this._Resource_categories = this.$resource('/api/quiz/categories');
                 this.questions = [];
-                this.categories = [
-                    "Animals",
-                    "Art",
-                    "Celebrities",
-                    "General Knowledge",
-                    "Geography",
-                    "History",
-                    "Science & Nature",
-                    "Sports",
-                    "Vehicles",
-                    "User Added"
-                ];
+                this.categories = [];
                 this.difficulty = [
                     "easy",
                     "medium",
@@ -32,15 +22,30 @@ var Quizdom;
                 ];
                 this._Question = new Quizdom.Models.QuestionModel();
                 this.getAllQs();
+                this.getAllCats();
             }
             QuestionService.prototype.getAllQs = function () {
                 if (this.questions.length == 0) {
-                    this.questions = this._Resource_question.query();
-                    return this.questions;
+                    return this.questions = this._Resource_question.query();
                 }
                 else {
                     return this.questions;
                 }
+            };
+            QuestionService.prototype.getAllCats = function () {
+                var _this = this;
+                if (this.categories.length == 0) {
+                    this._Resource_categories.query().$promise.then(function (data) {
+                        _this.categories = data.sort();
+                        return _this.categories;
+                    });
+                }
+                else {
+                    return this.categories;
+                }
+            };
+            QuestionService.prototype.sortCategories = function (a, b) {
+                return (a == "User Added") ? 1 : a - b;
             };
             QuestionService.prototype.getOneQuestionId = function (questionId) {
                 return this._Resource_question.get({

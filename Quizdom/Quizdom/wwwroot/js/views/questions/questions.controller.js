@@ -10,6 +10,7 @@ var Quizdom;
                     this.$state = $state;
                     this.title = "Quiz Questions";
                     this.questions = this.QuestionService.getAllQs();
+                    this.categories = this.QuestionService.getAllCats();
                     this.preDelete = false;
                     this.deleteText = "Delete";
                 }
@@ -57,6 +58,10 @@ var Quizdom;
                         this.preDelete = true;
                         this.deleteText = 'Really Delete';
                     }
+                };
+                QuestionsController.prototype.doNotDelete = function () {
+                    this.preDelete = false;
+                    this.deleteText = "Delete";
                 };
                 QuestionsController.prototype.saveNewQuestion = function () {
                     var _this = this;

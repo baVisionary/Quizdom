@@ -20,7 +20,7 @@
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
-        <link rel="stylesheet" href="~/../dist/css/site.css" asp-append-version="true">
+        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true" />
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
@@ -72,11 +72,17 @@
     <script src="~/js/factories/authenticationinterceptor.js"></script>
     <script src="~/js/factories/factories.js"></script>
 
+    <!-- Directives  -->
+    <script src="~/js/directives/qzPlayerFull/qzPlayerFull.js"></script>
+    <script src="~/js/directives/Directives.js"></script>
+
     <!-- Services  -->
     <script src="~/js/services/QuestionService.js"></script>
     <script src="~/js/services/UserService.js"></script>
+    <script src="~/js/services/GameService.js"></script>
     <script src="~/js/services/RegistrationService.js"></script>
     <script src="~/js/services/Services.js"></script>
+
 
     <!-- Application Views  -->
     <script src="~/js/views/forgotpassword/forgotpassword.controller.js"></script>
@@ -99,6 +105,10 @@
     <script src="~/js/views/questions/questions.config.js"></script>
     <script src="~/js/views/questions/questions.js"></script>
 
+    <script src="~/js/views/user/user.controller.js"></script>
+    <script src="~/js/views/user/user.config.js"></script>
+    <script src="~/js/views/user/user.js"></script>
+
     <script src="~/js/views/404/404.config.js"></script>
     <script src="~/js/views/404/404.js"></script>
 
@@ -109,11 +119,11 @@
     <script src="~/js/app.config.js"></script>
     <script src="~/js/app.js"></script>
 
-    <!-- <script>
+     <script>
         $(document).ready(function () {
             $(".button-collapse").sideNav();
         })
-    </script> -->
+    </script> 
 
     <!-- Must be present or app will not find linked Angular files
         @RenderBody()

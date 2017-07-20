@@ -7,7 +7,7 @@ namespace Quizdom.Views.Questions {
     $stateProvider: ng.ui.IStateProvider
   ) {
     $stateProvider
-      .state('questions', {
+      .state('Questions', {
         url: '/questions',
         templateUrl: 'js/views/questions/questions.html',
         controller: 'QuestionsController',

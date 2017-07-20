@@ -124,6 +124,7 @@ namespace Quizdom.Controllers
         private async Task<AuthUserViewModel> GetUser(ApplicationUser user)
         {
             //var user = await _userManager.FindByNameAsync(userName);
+
             var roles = await _userManager.GetRolesAsync(user);
 
             var vm = new AuthUserViewModel()

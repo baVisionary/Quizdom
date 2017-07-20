@@ -14,7 +14,7 @@ namespace Quizdom.Views.Questions {
         controllerAs: 'vm'
 
       })
-      .state('questions.edit', {
+      .state('Questions.edit', {
         url: '/edit/:id',
         views: {
           'detail': {
@@ -22,7 +22,7 @@ namespace Quizdom.Views.Questions {
           }
         }
       })
-      .state('questions.new', {
+      .state('Questions.new', {
         url: '/new',
         views: {
           'new': {

@@ -4,7 +4,7 @@ namespace Quizdom {
         '$locationProvider',
         '$httpProvider',
         '$stateProvider'
-    ];
+        ];
 
     export function Configuration(
         $urlRouterProvider: ng.ui.IUrlRouterProvider,

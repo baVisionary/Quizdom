@@ -55,7 +55,7 @@ var Quizdom;
             };
             UserService.prototype.loginUser = function (user) {
                 var _this = this;
-                return this.$http.post('api/account/login', user, {
+                return this.$http.post('api/Account/Login', user, {
                     cache: false
                 })
                     .then(function (response) {
@@ -69,7 +69,7 @@ var Quizdom;
             };
             UserService.prototype.logOut = function () {
                 var _this = this;
-                this.$http.post('api/account/logout', {
+                this.$http.post('api/Account/Logout', {
                     cache: false
                 })
                     .then(function () {

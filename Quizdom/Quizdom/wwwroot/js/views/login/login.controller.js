@@ -26,7 +26,7 @@ var Quizdom;
                         .then(function (result) {
                         if (result) {
                             _this.loginError = false;
-                            _this.$state.go('welcome');
+                            _this.$state.go('User', { userName: _this.UserService.user.userName });
                         }
                         _this.loginError = true;
                     });

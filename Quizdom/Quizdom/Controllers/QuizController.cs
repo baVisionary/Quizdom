@@ -2,13 +2,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Options;
 using Quizdom.Data;
+using Quizdom.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 
-namespace Quizdom.Models
+namespace Quizdom.Controllers
 {
     [Route("api/quiz/")]
     public class QuizController : Controller

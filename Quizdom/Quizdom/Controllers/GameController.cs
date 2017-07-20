@@ -371,6 +371,21 @@ namespace Quizdom.Models
             return NoContent();
         }
 
+        // GET /api/avatar/1   - get's Avatar information for a specific Id
+        [HttpGet("avatar/{id}")]
+        public IActionResult GetAvatarById(int id)
+        {
+            var record = (from c in _context.Avatars
+                          where c.Id == id
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NotFound($"Avatar Id #{id} does not exist!");
+            }
+
+            return Ok(record);
+        }
 
 
         // GET: /api/game/categories * get's all categories

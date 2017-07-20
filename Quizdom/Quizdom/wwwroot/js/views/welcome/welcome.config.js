@@ -9,7 +9,7 @@ var Quizdom;
             ];
             function Configuration($stateProvider) {
                 $stateProvider
-                    .state('welcome', {
+                    .state('Welcome', {
                     url: '/',
                     templateUrl: 'js/views/welcome/welcome.html',
                     controller: 'WelcomeController',

@@ -7,13 +7,17 @@ namespace Quizdom.Views.User {
             '$state'
         ];
 
+        
+
         constructor(
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService,
         ) {
+            console.log(this.UserService.user);
             
         }
 
+        
 
 
     }

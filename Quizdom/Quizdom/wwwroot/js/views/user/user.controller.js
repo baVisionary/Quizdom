@@ -8,6 +8,7 @@ var Quizdom;
                 function UserController(UserService, $state) {
                     this.UserService = UserService;
                     this.$state = $state;
+                    console.log(this.UserService.user);
                 }
                 return UserController;
             }());

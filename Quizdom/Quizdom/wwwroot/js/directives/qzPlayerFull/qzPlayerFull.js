@@ -2,11 +2,12 @@ var Quizdom;
 (function (Quizdom) {
     var Directives;
     (function (Directives) {
-        var qzPlayerDirective = (function () {
-            function qzPlayerDirective() {
-            }
-            return qzPlayerDirective;
-        }());
+        function qzPlayerDirective() {
+            return {
+                restrict: 'E',
+                templateUrl: 'js/directives/qzPlayerFull/qzPlayerFull.html'
+            };
+        }
         Directives.qzPlayerDirective = qzPlayerDirective;
     })(Directives = Quizdom.Directives || (Quizdom.Directives = {}));
 })(Quizdom || (Quizdom = {}));

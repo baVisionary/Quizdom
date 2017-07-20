@@ -26,6 +26,12 @@ select {
     bottom: 0.5em;
 }
 
+.avatar img {
+    width: 100%;
+    height: auto;
+    padding: 5%;
+}
+
 #avatars li {
     display: inline-block;
     cursor: pointer;

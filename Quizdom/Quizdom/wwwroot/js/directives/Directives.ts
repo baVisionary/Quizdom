@@ -1,5 +1,5 @@
 namespace Quizdom.Directives {
-    // let module: ng.IModule = angular.module('Quizdom.Directives', []);
+    let module: ng.IModule = angular.module('Quizdom.Directives', []);
 
-    // module.directive('qzPlayer', Directives.qzPlayerDirective);
+    module.directive('qzPlayer', Directives.qzPlayerDirective);
 }

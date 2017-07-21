@@ -9,7 +9,8 @@ namespace Quizdom.Models.AccountViewModels
     {
         public string UserName { get; set; }
         public string Email { get; set; }
-        public string AvatarUrl { get; set; }
+        public int AvatarId { get; set; }
         public bool IsAdmin { get; set; }
+
     }
 }

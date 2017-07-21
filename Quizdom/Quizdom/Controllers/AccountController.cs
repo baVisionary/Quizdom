@@ -63,13 +63,13 @@ namespace Quizdom.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, AvatarId = model.AvatarId };
                 var result = await _userManager.CreateAsync(user, model.Password);
-
+                
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Normal");
-                    if (user.Email.Contains("daVisionary") || user.Email.Contains("rickco"))
+                    if (user.UserName.ToUpper().Equals("DAVISIONARY") || user.UserName.ToUpper().Equals("RICKCO"))
                     {
                         await _userManager.AddToRoleAsync(user, "Admin");
                     }
@@ -77,7 +77,9 @@ namespace Quizdom.Controllers
 
                     _logger.LogInformation(3, "User created a new account with password.");
 
-                    return Ok();
+                    var authUser = await GetUser(user);
+                    
+                    return Ok(authUser);
                 }
 
                 AddErrors(result);
@@ -95,9 +97,12 @@ namespace Quizdom.Controllers
             var userx = await _userManager.FindByEmailAsync(email);
 
             // TODO: COMPLETE THIS
+            if (user == null && userx == null)
+            {
+                return Ok(true);
+            }
 
-
-            return NoContent();
+            return Ok(false);
         }
 
         //
@@ -131,7 +136,7 @@ namespace Quizdom.Controllers
             {
                 UserName = user.UserName,
                 Email = user.Email,
-                AvatarUrl = user?.Avatar?.ImageUrl,
+                AvatarId = user.AvatarId,
                 IsAdmin = roles.Contains("Admin")
                 //Email,
                 //Avatar,

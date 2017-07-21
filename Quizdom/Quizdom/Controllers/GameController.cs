@@ -328,6 +328,7 @@ namespace Quizdom.Models
             _context.SaveChanges();
             return NoContent();
         }
+                                                                /* AVATAR API'S */
 
         // GET: /api/game/avatar * get's all avatars
         [HttpGet("avatar")]
@@ -371,7 +372,7 @@ namespace Quizdom.Models
             return NoContent();
         }
 
-        // GET /api/avatar/1   - get's Avatar information for a specific Id
+        // GET /api/game/avatar/1   - get's Avatar information for a specific Id
         [HttpGet("avatar/{id}")]
         public IActionResult GetAvatarById(int id)
         {
@@ -421,7 +422,7 @@ namespace Quizdom.Models
             return Ok();
         }
 
-        // DELETE /api/game/categories/1  ** Delete avatar record by id
+        // DELETE /api/game/categories/1  ** Delete game record by id
         [HttpDelete("categories/{id}")]
         public IActionResult DeleteCategory(int id)
         {
@@ -429,10 +430,81 @@ namespace Quizdom.Models
             _context.SaveChanges();
             return NoContent();
         }
+                                                        /* FRIENDS API'S */
+
+        // GET: /api/game/friends * get's all friends
+        [HttpGet("friends")]
+        public IEnumerable<Friend> GetFriends()
+        {
+            return _context.Friends.ToList();
+        }
+
+        // POST /api/game/friends  ** Add new friends record
+        [HttpPost("friends")]
+        public void PostFriend([FromBody]Friend Friend)
+        {
+            _context.Friends.Add(Friend);
+            _context.SaveChanges();
+        }
+
+        // PUT /api/game/friend/1   ** updates friend record by id
+        [HttpPut("friends/{id}")]
+        public IActionResult PutFriend(int id, [FromBody]Friend Friend)
+        {
+            var record2 = _context.Friends.Where(c => c.Id == id).Count();
 
 
+            if (record2 == 0)
+            {
+                return NotFound($"Friend ID: #{id} does not exist!");
+            }
 
+            Friend.Id = id;
+            _context.Friends.Update(Friend);
+            _context.SaveChanges();
+            return Ok();
+        }
 
+        // DELETE /api/game/friends/1  ** Delete friend record by id
+        [HttpDelete("friends/{id}")]
+        public IActionResult DeleteFriend(int id)
+        {
+            _context.Remove(_context.Friends.SingleOrDefault<Friend>(c => c.Id == id));
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+        // GET /api/game/friends/1   - get's Friend information for a specific Id
+        [HttpGet("friends/{id}")]
+        public IActionResult GetFriendById(int id)
+        {
+            var record = (from c in _context.Friends
+                          where c.Id == id
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NotFound($"Friend Id #{id} does not exist!");
+            }
+
+            return Ok(record);
+        }
+
+        // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
+        [HttpGet("friends/primaryusername/{username}")]
+        public IActionResult GetFriendsByUserName(string username)
+        {
+            var record = (from c in _context.Friends
+                          where c.primaryUserName == username
+                          select c).ToList();
+
+            if (record == null)
+            {
+                return NotFound($"Username #{username} does not exist!");
+            }
+
+            return Ok(record);
+        }
 
 
 

@@ -328,6 +328,7 @@ namespace Quizdom.Models
             _context.SaveChanges();
             return NoContent();
         }
+                                                                /* AVATAR API'S */
 
         // GET: /api/game/avatar * get's all avatars
         [HttpGet("avatar")]
@@ -371,7 +372,7 @@ namespace Quizdom.Models
             return NoContent();
         }
 
-        // GET /api/avatar/1   - get's Avatar information for a specific Id
+        // GET /api/game/avatar/1   - get's Avatar information for a specific Id
         [HttpGet("avatar/{id}")]
         public IActionResult GetAvatarById(int id)
         {
@@ -489,6 +490,21 @@ namespace Quizdom.Models
             return Ok(record);
         }
 
+        // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
+        [HttpGet("friends/primaryusername/{username}")]
+        public IActionResult GetFriendsByUserName(string username)
+        {
+            var record = (from c in _context.Friends
+                          where c.primaryUserName == username
+                          select c).ToList();
+
+            if (record == null)
+            {
+                return NotFound($"Username #{username} does not exist!");
+            }
+
+            return Ok(record);
+        }
 
 
 

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
+using System;
 
 namespace Quizdom.Controllers
 {
@@ -35,7 +36,7 @@ namespace Quizdom.Controllers
             {
                 var user = await _userManager.FindByEmailAsync(model.Email);
 
-                if(user != null) 
+                if (user != null)
                 {
                     var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, isPersistent: false, lockoutOnFailure: false);
 
@@ -65,7 +66,7 @@ namespace Quizdom.Controllers
             {
                 var user = new ApplicationUser { UserName = model.UserName, Email = model.Email, AvatarId = model.AvatarId };
                 var result = await _userManager.CreateAsync(user, model.Password);
-                
+
                 if (result.Succeeded)
                 {
                     await _userManager.AddToRoleAsync(user, "Normal");
@@ -78,7 +79,7 @@ namespace Quizdom.Controllers
                     _logger.LogInformation(3, "User created a new account with password.");
 
                     var authUser = await GetUser(user);
-                    
+
                     return Ok(authUser);
                 }
 
@@ -103,6 +104,34 @@ namespace Quizdom.Controllers
             }
 
             return Ok(false);
+        }
+
+        // api/account/searchuserbyname?username={value}
+        [HttpGet("searchuserbyname")]
+        public async Task<IActionResult> SearchUserByName([FromQuery]string userName)
+        {
+            var user = await _userManager.FindByNameAsync(userName);
+            if (user == null)
+            {
+                return NotFound($"Username {userName} was not found");
+            }
+
+            var authUser = await GetUser(user);
+            return Ok(authUser);
+        }
+
+        // api/account/searchuserbyemail?email={value}
+        [HttpGet("searchuserbyemail")]
+        public async Task<IActionResult> SearchUserByEmail([FromQuery]string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user == null)
+            {
+                return NotFound($"Email Address: {email} was not found");
+            }
+
+            var authUser = await GetUser(user);
+            return Ok(authUser);
         }
 
         //

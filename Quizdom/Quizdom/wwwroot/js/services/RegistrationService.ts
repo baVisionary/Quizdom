@@ -3,47 +3,27 @@ namespace Quizdom.Services {
     export class RegistrationService {
 
         static $inject = [
-            '$http',
-            '$resource'
+            '$http'
         ];
-        public avatars = [];
-        private _Resource_avatars = this.$resource('api/game/avatar');
 
         constructor(
-            private $http: ng.IHttpService,
-            private $resource: ng.resource.IResourceService
+            private $http: ng.IHttpService
         ) {
         }
 
-        public registerUser(user: Models.RegisterModel): ng.IPromise<boolean> {
+        public registerUser(user: Models.RegisterModel): any {
             return this.$http.post<boolean>('api/account/register', user, <ng.IRequestShortcutConfig>{
                 cache: false
             })
-                .then(() => {
+                .then((response) => {
                     console.info('User was succesfully created.');
-                    return true;
+                    return response.data;
                 })
-                .catch(() => {
+                .catch((error) => {
                     console.info('User was not created');
-                    return false;
+                    return error;
                 });
         }
 
-        /**
-         * get array of avatars
-         */
-        public getAvatars(): object {
-            if (this.avatars.length == 0) {
-                this.avatars = this._Resource_avatars.query()
-                this.avatars.$promise.then((data) => {
-                    console.log(data);
-                })
-                .catch((error) => {
-                    console.log(`Unable to get avatars - ${error}`);
-                    return [];
-                });
-            }
-            return this.avatars;
-        }
     }
 }

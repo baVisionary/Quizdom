@@ -80,7 +80,7 @@ namespace Quizdom.Services {
                 cache: false
             })
                 .then(() => {
-                    console.info('User login was logged out.');
+                    console.info('User was logged out.');
                     this.clearSession();
                 })
                 .catch(() => {

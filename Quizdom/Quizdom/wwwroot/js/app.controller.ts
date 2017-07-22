@@ -1,14 +1,6 @@
 namespace Quizdom {
     export class AppController {
 
-        public get isUserLoggedIn(): boolean {
-            return this.UserService.isLoggedIn;
-        }
-
-        public get user(): Models.UserModel {
-            return this.UserService.user;
-        }
-
         static $inject = [
             'UserService',
             '$state'
@@ -18,7 +10,19 @@ namespace Quizdom {
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService
         ) {
-            this.UserService = UserService;            
+            this.UserService = UserService;
+            // if (this.isUserLoggedIn) {
+            //     console.log(this.user);
+            //     this.$state.go('User', {userName: this.user.userName})
+            // }
+        }
+
+        public get isUserLoggedIn(): boolean {
+            return this.UserService.isLoggedIn;
+        }
+
+        public get user(): Models.UserModel {
+            return this.UserService.user;
         }
 
         public logOut(): void {

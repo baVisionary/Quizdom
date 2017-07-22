@@ -50,7 +50,7 @@ namespace Quizdom.Services {
     }
     
     public sortCategories(a, b): number {
-      return ( a == "User Added" ) ? 1 : a - b;
+      return ( a == "User Added" ) ? 100 : a - b;
     }
 
     public getOneQuestionId(questionId: number) {

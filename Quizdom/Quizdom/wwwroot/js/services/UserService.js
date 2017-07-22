@@ -73,7 +73,7 @@ var Quizdom;
                     cache: false
                 })
                     .then(function () {
-                    console.info('User login was logged out.');
+                    console.info('User was logged out.');
                     _this.clearSession();
                 })
                     .catch(function () {

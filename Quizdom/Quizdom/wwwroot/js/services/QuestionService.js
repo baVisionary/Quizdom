@@ -45,7 +45,7 @@ var Quizdom;
                 }
             };
             QuestionService.prototype.sortCategories = function (a, b) {
-                return (a == "User Added") ? 1 : a - b;
+                return (a == "User Added") ? 100 : a - b;
             };
             QuestionService.prototype.getOneQuestionId = function (questionId) {
                 return this._Resource_question.get({

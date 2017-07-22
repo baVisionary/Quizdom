@@ -1,26 +1,25 @@
 namespace Quizdom.Views.Register {
     export class RegisterController {
         public formData: Models.RegisterModel = new Models.RegisterModel();
-        public user: Models.UserModel = new Models.UserModel();
+        private authUser: Models.LoginModel = new Models.LoginModel();
         public pattern: string = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
-        public avatars: object = [];
-        public RegistrationServices: angular.IServiceProvider;
+        public avatars: Models.IAvatar[];
+        // public RegistrationServices: angular.IServiceProvider;
 
         static $inject = [
             'RegistrationService',
             'UserService',
             '$state',
-            '$resource'
+            'AvatarResource'
         ];
-
 
         constructor(
             private RegistrationService: Services.RegistrationService,
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService,
-            private $resource: ng.resource.IResourceService
+            private Avatar: Models.IAvatarResource
         ) {
-            this.avatars = this.RegistrationService.getAvatars();
+            this.avatars = Avatar.query();
         }
 
         public checkRegExp(reg: string, str: string): boolean {
@@ -48,21 +47,32 @@ namespace Quizdom.Views.Register {
             return regTest.test(str);
         }
 
-        public registerUser(): void {
+        public registerUser(): any {
 
             this.RegistrationService
                 .registerUser(this.formData)
-                .then((result: boolean) => {
-                    if (result) {
-                        
-                        
-                    }
+                .then((user) => {
+                    console.log(user);
+                    this.authUser.email = user.email;
+                    this.authUser.password = this.formData.password;
+                    this.authUser.rememberMe = true;
+                    console.log(this.authUser);
+                    this.UserService
+                        .loginUser(this.authUser)
+                        .then((result: boolean) => {
+                            if (result) {
+                                this.$state.go('User', {
+                                    userName: this.UserService.user.userName
+                                });
+                            }
+                        });
                 })
-                .catch(() => {
+                .catch((error) => {
+                    console.log(error);
+                    return error;
                     
                 });
         }
-
 
     }
 }

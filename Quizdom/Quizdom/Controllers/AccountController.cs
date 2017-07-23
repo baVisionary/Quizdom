@@ -7,6 +7,9 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System.Threading.Tasks;
 using System;
+using System.Collections.Generic;
+using Quizdom.Data;
+using System.Linq;
 
 namespace Quizdom.Controllers
 {
@@ -17,14 +20,18 @@ namespace Quizdom.Controllers
         private readonly SignInManager<ApplicationUser> _signInManager;
         private readonly ILogger _logger;
 
+        private ApplicationDbContext _context;
+
         public AccountController(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILoggerFactory loggerFactory)
+            ILoggerFactory loggerFactory,
+            ApplicationDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
+            _context = context;
         }
 
         //
@@ -110,6 +117,7 @@ namespace Quizdom.Controllers
         [HttpGet("searchuserbyname")]
         public async Task<IActionResult> SearchUserByName([FromQuery]string userName)
         {
+
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
@@ -129,12 +137,49 @@ namespace Quizdom.Controllers
             {
                 return NotFound($"Email Address: {email} was not found");
             }
-
             var authUser = await GetUser(user);
+
             return Ok(authUser);
         }
 
-        //
+        // api/account/getfriendsbyprimaryusername?username={value}
+        [HttpGet("getfriendsbyprimaryusername")]
+        public async Task<IActionResult> SearchUserByPrimaryUserName([FromQuery]string userName)
+        {
+            List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+            var unregisteredUsers = 0;
+
+            var record = (from c in _context.Friends
+                          where c.primaryUserName == userName
+                          select c.friendUserName).Distinct().ToList();
+
+            if (record.Count > 0)
+            {
+                var authUser = new AuthUserViewModel();
+
+                foreach (var item in record)
+                {
+                    try
+                    {
+                        var user = await _userManager.FindByNameAsync(item);
+                        authUser = await GetUser(user);
+                        authModel.Add(authUser);
+                    }
+                    catch
+                    {
+                        unregisteredUsers++;
+                    }
+                }
+
+                if (authModel.Count() > 0)
+                    return Ok(authModel);
+
+                return NotFound("No Registered Users were located!");
+            }
+            return NotFound($"No Results Found for Primary User: {userName}");
+        }
+
+
         // POST: /Account/Logout
         [HttpPost("Logout")]
         public async Task<IActionResult> Logout()
@@ -172,7 +217,6 @@ namespace Quizdom.Controllers
                 //birthday,
                 //socialpriviledge,
                 //isPresident,
-                //isAdmin,
                 //friendsList,
 
             };

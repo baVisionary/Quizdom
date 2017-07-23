@@ -11,10 +11,6 @@ namespace Quizdom {
             private $state: ng.ui.IStateService
         ) {
             this.UserService = UserService;
-            // if (this.isUserLoggedIn) {
-            //     console.log(this.user);
-            //     this.$state.go('User', {userName: this.user.userName})
-            // }
         }
 
         public get isUserLoggedIn(): boolean {

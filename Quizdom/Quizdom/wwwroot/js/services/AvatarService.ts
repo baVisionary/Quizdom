@@ -57,7 +57,7 @@ namespace Quizdom.Services {
           console.log(this.avatars);
         })
         .catch((error) => {
-          console.log(`Avatars not retrieved database`);
+          console.log(`Avatars not retrieved from database`);
           return error
         });
       }
@@ -66,13 +66,16 @@ namespace Quizdom.Services {
 
     public getOneAvatar(avatarId: number) {
       if (this.avatars.length > 0) {
-        this.myAvatar = this.avatars.find(avatar => {return avatar.id == avatarId});
+        this.avatars.forEach(avatar => {
+          if (avatar.id == avatarId) { this.myAvatar = avatar };
+        });
+        // this.myAvatar = this.avatars.find(avatar => {return avatar.id == avatarId});
       } else {
         this.myAvatar = this._Resource_avatar.get({
           avatarId: avatarId
         });
         this.myAvatar.$promise.then(() => {
-          console.log(this.myAvatar);
+          // console.log(this.myAvatar);
         })
         .catch((error) => {          
           console.log(`${error.status}: ${error.data}`);

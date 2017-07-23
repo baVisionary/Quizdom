@@ -48,7 +48,7 @@ var Quizdom;
                         console.log(_this.avatars);
                     })
                         .catch(function (error) {
-                        console.log("Avatars not retrieved database");
+                        console.log("Avatars not retrieved from database");
                         return error;
                     });
                 }
@@ -57,14 +57,20 @@ var Quizdom;
             AvatarService.prototype.getOneAvatar = function (avatarId) {
                 var _this = this;
                 if (this.avatars.length > 0) {
-                    this.myAvatar = this.avatars.find(function (avatar) { return avatar.id == avatarId; });
+                    this.avatars.forEach(function (avatar) {
+                        if (avatar.id == avatarId) {
+                            _this.myAvatar = avatar;
+                        }
+                        ;
+                    });
+                    // this.myAvatar = this.avatars.find(avatar => {return avatar.id == avatarId});
                 }
                 else {
                     this.myAvatar = this._Resource_avatar.get({
                         avatarId: avatarId
                     });
                     this.myAvatar.$promise.then(function () {
-                        console.log(_this.myAvatar);
+                        // console.log(this.myAvatar);
                     })
                         .catch(function (error) {
                         console.log(error.status + ": " + error.data);

@@ -10,7 +10,7 @@ var Quizdom;
             function Configuration($stateProvider) {
                 $stateProvider
                     .state('User', {
-                    url: '/:userName',
+                    url: '/player',
                     templateUrl: 'js/views/user/user.html',
                     controller: 'UserController',
                     controllerAs: 'vm'

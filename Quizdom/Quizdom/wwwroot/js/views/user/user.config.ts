@@ -8,7 +8,7 @@ namespace Quizdom.Views.User {
     ) {
         $stateProvider
             .state('User', <ng.ui.IState>{
-                url: '/:userName',
+                url: '/player',
                 templateUrl: 'js/views/user/user.html',
                 controller: 'UserController',
                 controllerAs: 'vm'

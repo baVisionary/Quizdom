@@ -1,0 +1,19 @@
+<div>
+  <div class="row">
+    <div class="col s12 offset-m2 m8">
+      <div class="card horizontal purple lighten-3">
+        <div class="avatar">
+          <img ng-cloak ng-src="/images/{{player.avatarUrl}}" alt="Avatar" class="circle">
+        </div>
+        <div class="card-stacked">
+          <div class="card-content black-text">
+            <span class="card-title">{{player.userName}}</span>
+            <p>Role: <span ng-show="player.isAdmin">Admin</span><span ng-show="!player.isAdmin">Normal</span></p>
+            <p>Email: {{player.email}}</p>
+          </div>
+          <div class="card-action"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

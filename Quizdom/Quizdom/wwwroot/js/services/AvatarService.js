@@ -9,6 +9,7 @@ var Quizdom;
             ) {
                 this.$resource = $resource;
                 this.avatars = [];
+                this.oneAvatarUrl = 'avatar_generic.png';
                 /**
                  * get array of avatars
                  */
@@ -26,26 +27,28 @@ var Quizdom;
                 // }
                 // public loadMyAvatar(avatarId: number) {
                 //   if (this.avatars.length == 0) {
-                //     this.myAvatar = this.Avatar.get({avatarId: avatarId}, function () {
-                //       console.log(this.myAvatar);
+                //     this.oneAvatar = this.Avatar.get({avatarId: avatarId}, function () {
+                //       console.log(this.oneAvatar);
                 //     }).$promise
                 //       .catch((error) => {
                 //         console.log(`Unable to retrieve avatar - ${error}`);
                 //         return null;
                 //       });
                 //   } else {
-                //     this.myAvatar = this.avatars.find(avatar => { return avatar.id == avatarId });
+                //     this.oneAvatar = this.avatars.find(avatar => { return avatar.id == avatarId });
                 //   }
-                //   return this.myAvatar;
+                //   return this.oneAvatar;
                 // }
                 this._Resource_avatar = this.$resource('/api/game/avatar/:avatarId');
+                this.getAllAvatars();
             }
             AvatarService.prototype.getAllAvatars = function () {
                 var _this = this;
                 if (this.avatars.length == 0) {
-                    this.avatars = this._Resource_avatar.query();
-                    this.avatars.$promise.then(function () {
+                    this._Resource_avatar.query().$promise.then(function (data) {
+                        _this.avatars = data;
                         console.log(_this.avatars);
+                        return _this.avatars;
                     })
                         .catch(function (error) {
                         console.log("Avatars not retrieved from database");
@@ -54,30 +57,29 @@ var Quizdom;
                 }
                 return this.avatars;
             };
-            AvatarService.prototype.getOneAvatar = function (avatarId) {
+            AvatarService.prototype.getAvatarUrl = function (avatarId) {
                 var _this = this;
                 if (this.avatars.length > 0) {
                     this.avatars.forEach(function (avatar) {
                         if (avatar.id == avatarId) {
-                            _this.myAvatar = avatar;
+                            _this.oneAvatar = avatar;
                         }
                         ;
                     });
-                    // this.myAvatar = this.avatars.find(avatar => {return avatar.id == avatarId});
+                    return this.oneAvatar.imageUrl;
                 }
                 else {
-                    this.myAvatar = this._Resource_avatar.get({
+                    this.oneAvatar = this._Resource_avatar.get({
                         avatarId: avatarId
                     });
-                    this.myAvatar.$promise.then(function () {
-                        // console.log(this.myAvatar);
+                    this.oneAvatar.$promise.then(function () {
+                        return _this.oneAvatar.imageUrl;
                     })
                         .catch(function (error) {
                         console.log(error.status + ": " + error.data);
                         return error;
                     });
                 }
-                return this.myAvatar;
             };
             return AvatarService;
         }());

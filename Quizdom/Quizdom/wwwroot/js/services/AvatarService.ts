@@ -3,7 +3,8 @@ namespace Quizdom.Services {
   export class AvatarService {
 
     public avatars = [];
-    public myAvatar;
+    private oneAvatar;
+    private oneAvatarUrl: string = 'avatar_generic.png';
 
     static $inject = [
       '$resource'
@@ -14,7 +15,7 @@ namespace Quizdom.Services {
       // private AvatarResource: ,
       // private Avatar: Models.IAvatarResource
     ) {
-
+      this.getAllAvatars();
     }
 
     /**
@@ -35,54 +36,54 @@ namespace Quizdom.Services {
 
     // public loadMyAvatar(avatarId: number) {
     //   if (this.avatars.length == 0) {
-    //     this.myAvatar = this.Avatar.get({avatarId: avatarId}, function () {
-    //       console.log(this.myAvatar);
+    //     this.oneAvatar = this.Avatar.get({avatarId: avatarId}, function () {
+    //       console.log(this.oneAvatar);
     //     }).$promise
     //       .catch((error) => {
     //         console.log(`Unable to retrieve avatar - ${error}`);
     //         return null;
     //       });
     //   } else {
-    //     this.myAvatar = this.avatars.find(avatar => { return avatar.id == avatarId });
+    //     this.oneAvatar = this.avatars.find(avatar => { return avatar.id == avatarId });
     //   }
-    //   return this.myAvatar;
+    //   return this.oneAvatar;
     // }
 
     private _Resource_avatar = this.$resource('/api/game/avatar/:avatarId');
 
     public getAllAvatars() {
       if (this.avatars.length == 0) {
-        this.avatars = this._Resource_avatar.query();
-        this.avatars.$promise.then(() => {
+        this._Resource_avatar.query().$promise.then((data) => {
+          this.avatars = data;
           console.log(this.avatars);
+          return this.avatars;
         })
-        .catch((error) => {
-          console.log(`Avatars not retrieved from database`);
-          return error
-        });
+          .catch((error) => {
+            console.log(`Avatars not retrieved from database`);
+            return error
+          });
       }
       return this.avatars;
     }
 
-    public getOneAvatar(avatarId: number) {
+    public getAvatarUrl(avatarId: number) {
       if (this.avatars.length > 0) {
         this.avatars.forEach(avatar => {
-          if (avatar.id == avatarId) { this.myAvatar = avatar };
+          if (avatar.id == avatarId) { this.oneAvatar = avatar };
         });
-        // this.myAvatar = this.avatars.find(avatar => {return avatar.id == avatarId});
+        return this.oneAvatar.imageUrl;
       } else {
-        this.myAvatar = this._Resource_avatar.get({
+        this.oneAvatar = this._Resource_avatar.get({
           avatarId: avatarId
         });
-        this.myAvatar.$promise.then(() => {
-          // console.log(this.myAvatar);
+        this.oneAvatar.$promise.then(() => {
+          return this.oneAvatar.imageUrl;
         })
-        .catch((error) => {          
-          console.log(`${error.status}: ${error.data}`);
-          return error;
-        });
+          .catch((error) => {
+            console.log(`${error.status}: ${error.data}`);
+            return error;
+          });
       }
-      return this.myAvatar;
     }
 
   }

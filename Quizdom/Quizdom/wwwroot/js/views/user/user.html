@@ -1,19 +1,48 @@
-<div id="userview">
-  <div class="row player">
-    <div class="col s12 offset-m2 m8">
-      <div class="card horizontal purple lighten-3">
-        <div class="avatar">
-          <img ng-src="/images/{{vm.myAvatar.imageUrl}}" alt="Avatar" class="circle">
-        </div>
-        <div class="card-stacked">
-          <div class="card-content black-text">
-            <span class="card-title">{{vm.UserService.user.userName}}</span>
-            <p>Role: <span ng-show="vm.UserService.user.isAdmin">Admin</span><span ng-show="!vm.UserService.user.isAdmin">Normal</span></p>
-            <p>Email: {{vm.UserService.user.email}}</p>
+<div id="player-card">
+  <div class="row">
+    <div class="col s12 offset-m1 m10">
+      <div class="card purple lighten-3">
+        <div class="row">
+          <div class="avatar col s3 l2 align-center">
+            <img ng-cloak ng-src="/images/{{vm.UserService.user.avatarUrl}}" alt="Avatar" class="circle medium">
           </div>
-          <div class="card-action">{{vm.myAvatar}}</div>
+          <div class="col s9 l10">
+            <div class="card-content black-text">
+              <span class="card-title">{{vm.UserService.user.userName}}</span>
+              <p>Role: <span ng-show="vm.UserService.user.isAdmin">Admin</span><span ng-show="!vm.UserService.user.isAdmin">Normal</span></p>
+              <p>Email: {{vm.UserService.user.email}}</p>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s10 offset-s1">
+            <h6>Friends</h6>
+            <div class="chip" ng-repeat="friend in vm.FriendService.friends">
+              <img src="/images/{{friend.avatarUrl}}" alt="Friend">&nbsp;{{friend.userName}}
+              <i class="close material-icons">close</i>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <form id="friends" class="col s10 offset-s1">
+            <div class="row card valign-wrapper">
+              <div class="input-field col s9">
+                <input type="text" id="search-term" placeholder="Username or Email" class="validate">
+                <label for="search-user-name" class="active">Friend</label>
+              </div>
+              <div class="col s3 ">
+                <button class="btn" >Add</button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="card-action">
+          <a ui-sref="Invite" class="btn">Start Game</a>
         </div>
       </div>
     </div>
   </div>
+</div>
+<div id="qz-user-profile">
+  <qz-player-card player="vm.UserService.user"></qz-player-card>
 </div>

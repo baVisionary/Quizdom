@@ -17,7 +17,6 @@ namespace Quizdom.Models
     {
         private ApplicationDbContext _context;
 
-
         public GameController(ApplicationDbContext context)
         {
             _context = context;
@@ -480,6 +479,7 @@ namespace Quizdom.Models
         [HttpGet("friends/{id}")]
         public IActionResult GetFriendById(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
             UserTracker.UpdateUserActivity(Request);
 
             var record = (from c in _context.Friends

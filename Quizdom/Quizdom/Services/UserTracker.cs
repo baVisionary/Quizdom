@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Quizdom.Data;
+using Quizdom.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,17 +15,28 @@ namespace Quizdom.Services
      */ 
     public class UserTracker
     {
+        private ApplicationDbContext _context;
+
+        public UserTracker(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
         private static string ExtractUsernameHeader(HttpRequest request)
         {
             string username =  request.Headers["Username"];
             return username;
         }
 
+        //update USERACTIVITY table
         public static void UpdateUserActivity(HttpRequest request)
         {
-            
+            UserActivity userActivity = new UserActivity();
             string username = ExtractUsernameHeader(request);
-            //update table where username is the user sent in
+            userActivity.LastActivity = DateTime.UtcNow;
+            userActivity.Username = username;
+            //_context.UserActivity.Add(userActivity);
+           // _context.SaveChanges();
 
         }
     }

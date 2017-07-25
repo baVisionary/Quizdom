@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using Microsoft.AspNetCore.Http;
+using Quizdom.Services;
 
 namespace Quizdom.Models
 {
@@ -478,6 +480,8 @@ namespace Quizdom.Models
         [HttpGet("friends/{id}")]
         public IActionResult GetFriendById(int id)
         {
+            UserTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Friends
                           where c.Id == id
                           select c).FirstOrDefault();

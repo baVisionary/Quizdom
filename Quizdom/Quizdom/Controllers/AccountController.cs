@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using Quizdom.Data;
 using System.Linq;
+using Quizdom.Services;
 
 namespace Quizdom.Controllers
 {
@@ -21,6 +22,7 @@ namespace Quizdom.Controllers
         private readonly ILogger _logger;
 
         private ApplicationDbContext _context;
+        private UserTracker userTracker;
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -32,6 +34,7 @@ namespace Quizdom.Controllers
             _signInManager = signInManager;
             _logger = loggerFactory.CreateLogger<AccountController>();
             _context = context;
+            userTracker = new UserTracker(context);
         }
 
         //
@@ -52,7 +55,8 @@ namespace Quizdom.Controllers
                         var authUser = await GetUser(user);
 
                         _logger.LogInformation(1, "User logged in.");
-
+                        // UPDATE USER TRACKING INFORMATION
+                        userTracker.UpdateUserActivity(Request);
                         return Ok(authUser);
                     }
                 }
@@ -87,6 +91,9 @@ namespace Quizdom.Controllers
 
                     var authUser = await GetUser(user);
 
+                    // UPDATE USER TRACKING INFORMATION
+                    userTracker.UpdateUserActivity(Request);
+
                     return Ok(authUser);
                 }
 
@@ -117,6 +124,8 @@ namespace Quizdom.Controllers
         [HttpGet("searchuserbyname")]
         public async Task<IActionResult> SearchUserByName([FromQuery]string userName)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
@@ -132,6 +141,9 @@ namespace Quizdom.Controllers
         [HttpGet("searchuserbyemail")]
         public async Task<IActionResult> SearchUserByEmail([FromQuery]string email)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
@@ -146,6 +158,9 @@ namespace Quizdom.Controllers
         [HttpGet("getfriendsbyprimaryusername")]
         public async Task<IActionResult> SearchUserByPrimaryUserName([FromQuery]string userName)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
             var unregisteredUsers = 0;
 

@@ -29,15 +29,14 @@ namespace Quizdom.Services
         }
 
         //update USERACTIVITY table
-        public static void UpdateUserActivity(HttpRequest request)
+        public void UpdateUserActivity(HttpRequest request)
         {
             UserActivity userActivity = new UserActivity();
             string username = ExtractUsernameHeader(request);
             userActivity.LastActivity = DateTime.UtcNow;
             userActivity.Username = username;
-            //_context.UserActivity.Add(userActivity);
-           // _context.SaveChanges();
-
+            _context.UserActivity.Add(userActivity);
+            _context.SaveChanges();
         }
     }
 }

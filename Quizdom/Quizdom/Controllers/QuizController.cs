@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using Quizdom.Services;
 
 namespace Quizdom.Controllers
 {
@@ -15,6 +16,7 @@ namespace Quizdom.Controllers
     public class QuizController : Controller
     {
         private ApplicationDbContext _context;
+        private UserTracker userTracker;
 
         /* USER INFORMATION */
         private readonly UserManager<ApplicationUser> _userManager;
@@ -27,6 +29,7 @@ namespace Quizdom.Controllers
                               IOptions<IdentityCookieOptions> identityCookieOptions)
         {
             _context = context;
+            userTracker = new UserTracker(context);
             _userManager = userManager;
             _signInManager = signInManager;
             _externalCookieScheme = identityCookieOptions.Value.ExternalCookieAuthenticationScheme;
@@ -37,6 +40,9 @@ namespace Quizdom.Controllers
         [HttpGet("user")]
         public async Task<IActionResult> GetUserInformationAsync()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var user = await GetCurrentUserAsync();
             
             if (user == null)
@@ -50,6 +56,8 @@ namespace Quizdom.Controllers
         [HttpGet]
         public IEnumerable<Quiz> Get()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
             return _context.Quiz.ToList();
         }
 
@@ -58,6 +66,9 @@ namespace Quizdom.Controllers
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Quiz
                           where c.Id == id
                           select c).FirstOrDefault();
@@ -73,6 +84,9 @@ namespace Quizdom.Controllers
         [HttpGet("categories")]
         public IActionResult GetCategories()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Quiz                          
                           select c.Category).Distinct();
 
@@ -87,6 +101,9 @@ namespace Quizdom.Controllers
         [HttpGet("category/{category}")]
         public IActionResult GetCategory(string category)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Quiz
                           where c.Category == category
                           select c).ToList();
@@ -102,6 +119,9 @@ namespace Quizdom.Controllers
         [HttpGet("difficulty/{difficulty}")]
         public IActionResult GetDifficulty(string difficulty)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Quiz
                           where c.Difficulty == difficulty
                           select c).OrderBy(c => c.Category).ToList();
@@ -117,6 +137,9 @@ namespace Quizdom.Controllers
         [HttpGet("category/{category}/difficulty/{difficulty}")]
         public IActionResult GetCategoryDifficulty(string category, string difficulty)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Quiz
                           where c.Category == category 
                                 && c.Difficulty == difficulty
@@ -134,6 +157,9 @@ namespace Quizdom.Controllers
         [HttpPost]
         public void Post([FromBody]Quiz quiz)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Quiz.Add(quiz);
             _context.SaveChanges();
         }
@@ -141,6 +167,9 @@ namespace Quizdom.Controllers
         [HttpPost("multi")]
         public void PostMulitple([FromBody]List<Quiz> quizes)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             foreach (Quiz quiz in quizes)
             {
                 _context.Quiz.Add(quiz);
@@ -151,6 +180,9 @@ namespace Quizdom.Controllers
         [HttpPost("import")]
         public void Import([FromBody]List<QuizImport> quizes)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             Quiz newQuiz;
             foreach (QuizImport quiz in quizes)
             {
@@ -174,6 +206,8 @@ namespace Quizdom.Controllers
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]Quiz quiz)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var record2 = _context.Quiz.Where(c => c.Id == id).Count();
 
@@ -192,6 +226,9 @@ namespace Quizdom.Controllers
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();

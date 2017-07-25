@@ -3,5 +3,4 @@ namespace Quizdom.Views.User {
 
   module.config(User.Configuration);
   module.controller('UserController', User.UserController);
-  // module.directive('PlayerDirective', Directives.qzPlayer);
 }

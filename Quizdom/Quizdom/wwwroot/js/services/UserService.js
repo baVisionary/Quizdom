@@ -4,9 +4,10 @@ var Quizdom;
     var Services;
     (function (Services) {
         var UserService = (function () {
-            function UserService($http, $window) {
+            function UserService($http, $window, AvatarService) {
                 this.$http = $http;
                 this.$window = $window;
+                this.AvatarService = AvatarService;
                 this.isUserLoggedIn = false;
                 this.authUser = new Quizdom.Models.UserModel();
                 this.getSessionData();
@@ -60,12 +61,16 @@ var Quizdom;
                 })
                     .then(function (response) {
                     console.info('User login was successful.');
+                    response.data.avatarUrl = _this.AvatarService.getAvatarUrl(response.data.avatarId);
                     return _this.updateSession(response.data);
                 })
                     .catch(function () {
                     console.info('User was not logged in.');
                     return _this.updateSession(null);
                 });
+            };
+            UserService.prototype.addAvatarUrl = function (avatarUrl) {
+                this.authUser.avatarUrl = avatarUrl;
             };
             UserService.prototype.logOut = function () {
                 var _this = this;
@@ -84,7 +89,8 @@ var Quizdom;
         }());
         UserService.$inject = [
             '$http',
-            '$window'
+            '$window',
+            'AvatarService'
         ];
         Services.UserService = UserService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));

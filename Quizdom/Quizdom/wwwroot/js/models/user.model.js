@@ -5,7 +5,9 @@ var Quizdom;
         var UserModel = (function () {
             function UserModel() {
                 this.userName = '';
-                this.avatarId = 1;
+                this.email = ',';
+                this.avatarId = 0;
+                this.avatarUrl = "avatar_generic.png";
             }
             UserModel.getAnonymousUser = function () {
                 var user = new Models.UserModel();

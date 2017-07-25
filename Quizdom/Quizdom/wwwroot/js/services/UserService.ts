@@ -5,24 +5,26 @@ namespace Quizdom.Services {
         private isUserLoggedIn: boolean = false;
         private authUser: Models.UserModel = new Models.UserModel();
 
+        static $inject = [
+            '$http',
+            '$window',
+            'AvatarService'
+        ];
+
+        constructor(
+            private $http: ng.IHttpService,
+            private $window: ng.IWindowService,
+            private AvatarService: Services.AvatarService
+        ) {
+            this.getSessionData();
+        }
+
         public get isLoggedIn(): boolean {
             return this.isUserLoggedIn;
         }
 
         public get user(): Models.UserModel {
             return this.authUser;
-        }
-
-        static $inject = [
-            '$http',
-            '$window'
-        ];
-
-        constructor(
-            private $http: ng.IHttpService,
-            private $window: ng.IWindowService
-        ) {
-            this.getSessionData();
         }
 
         private getSessionData(): void {
@@ -65,14 +67,19 @@ namespace Quizdom.Services {
             return this.$http.post<Models.UserModel>('api/Account/Login', user, <ng.IRequestShortcutConfig>{
                 cache: false
             })
-                .then((response) => {
+                .then((response: ng.IRequestShortcutConfig) => {
                     console.info('User login was successful.');
+                    response.data.avatarUrl = this.AvatarService.getAvatarUrl(response.data.avatarId);
                     return this.updateSession(response.data);
                 })
                 .catch(() => {
                     console.info('User was not logged in.');
                     return this.updateSession(null);
                 });
+        }
+        
+        public addAvatarUrl(avatarUrl) {
+            this.authUser.avatarUrl = avatarUrl;
         }
 
         public logOut(): void {

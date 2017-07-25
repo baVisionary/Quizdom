@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
+using Microsoft.AspNetCore.Http;
+using Quizdom.Services;
 
 namespace Quizdom.Models
 {
@@ -14,11 +16,12 @@ namespace Quizdom.Models
     public class GameController : Controller
     {
         private ApplicationDbContext _context;
-
+        private UserTracker userTracker;
 
         public GameController(ApplicationDbContext context)
         {
             _context = context;
+            userTracker = new UserTracker(context);
         }
 
 
@@ -26,6 +29,9 @@ namespace Quizdom.Models
         [HttpGet]
         public IEnumerable<Game> Get()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.Games.ToList();
 
             //// RETURN JSON ARRAY FROM STRING FIELDS
@@ -43,6 +49,9 @@ namespace Quizdom.Models
         [HttpGet("{id}")]
         public IActionResult Get(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Games
                           where c.Id == id
                           select c).FirstOrDefault();
@@ -60,6 +69,9 @@ namespace Quizdom.Models
         [HttpPost]
         public void Post([FromBody]Game game)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Games.Add(game);
             _context.SaveChanges();
         }
@@ -68,6 +80,8 @@ namespace Quizdom.Models
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]Game games)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var record2 = _context.Games.Where(c => c.Id == id).Count();
 
@@ -87,6 +101,9 @@ namespace Quizdom.Models
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.Games.SingleOrDefault<Game>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -97,6 +114,9 @@ namespace Quizdom.Models
         [HttpPost("email")]
         public void Post([FromBody]GamePlayersEmail gamePlayersEmail)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.GamePlayersEmail.Add(gamePlayersEmail);
             _context.SaveChanges();
         }
@@ -105,6 +125,9 @@ namespace Quizdom.Models
         [HttpGet("email")]
         public IEnumerable<GamePlayersEmail> GamePlayersEmail()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.GamePlayersEmail.ToList();
         }
 
@@ -112,6 +135,8 @@ namespace Quizdom.Models
         [HttpPut("email/{id}")]
         public IActionResult PutEmail(int id, [FromBody]GamePlayersEmail email)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var record2 = _context.GamePlayersEmail.Where(c => c.Id == id).Count();
 
@@ -131,6 +156,9 @@ namespace Quizdom.Models
         [HttpDelete("email/{id}")]
         public IActionResult DeleteEmail(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.GamePlayersEmail.SingleOrDefault<GamePlayersEmail>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -140,6 +168,9 @@ namespace Quizdom.Models
         [HttpGet("players")]
         public IEnumerable<GamePlayers> Gameplayers()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.GamePlayers.ToList();
         }
 
@@ -147,6 +178,9 @@ namespace Quizdom.Models
         [HttpGet("players/{gameId}")]
         public IActionResult GetPlayersByGameId(int gameId)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.GamePlayers
                           where c.gameId == gameId
                           select c).ToList();
@@ -163,6 +197,9 @@ namespace Quizdom.Models
         [HttpGet("players/{gameId}/count")]
         public IActionResult GetPlayersByGameIdCount(int gameId)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.GamePlayers
                           where c.gameId == gameId
                           select c).Count();
@@ -179,6 +216,9 @@ namespace Quizdom.Models
         [HttpPost("players")]
         public void Post([FromBody]GamePlayers gamePlayers)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.GamePlayers.Add(gamePlayers);
             _context.SaveChanges();
         }
@@ -187,6 +227,8 @@ namespace Quizdom.Models
         [HttpPut("players/{id}")]
         public IActionResult Put(int id, [FromBody]GamePlayers player)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var record2 = _context.GamePlayers.Where(c => c.Id == id).Count();
 
@@ -206,6 +248,9 @@ namespace Quizdom.Models
         [HttpDelete("players/{id}")]
         public IActionResult DeletePlayers(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.GamePlayers.SingleOrDefault<GamePlayers>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -216,6 +261,9 @@ namespace Quizdom.Models
         [HttpGet("board")]
         public IEnumerable<GameBoard> GetBoard()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.GameBoards.ToList();
         }
 
@@ -223,6 +271,9 @@ namespace Quizdom.Models
         [HttpGet("board/{gameId}")]
         public IActionResult GetBoardByGameId(int gameId)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.GameBoards
                           where c.gameId == gameId
                           select c).ToList();
@@ -239,6 +290,9 @@ namespace Quizdom.Models
         [HttpGet("board/{gameId}/count")]
         public IActionResult GetQuestionsByGameIdCount(int gameId)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.GameBoards
                           where c.gameId == gameId
                           select c).Count();
@@ -255,6 +309,9 @@ namespace Quizdom.Models
         [HttpPost("board")]
         public void Post([FromBody]GameBoard gameBoard)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.GameBoards.Add(gameBoard);
             _context.SaveChanges();
         }
@@ -263,6 +320,8 @@ namespace Quizdom.Models
         [HttpPut("board/{id}")]
         public IActionResult PutBoard(int id, [FromBody]GameBoard gameBoard)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
             var record2 = _context.GameBoards.Where(c => c.Id == id).Count();
 
@@ -282,6 +341,9 @@ namespace Quizdom.Models
         [HttpDelete("board/{id}")]
         public IActionResult DeleteBoard(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.GameBoards.SingleOrDefault<GameBoard>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -291,6 +353,9 @@ namespace Quizdom.Models
         [HttpGet("gamecategories")]
         public IEnumerable<GameCategories> GameCategories()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.GameCategories.ToList();
         }
 
@@ -298,6 +363,9 @@ namespace Quizdom.Models
         [HttpPost("gamecategories")]
         public void PostGameCategories([FromBody]GameCategories GameCategories)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.GameCategories.Add(GameCategories);
             _context.SaveChanges();
         }
@@ -306,6 +374,9 @@ namespace Quizdom.Models
         [HttpPut("gamecategories/{id}")]
         public IActionResult PutGameCategories(int id, [FromBody]GameCategories GameCategories)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record2 = _context.GameCategories.Where(c => c.Id == id).Count();
 
 
@@ -324,6 +395,9 @@ namespace Quizdom.Models
         [HttpDelete("gamecategories/{id}")]
         public IActionResult DeleteGameCategories(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.GameCategories.SingleOrDefault<GameCategories>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -334,6 +408,9 @@ namespace Quizdom.Models
         [HttpGet("avatar")]
         public IEnumerable<Avatar> Avatar()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.Avatars.ToList();
         }
 
@@ -341,6 +418,9 @@ namespace Quizdom.Models
         [HttpPost("avatar")]
         public void PostAvatar([FromBody]Avatar Avatar)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Avatars.Add(Avatar);
             _context.SaveChanges();
         }
@@ -349,6 +429,9 @@ namespace Quizdom.Models
         [HttpPut("avatar/{id}")]
         public IActionResult PutAvatar(int id, [FromBody]Avatar Avatar)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record2 = _context.Avatars.Where(c => c.Id == id).Count();
 
 
@@ -367,6 +450,9 @@ namespace Quizdom.Models
         [HttpDelete("avatar/{id}")]
         public IActionResult DeleteAvatar(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.Avatars.SingleOrDefault<Avatar>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -376,6 +462,9 @@ namespace Quizdom.Models
         [HttpGet("avatar/{id}")]
         public IActionResult GetAvatarById(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Avatars
                           where c.Id == id
                           select c).FirstOrDefault();
@@ -393,6 +482,9 @@ namespace Quizdom.Models
         [HttpGet("categories")]
         public IEnumerable<Category> Category()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.Categories.ToList();
         }
 
@@ -400,6 +492,9 @@ namespace Quizdom.Models
         [HttpPost("categories")]
         public void PostCategory([FromBody]Category Category)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Categories.Add(Category);
             _context.SaveChanges();
         }
@@ -408,6 +503,9 @@ namespace Quizdom.Models
         [HttpPut("categories/{id}")]
         public IActionResult PutCategory(int id, [FromBody]Category Category)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record2 = _context.Categories.Where(c => c.Id == id).Count();
 
 
@@ -426,6 +524,9 @@ namespace Quizdom.Models
         [HttpDelete("categories/{id}")]
         public IActionResult DeleteCategory(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Remove(_context.Categories.SingleOrDefault<Category>(c => c.Id == id));
             _context.SaveChanges();
             return NoContent();
@@ -436,6 +537,9 @@ namespace Quizdom.Models
         [HttpGet("friends")]
         public IEnumerable<Friend> GetFriends()
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             return _context.Friends.ToList();
         }
 
@@ -443,6 +547,9 @@ namespace Quizdom.Models
         [HttpPost("friends")]
         public void PostFriend([FromBody]Friend Friend)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             _context.Friends.Add(Friend);
             _context.SaveChanges();
         }
@@ -451,6 +558,9 @@ namespace Quizdom.Models
         [HttpPut("friends/{id}")]
         public IActionResult PutFriend(int id, [FromBody]Friend Friend)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record2 = _context.Friends.Where(c => c.Id == id).Count();
 
 
@@ -478,6 +588,9 @@ namespace Quizdom.Models
         [HttpGet("friends/{id}")]
         public IActionResult GetFriendById(int id)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Friends
                           where c.Id == id
                           select c).FirstOrDefault();
@@ -494,6 +607,9 @@ namespace Quizdom.Models
         [HttpGet("friends/primaryusername/{username}")]
         public IActionResult GetFriendsByUserName(string username)
         {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
             var record = (from c in _context.Friends
                           where c.primaryUserName == username
                           select c).ToList();

@@ -151,7 +151,7 @@ namespace Quizdom.Controllers
 
             var record = (from c in _context.Friends
                           where c.primaryUserName == userName
-                          select c.friendUserName).Distinct().ToList();
+                          select c).Distinct().ToList();
 
             if (record.Count > 0)
             {
@@ -161,8 +161,9 @@ namespace Quizdom.Controllers
                 {
                     try
                     {
-                        var user = await _userManager.FindByNameAsync(item);
+                        var user = await _userManager.FindByNameAsync(item.friendUserName);
                         authUser = await GetUser(user);
+                        authUser.FriendId = item.Id;
                         authModel.Add(authUser);
                     }
                     catch

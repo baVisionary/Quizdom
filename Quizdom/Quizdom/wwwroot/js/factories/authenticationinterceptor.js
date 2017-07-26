@@ -4,13 +4,16 @@ var Quizdom;
     (function (Factories) {
         AuthenticationInterceptor.$inject = [
             '$q',
-            '$location'
+            '$location',
+            'AuthenticationService'
         ];
-        function AuthenticationInterceptor($q, $location) {
+        function AuthenticationInterceptor($q, $location, AuthenticationService) {
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
-                    config.headers['X-Requested-With'] = 'XMLHttpRequest';
+                    var authUser = AuthenticationService.getUser() || new Quizdom.Models.UserModel;
+                    config.headers['Username'] = authUser.userName;
+                    config.headers['Role'] = (authUser.isAdmin) ? 'Admin' : (authUser.userName == 'Guest') ? 'Guest' : 'Normal';
                     return config;
                 },
                 responseError: function (rejection) {

@@ -15,7 +15,7 @@ namespace Quizdom.Services {
       // private AvatarResource: ,
       // private Avatar: Models.IAvatarResource
     ) {
-      this.getAllAvatars();
+      // this.avatars = this.getAllAvatars();
     }
 
     /**
@@ -53,15 +53,7 @@ namespace Quizdom.Services {
 
     public getAllAvatars() {
       if (this.avatars.length == 0) {
-        this._Resource_avatar.query().$promise.then((data) => {
-          this.avatars = data;
-          console.log(this.avatars);
-          return this.avatars;
-        })
-          .catch((error) => {
-            console.log(`Avatars not retrieved from database`);
-            return error
-          });
+        return this.avatars = this._Resource_avatar.query();
       }
       return this.avatars;
     }

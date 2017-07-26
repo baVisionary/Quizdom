@@ -4,14 +4,15 @@ var Quizdom;
     (function (Models) {
         var UserModel = (function () {
             function UserModel() {
-                this.userName = '';
+                this.userName = 'Guest';
                 this.email = ',';
                 this.avatarId = 0;
                 this.avatarUrl = "avatar_generic.png";
+                this.isAdmin = false;
+                this.friendId = 0;
             }
             UserModel.getAnonymousUser = function () {
                 var user = new Models.UserModel();
-                user.userName = 'Anonymous';
                 return user;
             };
             return UserModel;

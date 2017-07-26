@@ -5,15 +5,15 @@ var Quizdom;
         var Register;
         (function (Register) {
             var RegisterController = (function () {
-                function RegisterController(RegistrationService, UserService, $state, Avatar) {
+                function RegisterController(RegistrationService, UserService, $state, AvatarService) {
                     this.RegistrationService = RegistrationService;
                     this.UserService = UserService;
                     this.$state = $state;
-                    this.Avatar = Avatar;
+                    this.AvatarService = AvatarService;
                     this.formData = new Quizdom.Models.RegisterModel();
                     this.authUser = new Quizdom.Models.LoginModel();
                     this.pattern = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
-                    this.avatars = Avatar.query();
+                    this.AvatarService.getAllAvatars();
                 }
                 RegisterController.prototype.checkRegExp = function (reg, str) {
                     // console.log(str);
@@ -70,7 +70,7 @@ var Quizdom;
                 'RegistrationService',
                 'UserService',
                 '$state',
-                'AvatarResource'
+                'AvatarService'
             ];
             Register.RegisterController = RegisterController;
         })(Register = Views.Register || (Views.Register = {}));

@@ -40,20 +40,11 @@ var Quizdom;
                 //   return this.oneAvatar;
                 // }
                 this._Resource_avatar = this.$resource('/api/game/avatar/:avatarId');
-                this.getAllAvatars();
+                // this.avatars = this.getAllAvatars();
             }
             AvatarService.prototype.getAllAvatars = function () {
-                var _this = this;
                 if (this.avatars.length == 0) {
-                    this._Resource_avatar.query().$promise.then(function (data) {
-                        _this.avatars = data;
-                        console.log(_this.avatars);
-                        return _this.avatars;
-                    })
-                        .catch(function (error) {
-                        console.log("Avatars not retrieved from database");
-                        return error;
-                    });
+                    return this.avatars = this._Resource_avatar.query();
                 }
                 return this.avatars;
             };

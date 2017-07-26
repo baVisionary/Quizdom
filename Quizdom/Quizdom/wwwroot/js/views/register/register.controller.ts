@@ -10,16 +10,16 @@ namespace Quizdom.Views.Register {
             'RegistrationService',
             'UserService',
             '$state',
-            'AvatarResource'
+            'AvatarService'
         ];
 
         constructor(
             private RegistrationService: Services.RegistrationService,
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService,
-            private Avatar: Models.IAvatarResource
+            private AvatarService: Services.AvatarService
         ) {
-            this.avatars = Avatar.query();
+            this.AvatarService.getAllAvatars();
         }
 
         public checkRegExp(reg: string, str: string): boolean {

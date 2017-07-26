@@ -11,6 +11,7 @@ var Quizdom;
                     this.FriendService = FriendService;
                     this.$scope = $scope;
                     this.$state = $state;
+                    this.friendEdit = false;
                     if (!this.UserService.isLoggedIn) {
                         this.$state.go('Login');
                     }
@@ -19,6 +20,10 @@ var Quizdom;
                     // console.log(this.UserService.user);
                     this.FriendService.getMyFriends(this.UserService.user.userName);
                 }
+                UserController.prototype.editFriends = function () {
+                    this.friendEdit = !this.friendEdit;
+                    console.log("friendEdit: " + this.friendEdit);
+                };
                 return UserController;
             }());
             UserController.$inject = [

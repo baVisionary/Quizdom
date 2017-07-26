@@ -1,6 +1,7 @@
 namespace Quizdom.Views.User {
     export class UserController {
         public myAvatar: string;
+        public friendEdit: boolean = false;
 
         static $inject = [
             'UserService',
@@ -24,6 +25,13 @@ namespace Quizdom.Views.User {
             // this.UserService.addAvatarUrl(this.myAvatar);
             // console.log(this.UserService.user);
             this.FriendService.getMyFriends(this.UserService.user.userName);
+
+        }
+ 
+        public editFriends():void {
+            this.friendEdit = !this.friendEdit;
+            console.log(`friendEdit: ${this.friendEdit}`);
+            
         }
     }
 }

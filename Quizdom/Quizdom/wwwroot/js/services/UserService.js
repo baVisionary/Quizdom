@@ -4,13 +4,13 @@ var Quizdom;
     var Services;
     (function (Services) {
         var UserService = (function () {
-            function UserService($http, $window, AvatarService) {
+            function UserService($http, $window, AvatarService, AuthenticationService) {
                 this.$http = $http;
                 this.$window = $window;
                 this.AvatarService = AvatarService;
+                this.AuthenticationService = AuthenticationService;
                 this.isUserLoggedIn = false;
                 this.authUser = new Quizdom.Models.UserModel();
-                this.getSessionData();
             }
             Object.defineProperty(UserService.prototype, "isLoggedIn", {
                 get: function () {
@@ -31,6 +31,7 @@ var Quizdom;
                 if (user) {
                     this.authUser = JSON.parse(user);
                     this.isUserLoggedIn = true;
+                    this.AuthenticationService.setUser(this.authUser);
                     return;
                 }
                 this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
@@ -42,8 +43,10 @@ var Quizdom;
                 console.info(encodedUser);
                 if (encodedUser) {
                     this.$window.sessionStorage.setItem('user', encodedUser);
+                    this.$window.localStorage.setItem('user', encodedUser);
                     this.authUser = user;
                     this.isUserLoggedIn = true;
+                    this.AuthenticationService.setUser(this.authUser);
                     return true;
                 }
                 this.clearSession();
@@ -53,6 +56,7 @@ var Quizdom;
                 this.$window.sessionStorage.clear();
                 this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
                 this.isUserLoggedIn = false;
+                this.AuthenticationService.setUser(this.authUser);
             };
             UserService.prototype.loginUser = function (user) {
                 var _this = this;
@@ -90,7 +94,8 @@ var Quizdom;
         UserService.$inject = [
             '$http',
             '$window',
-            'AvatarService'
+            'AvatarService',
+            'AuthenticationService'
         ];
         Services.UserService = UserService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));

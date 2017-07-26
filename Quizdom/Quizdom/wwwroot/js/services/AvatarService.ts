@@ -15,7 +15,7 @@ namespace Quizdom.Services {
       // private AvatarResource: ,
       // private Avatar: Models.IAvatarResource
     ) {
-      this.getAllAvatars();
+      this.avatars = this.getAllAvatars();
     }
 
     /**

@@ -4,10 +4,11 @@ var Quizdom;
     (function (Directives) {
         function qzPlayerCard() {
             return {
-                restrict: 'E',
+                restrict: 'AE',
                 replace: true,
+                // controller: 'qzPlayerCardController',
                 scope: {
-                    player: '@'
+                    'player': '<'
                 },
                 templateUrl: 'js/directives/qzPlayerCard/qzPlayerCard.html'
             };

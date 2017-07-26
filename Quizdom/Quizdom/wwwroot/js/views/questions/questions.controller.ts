@@ -8,7 +8,7 @@ namespace Quizdom.Views.Questions {
 
     public title: string;
     public questions;
-    public categories;
+    public categories: string[];
     public category: string;
     public difficulty: string;
     public search: string;

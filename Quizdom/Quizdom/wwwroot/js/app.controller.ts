@@ -10,7 +10,7 @@ namespace Quizdom {
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService
         ) {
-            this.UserService = UserService;
+
         }
 
         public get isUserLoggedIn(): boolean {

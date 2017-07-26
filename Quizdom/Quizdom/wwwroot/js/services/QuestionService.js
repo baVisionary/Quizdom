@@ -5,8 +5,9 @@ var Quizdom;
     var Services;
     (function (Services) {
         var QuestionService = (function () {
-            function QuestionService($resource) {
+            function QuestionService($resource, UserService) {
                 this.$resource = $resource;
+                this.UserService = UserService;
                 this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
                     'update': {
                         method: 'PUT'
@@ -45,7 +46,7 @@ var Quizdom;
                 }
             };
             QuestionService.prototype.sortCategories = function (a, b) {
-                return (a == "User Added") ? 100 : a - b;
+                return (a == "User Added") ? 1 : 0;
             };
             QuestionService.prototype.getOneQuestionId = function (questionId) {
                 return this._Resource_question.get({

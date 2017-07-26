@@ -10,7 +10,7 @@ var Quizdom;
                     email: 'dtnathanson@gmail.com',
                     avatarUrl: 'avatar_1.png'
                 };
-                console.log($scope.player);
+                console.log($scope);
             }
             return qzPlayerCardController;
         }());

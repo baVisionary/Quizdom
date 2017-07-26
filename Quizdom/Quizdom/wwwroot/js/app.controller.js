@@ -4,7 +4,6 @@ var Quizdom;
         function AppController(UserService, $state) {
             this.UserService = UserService;
             this.$state = $state;
-            this.UserService = UserService;
         }
         Object.defineProperty(AppController.prototype, "isUserLoggedIn", {
             get: function () {

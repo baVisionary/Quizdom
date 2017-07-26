@@ -40,7 +40,7 @@ var Quizdom;
                 //   return this.oneAvatar;
                 // }
                 this._Resource_avatar = this.$resource('/api/game/avatar/:avatarId');
-                this.getAllAvatars();
+                this.avatars = this.getAllAvatars();
             }
             AvatarService.prototype.getAllAvatars = function () {
                 var _this = this;

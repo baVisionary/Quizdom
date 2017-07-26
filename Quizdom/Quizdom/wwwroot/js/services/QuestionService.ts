@@ -6,13 +6,20 @@ namespace Quizdom.Services {
 
     static $inject = ['$resource'];
 
+    constructor(
+      private $resource,
+      private UserService: Services.UserService
+    ) {
+      this.getAllQs();
+      this.getAllCats();
+    }
+
     private _Resource_question = this.$resource('/api/quiz/:questionId', null, {
       'update': {
         method: 'PUT'
       }
     });
     private _Resource_categories = this.$resource('/api/quiz/categories');
-
 
     public questions = [];
     public categories = [];
@@ -22,13 +29,6 @@ namespace Quizdom.Services {
       "hard"
     ];
     private _Question: Models.QuestionModel = new Models.QuestionModel();
-
-    constructor(
-      private $resource
-    ) {
-      this.getAllQs();
-      this.getAllCats();
-    }
 
     public getAllQs() {
       if (this.questions.length == 0) {
@@ -41,16 +41,16 @@ namespace Quizdom.Services {
     public getAllCats() {
       if (this.categories.length == 0) {
         this._Resource_categories.query().$promise.then((data) => {
-          this.categories = data.sort();
+          this.categories = data.sort()
           return this.categories;
         });
       } else {
         return this.categories;
       }
     }
-    
+
     public sortCategories(a, b): number {
-      return ( a == "User Added" ) ? 100 : a - b;
+      return (a == "User Added") ? 1 : 0;
     }
 
     public getOneQuestionId(questionId: number) {

@@ -7,7 +7,7 @@ namespace Quizdom.Directives {
       restrict: 'E',
       replace: true,
       scope: {
-        player: '@'
+        'player': '<'
         },
       templateUrl: 'js/directives/qzPlayerChip/qzPlayerChip.html'
     }

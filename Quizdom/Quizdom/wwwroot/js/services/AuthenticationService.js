@@ -3,23 +3,16 @@ var Quizdom;
     var Services;
     (function (Services) {
         var AuthenticationService = (function () {
-            function AuthenticationService($window) {
-                this.$window = $window;
-                this.getSessionUser();
+            function AuthenticationService() {
             }
-            AuthenticationService.prototype.getSessionUser = function () {
-                var user = this.$window.sessionStorage.getItem('user');
-                if (user) {
-                    return this.authUser = JSON.parse(user);
-                }
-                return this.authUser = new Quizdom.Models.UserModel;
+            AuthenticationService.prototype.getUser = function () {
+                return this.authUser;
+            };
+            AuthenticationService.prototype.setUser = function (user) {
+                this.authUser = user;
             };
             return AuthenticationService;
         }());
-        AuthenticationService.$inject = [
-            '$window'
-            // ,'$http'
-        ];
         Services.AuthenticationService = AuthenticationService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

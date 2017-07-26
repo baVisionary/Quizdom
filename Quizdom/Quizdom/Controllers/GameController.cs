@@ -622,7 +622,27 @@ namespace Quizdom.Models
             return Ok(record);
         }
 
+        // PUT /api/game/updateuseractivitygameid/username/gameid   ** updates useractivity table by username
+        [HttpPut("updateuseractivitygameid/{username}/{gameid}")]
+        public IActionResult UpdateGameIdUserActivity(string username, int gameid)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
 
+            var userActivityRecord = _context.UserActivity.Where(c => c.Username == username).FirstOrDefault();
+
+
+            if (userActivityRecord == null)
+            {
+                return NotFound($"Username: {username} does not exist!");
+            }
+            
+            userActivityRecord.GameId = gameid;
+            _context.UserActivity.Update(userActivityRecord);
+            _context.SaveChanges();
+
+            return Ok(userActivityRecord);
+        }
 
 
 

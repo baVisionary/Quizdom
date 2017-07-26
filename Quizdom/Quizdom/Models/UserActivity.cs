@@ -10,5 +10,6 @@ namespace Quizdom.Models
         public int Id { get; set; }
         public string Username { get; set; }
         public DateTime LastActivity { get; set; }
+        public int GameId { get; set; }
     }
 }

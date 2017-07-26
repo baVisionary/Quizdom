@@ -3,21 +3,21 @@ namespace Quizdom.Views.Register {
         public formData: Models.RegisterModel = new Models.RegisterModel();
         private authUser: Models.LoginModel = new Models.LoginModel();
         public pattern: string = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
-        public avatars: Models.IAvatar[];
-        // public RegistrationServices: angular.IServiceProvider;
 
         static $inject = [
             'RegistrationService',
             'UserService',
             '$state',
-            'AvatarService'
+            'AvatarService',
+            'AuthenticationService'
         ];
 
         constructor(
             private RegistrationService: Services.RegistrationService,
             private UserService: Services.UserService,
             private $state: ng.ui.IStateService,
-            private AvatarService: Services.AvatarService
+            private AvatarService: Services.AvatarService,
+            private AuthenticationService: Services.AuthenticationService
         ) {
             this.AvatarService.getAllAvatars();
         }
@@ -61,17 +61,19 @@ namespace Quizdom.Views.Register {
                         .loginUser(this.authUser)
                         .then((result: boolean) => {
                             if (result) {
-                                this.$state.go('User', {
-                                    userName: this.UserService.user.userName
-                                });
+                                this.goToUser();
                             }
                         });
                 })
                 .catch((error) => {
                     console.log(error);
                     return error;
-                    
+
                 });
+        }
+
+        public goToUser() {
+            this.$state.go('User');
         }
 
     }

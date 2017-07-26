@@ -5,9 +5,10 @@ var Quizdom;
         var Login;
         (function (Login) {
             var LoginController = (function () {
-                function LoginController(UserService, $state) {
-                    this.UserService = UserService;
+                function LoginController($state, UserService, AuthenticationService) {
                     this.$state = $state;
+                    this.UserService = UserService;
+                    this.AuthenticationService = AuthenticationService;
                     this.formData = new Quizdom.Models.LoginModel();
                     this.loginError = false;
                 }
@@ -21,21 +22,24 @@ var Quizdom;
                 });
                 LoginController.prototype.loginUser = function () {
                     var _this = this;
-                    this.UserService
-                        .loginUser(this.formData)
+                    this.UserService.loginUser(this.formData)
                         .then(function (result) {
                         if (result) {
                             _this.loginError = false;
-                            _this.$state.go('User', { userName: _this.UserService.user.userName });
+                            _this.goToUser();
                         }
                         _this.loginError = true;
                     });
                 };
+                LoginController.prototype.goToUser = function () {
+                    this.$state.go('User');
+                };
                 return LoginController;
             }());
             LoginController.$inject = [
+                '$state',
                 'UserService',
-                '$state'
+                'AuthenticationService'
             ];
             Login.LoginController = LoginController;
         })(Login = Views.Login || (Views.Login = {}));

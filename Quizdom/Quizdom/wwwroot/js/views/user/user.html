@@ -4,13 +4,13 @@
       <div class="card purple lighten-3">
         <div class="row">
           <div class="avatar col s3 l2 align-center">
-            <img ng-cloak ng-src="/images/{{vm.UserService.user.avatarUrl}}" alt="Avatar" class="circle medium">
+            <img ng-cloak ng-src="/images/{{vm.AuthenticationService.User.avatarUrl}}" alt="Avatar" class="circle medium">
           </div>
           <div class="col s9 l10">
             <div class="card-content black-text">
-              <span class="card-title">{{vm.UserService.user.userName}}</span>
-              <p>Role: <span ng-show="vm.UserService.user.isAdmin">Admin</span><span ng-show="!vm.UserService.user.isAdmin">Normal</span></p>
-              <p>Email: {{vm.UserService.user.email}}</p>
+              <span class="card-title">{{vm.AuthenticationService.User.userName}}</span>
+              <p>Role: <span ng-show="vm.AuthenticationService.User.isAdmin">Admin</span><span ng-show="!vm.AuthenticationService.User.isAdmin">Normal</span></p>
+              <p>Email: {{vm.AuthenticationService.User.email}}</p>
             </div>
           </div>
         </div>
@@ -46,9 +46,9 @@
     </div>
   </div>
 </div>
-<div id="qz-user-profile">
+<!-- <div id="qz-user-profile">
   <qz-player-card player="vm.UserService.user"></qz-player-card>
-</div>
+</div> -->
 
 <script>
   $('.chips').material_chip();

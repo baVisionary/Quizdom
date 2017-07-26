@@ -5,11 +5,12 @@ var Quizdom;
         var Register;
         (function (Register) {
             var RegisterController = (function () {
-                function RegisterController(RegistrationService, UserService, $state, AvatarService) {
+                function RegisterController(RegistrationService, UserService, $state, AvatarService, AuthenticationService) {
                     this.RegistrationService = RegistrationService;
                     this.UserService = UserService;
                     this.$state = $state;
                     this.AvatarService = AvatarService;
+                    this.AuthenticationService = AuthenticationService;
                     this.formData = new Quizdom.Models.RegisterModel();
                     this.authUser = new Quizdom.Models.LoginModel();
                     this.pattern = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
@@ -52,9 +53,7 @@ var Quizdom;
                             .loginUser(_this.authUser)
                             .then(function (result) {
                             if (result) {
-                                _this.$state.go('User', {
-                                    userName: _this.UserService.user.userName
-                                });
+                                _this.goToUser();
                             }
                         });
                     })
@@ -63,14 +62,17 @@ var Quizdom;
                         return error;
                     });
                 };
+                RegisterController.prototype.goToUser = function () {
+                    this.$state.go('User');
+                };
                 return RegisterController;
             }());
-            // public RegistrationServices: angular.IServiceProvider;
             RegisterController.$inject = [
                 'RegistrationService',
                 'UserService',
                 '$state',
-                'AvatarService'
+                'AvatarService',
+                'AuthenticationService'
             ];
             Register.RegisterController = RegisterController;
         })(Register = Views.Register || (Views.Register = {}));

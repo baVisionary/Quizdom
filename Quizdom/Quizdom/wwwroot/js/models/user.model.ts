@@ -12,4 +12,19 @@ namespace Quizdom.Models {
             return user;
         }
     }
+
+    export interface IUser extends ng.resource.IResource<IUser> {
+        userName: string;
+        email: string;
+        avatarId: number;
+        avatarUrl?: string;
+        isAdmin?: boolean;
+        friendId?: number;
+
+        getAnonymousUser();
+    }
+
+    export interface IUserResource extends ng.resource.IResource<IUser> {
+        
+    }
 }

@@ -12,30 +12,19 @@ var Quizdom;
                 this.isUserLoggedIn = false;
                 this.authUser = new Quizdom.Models.UserModel();
             }
-            Object.defineProperty(UserService.prototype, "isLoggedIn", {
-                get: function () {
-                    return this.isUserLoggedIn;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(UserService.prototype, "user", {
-                get: function () {
-                    return this.authUser;
-                },
-                enumerable: true,
-                configurable: true
-            });
+            // public get isLoggedIn(): boolean {
+            //     return this.isUserLoggedIn;
+            // }
+            // public get user(): Models.UserModel {
+            //     return this.authUser;
+            // }
             UserService.prototype.getSessionData = function () {
                 var user = this.$window.sessionStorage.getItem('user');
                 if (user) {
-                    this.authUser = JSON.parse(user);
-                    this.isUserLoggedIn = true;
-                    this.AuthenticationService.setUser(this.authUser);
+                    this.AuthenticationService.setUser(JSON.parse(user));
                     return;
                 }
-                this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
-                this.isUserLoggedIn = false;
+                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
                 return;
             };
             UserService.prototype.updateSession = function (user) {
@@ -44,9 +33,7 @@ var Quizdom;
                 if (encodedUser) {
                     this.$window.sessionStorage.setItem('user', encodedUser);
                     this.$window.localStorage.setItem('user', encodedUser);
-                    this.authUser = user;
-                    this.isUserLoggedIn = true;
-                    this.AuthenticationService.setUser(this.authUser);
+                    this.AuthenticationService.setUser(user);
                     return true;
                 }
                 this.clearSession();
@@ -54,9 +41,7 @@ var Quizdom;
             };
             UserService.prototype.clearSession = function () {
                 this.$window.sessionStorage.clear();
-                this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
-                this.isUserLoggedIn = false;
-                this.AuthenticationService.setUser(this.authUser);
+                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
             };
             UserService.prototype.loginUser = function (user) {
                 var _this = this;

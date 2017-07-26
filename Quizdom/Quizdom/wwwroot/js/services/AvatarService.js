@@ -63,13 +63,7 @@ var Quizdom;
                     this.oneAvatar = this._Resource_avatar.get({
                         avatarId: avatarId
                     });
-                    this.oneAvatar.$promise.then(function () {
-                        return _this.oneAvatar.imageUrl;
-                    })
-                        .catch(function (error) {
-                        console.log(error.status + ": " + error.data);
-                        return error;
-                    });
+                    return this.oneAvatar.imageUrl;
                 }
             };
             return AvatarService;

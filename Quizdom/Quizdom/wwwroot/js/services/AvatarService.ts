@@ -68,13 +68,7 @@ namespace Quizdom.Services {
         this.oneAvatar = this._Resource_avatar.get({
           avatarId: avatarId
         });
-        this.oneAvatar.$promise.then(() => {
-          return this.oneAvatar.imageUrl;
-        })
-          .catch((error) => {
-            console.log(`${error.status}: ${error.data}`);
-            return error;
-          });
+        return this.oneAvatar.imageUrl;
       }
     }
 

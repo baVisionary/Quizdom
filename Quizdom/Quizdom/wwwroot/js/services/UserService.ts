@@ -21,26 +21,23 @@ namespace Quizdom.Services {
 
         }
 
-        public get isLoggedIn(): boolean {
-            return this.isUserLoggedIn;
-        }
+        // public get isLoggedIn(): boolean {
+        //     return this.isUserLoggedIn;
+        // }
 
-        public get user(): Models.UserModel {
-            return this.authUser;
-        }
+        // public get user(): Models.UserModel {
+        //     return this.authUser;
+        // }
 
         private getSessionData(): void {
             let user = this.$window.sessionStorage.getItem('user');
 
             if (user) {
-                this.authUser = <Models.UserModel>JSON.parse(user);
-                this.isUserLoggedIn = true;
-                this.AuthenticationService.setUser(this.authUser);
+                this.AuthenticationService.setUser(<Models.UserModel>JSON.parse(user));
                 return;
             }
 
-            this.authUser = Models.UserModel.getAnonymousUser();
-            this.isUserLoggedIn = false;
+            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
             return;
         }
 
@@ -51,9 +48,7 @@ namespace Quizdom.Services {
             if (encodedUser) {
                 this.$window.sessionStorage.setItem('user', encodedUser);
                 this.$window.localStorage.setItem('user', encodedUser);
-                this.authUser = user;
-                this.isUserLoggedIn = true;
-                this.AuthenticationService.setUser(this.authUser);
+                this.AuthenticationService.setUser(user);
                 return true;
             }
 
@@ -63,9 +58,7 @@ namespace Quizdom.Services {
 
         private clearSession(): void {
             this.$window.sessionStorage.clear();
-            this.authUser = Models.UserModel.getAnonymousUser();
-            this.isUserLoggedIn = false;
-            this.AuthenticationService.setUser(this.authUser);
+            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {
@@ -76,6 +69,7 @@ namespace Quizdom.Services {
                     console.info('User login was successful.');
                     response.data.avatarUrl = this.AvatarService.getAvatarUrl(response.data.avatarId);
                     return this.updateSession(response.data);
+                    
                 })
                 .catch(() => {
                     console.info('User was not logged in.');

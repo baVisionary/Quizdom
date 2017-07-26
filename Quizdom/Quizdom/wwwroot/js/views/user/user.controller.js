@@ -5,20 +5,19 @@ var Quizdom;
         var User;
         (function (User) {
             var UserController = (function () {
-                function UserController(UserService, AvatarService, FriendService, $scope, $state) {
-                    this.UserService = UserService;
-                    this.AvatarService = AvatarService;
+                function UserController(
+                    // private UserService: Services.UserService,
+                    // private AvatarService: Services.AvatarService,
+                    FriendService, AuthenticationService, $scope, $state) {
                     this.FriendService = FriendService;
+                    this.AuthenticationService = AuthenticationService;
                     this.$scope = $scope;
                     this.$state = $state;
                     this.friendEdit = false;
-                    if (!this.UserService.isLoggedIn) {
+                    if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    // this.myAvatar = this.AvatarService.getAvatarUrl(this.UserService.user.avatarId);
-                    // this.UserService.addAvatarUrl(this.myAvatar);
-                    // console.log(this.UserService.user);
-                    this.FriendService.getMyFriends(this.UserService.user.userName);
+                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName);
                 }
                 UserController.prototype.editFriends = function () {
                     this.friendEdit = !this.friendEdit;
@@ -27,9 +26,10 @@ var Quizdom;
                 return UserController;
             }());
             UserController.$inject = [
-                'UserService',
-                'AvatarService',
+                // 'UserService',
+                // 'AvatarService',
                 'FriendService',
+                'AuthenticationService',
                 '$scope',
                 '$state'
             ];

@@ -3,22 +3,24 @@ namespace Quizdom {
 
         static $inject = [
             'UserService',
+            'AuthenticationService',
             '$state'
         ];
 
         constructor(
             private UserService: Services.UserService,
+            private AuthenticationService: Services.AuthenticationService,
             private $state: ng.ui.IStateService
         ) {
 
         }
 
         public get isUserLoggedIn(): boolean {
-            return this.UserService.isLoggedIn;
+            return this.AuthenticationService.isLoggedIn;
         }
 
         public get user(): Models.UserModel {
-            return this.UserService.user;
+            return this.AuthenticationService.getUser();
         }
 
         public logOut(): void {

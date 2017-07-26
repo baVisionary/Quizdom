@@ -9,27 +9,32 @@ namespace Quizdom.Views.Login {
         }
 
         static $inject = [
+            '$state',
             'UserService',
-            '$state'
+            'AuthenticationService'
         ];
 
         constructor(
+            private $state: ng.ui.IStateService,
             private UserService: Services.UserService,
-            private $state: ng.ui.IStateService
+            private AuthenticationService: Services.AuthenticationService
         ) {
 
         }
 
         public loginUser() {
-            this.UserService
-                .loginUser(this.formData)
+            this.UserService.loginUser(this.formData)
                 .then((result: boolean) => {
                     if (result) {
                         this.loginError = false;
-                        this.$state.go('User', {userName: this.UserService.user.userName});
+                        this.goToUser();
                     }
                     this.loginError = true;
                 });
+        }
+
+        public goToUser() {
+            this.$state.go('User');
         }
     }
 }

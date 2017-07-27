@@ -1,7 +1,7 @@
 // Managing account logged in status
 
 namespace Quizdom.Services {
-    export class UserService {
+    export class LoginService {
         private isUserLoggedIn: boolean = false;
         private authUser: Models.UserModel = new Models.UserModel();
 
@@ -29,7 +29,7 @@ namespace Quizdom.Services {
         //     return this.authUser;
         // }
 
-        private getSessionData(): void {
+        public getSessionData(): void {
             let user = this.$window.sessionStorage.getItem('user');
 
             if (user) {
@@ -41,9 +41,9 @@ namespace Quizdom.Services {
             return;
         }
 
-        private updateSession(user: Models.UserModel|null): boolean {
+        private updateSession(user: Models.UserModel | null): boolean {
             var encodedUser = JSON.stringify(user);
-            console.info(encodedUser);
+            console.log(user);
 
             if (encodedUser) {
                 this.$window.sessionStorage.setItem('user', encodedUser);
@@ -67,16 +67,15 @@ namespace Quizdom.Services {
             })
                 .then((response: ng.IRequestShortcutConfig) => {
                     console.info('User login was successful.');
-                    response.data.avatarUrl = this.AvatarService.getAvatarUrl(response.data.avatarId);
+                    this.AuthenticationService.setUser(response.data);
                     return this.updateSession(response.data);
-                    
                 })
                 .catch(() => {
                     console.info('User was not logged in.');
                     return this.updateSession(null);
                 });
         }
-        
+
         public addAvatarUrl(avatarUrl) {
             this.authUser.avatarUrl = avatarUrl;
         }

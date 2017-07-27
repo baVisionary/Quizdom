@@ -5,12 +5,13 @@ var Quizdom;
         var Questions;
         (function (Questions) {
             var QuestionsController = (function () {
-                function QuestionsController(QuestionService, $state) {
+                function QuestionsController(QuestionService, $state, $q) {
                     this.QuestionService = QuestionService;
                     this.$state = $state;
+                    this.$q = $q;
                     this.title = "Quiz Questions";
-                    this.questions = this.QuestionService.getAllQs();
-                    this.categories = this.QuestionService.getAllCats();
+                    this.QuestionService.getAllQs();
+                    this.QuestionService.getAllCats();
                     this.preDelete = false;
                     this.deleteText = "Delete";
                 }
@@ -76,7 +77,7 @@ var Quizdom;
             QuestionsController.$inject = [
                 'QuestionService',
                 '$state',
-                '$stateParams'
+                '$q'
             ];
             Questions.QuestionsController = QuestionsController;
         })(Questions = Views.Questions || (Views.Questions = {}));

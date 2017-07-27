@@ -10,20 +10,20 @@ namespace Quizdom.Views.Login {
 
         static $inject = [
             '$state',
-            'UserService',
+            'LoginService',
             'AuthenticationService'
         ];
 
         constructor(
             private $state: ng.ui.IStateService,
-            private UserService: Services.UserService,
+            private LoginService: Services.LoginService,
             private AuthenticationService: Services.AuthenticationService
         ) {
 
         }
 
         public loginUser() {
-            this.UserService.loginUser(this.formData)
+            this.LoginService.loginUser(this.formData)
                 .then((result: boolean) => {
                     if (result) {
                         this.loginError = false;

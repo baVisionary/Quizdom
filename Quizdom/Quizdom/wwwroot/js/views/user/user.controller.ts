@@ -3,7 +3,7 @@ namespace Quizdom.Views.User {
         public friendEdit: boolean = false;
 
         static $inject = [
-            // 'UserService',
+            // 'LoginService',
             // 'AvatarService',
             'FriendService',
             'AuthenticationService',
@@ -12,7 +12,7 @@ namespace Quizdom.Views.User {
         ];
 
         constructor(
-            // private UserService: Services.UserService,
+            // private LoginService: Services.LoginService,
             // private AvatarService: Services.AvatarService,
             private FriendService: Services.FriendService,
             private AuthenticationService: Services.AuthenticationService,

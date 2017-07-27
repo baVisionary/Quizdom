@@ -4,6 +4,12 @@ namespace Quizdom.Services {
     private authUser: Models.UserModel;
     private isUserLoggedIn: boolean = false;
 
+    constructor (
+
+    ) {
+
+    }
+
     public getUser() {
       return this.authUser;
     }
@@ -24,6 +30,8 @@ namespace Quizdom.Services {
     public get isLoggedIn(): boolean {
       return this.isUserLoggedIn;
     }
+
+    
 
 
   }

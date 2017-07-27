@@ -6,7 +6,7 @@ namespace Quizdom.Views.Register {
 
         static $inject = [
             'RegistrationService',
-            'UserService',
+            'LoginService',
             '$state',
             'AvatarService',
             'AuthenticationService'
@@ -14,7 +14,7 @@ namespace Quizdom.Views.Register {
 
         constructor(
             private RegistrationService: Services.RegistrationService,
-            private UserService: Services.UserService,
+            private LoginService: Services.LoginService,
             private $state: ng.ui.IStateService,
             private AvatarService: Services.AvatarService,
             private AuthenticationService: Services.AuthenticationService
@@ -51,30 +51,28 @@ namespace Quizdom.Views.Register {
 
             this.RegistrationService
                 .registerUser(this.formData)
-                .then((user) => {
+                .then((user: Models.UserModel) => {
                     console.log(user);
                     this.authUser.email = user.email;
                     this.authUser.password = this.formData.password;
                     this.authUser.rememberMe = true;
                     console.log(this.authUser);
-                    this.UserService
-                        .loginUser(this.authUser)
+                    this.LoginService.loginUser(this.authUser)
                         .then((result: boolean) => {
+                            console.log(`Login process result: ${result}`);
                             if (result) {
                                 this.goToUser();
                             }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return error;
                         });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    return error;
-
                 });
         }
 
         public goToUser() {
             this.$state.go('User');
         }
-
     }
 }

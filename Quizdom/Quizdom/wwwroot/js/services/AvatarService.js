@@ -3,11 +3,9 @@ var Quizdom;
     var Services;
     (function (Services) {
         var AvatarService = (function () {
-            function AvatarService($resource
-                // private AvatarResource: ,
-                // private Avatar: Models.IAvatarResource
-            ) {
+            function AvatarService($resource, $q) {
                 this.$resource = $resource;
+                this.$q = $q;
                 this.avatars = [];
                 this.oneAvatarUrl = 'avatar_generic.png';
                 /**
@@ -40,13 +38,16 @@ var Quizdom;
                 //   return this.oneAvatar;
                 // }
                 this._Resource_avatar = this.$resource('/api/game/avatar/:avatarId');
-                // this.avatars = this.getAllAvatars();
+                // this.getAllAvatars();
             }
             AvatarService.prototype.getAllAvatars = function () {
                 if (this.avatars.length == 0) {
-                    return this.avatars = this._Resource_avatar.query();
+                    this.avatars = this._Resource_avatar.query();
+                    return this.avatars.$promise;
                 }
-                return this.avatars;
+                var avatars = this.$q.defer();
+                avatars.resolve(this.avatars);
+                return avatars;
             };
             AvatarService.prototype.getAvatarUrl = function (avatarId) {
                 var _this = this;
@@ -69,7 +70,8 @@ var Quizdom;
             return AvatarService;
         }());
         AvatarService.$inject = [
-            '$resource'
+            '$resource',
+            '$q'
         ];
         Services.AvatarService = AvatarService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));

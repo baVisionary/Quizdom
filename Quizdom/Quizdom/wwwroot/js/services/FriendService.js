@@ -12,19 +12,15 @@ var Quizdom;
                 this._Resource_friend = this.$resource('/api/game/friends');
             }
             FriendService.prototype.getMyFriends = function (userName) {
-                var _this = this;
-                if (this.friends.length == 0) {
-                    this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName }).$promise.then(function (data) {
-                        _this.friends = data;
-                        _this.friends.forEach(function (friend) {
-                            friend.avatarUrl = _this.AvatarService.getAvatarUrl(friend.avatarId);
-                            console.log(friend);
-                        });
-                    })
-                        .catch(function (error) {
-                        console.log("Error " + error.status + ": " + error.data);
-                    });
-                }
+                this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName });
+                console.log(this.friends);
+                // .$promise.then((friends) => {
+                //   this.friends = friends;
+                //   this.friends.forEach(friend => {
+                //     friend.avatarUrl = this.AvatarService.getAvatarUrl(friend.avatarId);
+                //     console.log(friend);
+                //   });
+                // });
                 return this.friends;
             };
             FriendService.prototype.findByEmail = function (email) {

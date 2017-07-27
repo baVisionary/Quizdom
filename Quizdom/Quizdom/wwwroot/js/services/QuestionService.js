@@ -5,9 +5,9 @@ var Quizdom;
     var Services;
     (function (Services) {
         var QuestionService = (function () {
-            function QuestionService($resource, UserService) {
+            function QuestionService($resource, $q) {
                 this.$resource = $resource;
-                this.UserService = UserService;
+                this.$q = $q;
                 this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
                     'update': {
                         method: 'PUT'
@@ -22,27 +22,30 @@ var Quizdom;
                     "hard"
                 ];
                 this._Question = new Quizdom.Models.QuestionModel();
-                this.getAllQs();
-                this.getAllCats();
+                // this.getAllQs();
+                // this.getAllCats();
             }
             QuestionService.prototype.getAllQs = function () {
                 if (this.questions.length == 0) {
-                    return this.questions = this._Resource_question.query();
+                    this.questions = this._Resource_question.query();
+                    return this.questions.$promise;
                 }
                 else {
-                    return this.questions;
+                    var questions = this.$q.defer();
+                    questions.resolve(this.questions);
+                    return questions;
                 }
             };
             QuestionService.prototype.getAllCats = function () {
-                var _this = this;
                 if (this.categories.length == 0) {
-                    this._Resource_categories.query().$promise.then(function (data) {
-                        _this.categories = data.sort();
-                        return _this.categories;
-                    });
+                    this.categories = this._Resource_categories.query();
+                    return this.categories.$promise;
                 }
                 else {
-                    return this.categories;
+                    var categories = this.$q.defer();
+                    categories.resolve(this.categories);
+                    console.log(categories);
+                    return categories;
                 }
             };
             QuestionService.prototype.sortCategories = function (a, b) {
@@ -71,7 +74,10 @@ var Quizdom;
             };
             return QuestionService;
         }());
-        QuestionService.$inject = ['$resource'];
+        QuestionService.$inject = [
+            '$resource',
+            '$q'
+        ];
         Services.QuestionService = QuestionService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

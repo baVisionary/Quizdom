@@ -3,7 +3,7 @@ namespace Quizdom.Views.Questions {
     static $inject = [
       'QuestionService',
       '$state',
-      '$stateParams'
+      '$q'
     ];
 
     public title: string;
@@ -15,15 +15,15 @@ namespace Quizdom.Views.Questions {
     public questionToEdit;
     private preDelete: boolean;
     private deleteText: string;
-    
 
     constructor(
       private QuestionService: Services.QuestionService,
-      private $state
+      private $state,
+      private $q
     ) {
       this.title = "Quiz Questions";
-      this.questions = this.QuestionService.getAllQs();
-      this.categories = this.QuestionService.getAllCats();
+      this.QuestionService.getAllQs();
+      this.QuestionService.getAllCats()
       this.preDelete = false;
       this.deleteText = "Delete";
     }

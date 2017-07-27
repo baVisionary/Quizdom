@@ -3,8 +3,8 @@ var Quizdom;
 (function (Quizdom) {
     var Services;
     (function (Services) {
-        var UserService = (function () {
-            function UserService($http, $window, AvatarService, AuthenticationService) {
+        var LoginService = (function () {
+            function LoginService($http, $window, AvatarService, AuthenticationService) {
                 this.$http = $http;
                 this.$window = $window;
                 this.AvatarService = AvatarService;
@@ -18,7 +18,7 @@ var Quizdom;
             // public get user(): Models.UserModel {
             //     return this.authUser;
             // }
-            UserService.prototype.getSessionData = function () {
+            LoginService.prototype.getSessionData = function () {
                 var user = this.$window.sessionStorage.getItem('user');
                 if (user) {
                     this.AuthenticationService.setUser(JSON.parse(user));
@@ -27,9 +27,9 @@ var Quizdom;
                 this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
                 return;
             };
-            UserService.prototype.updateSession = function (user) {
+            LoginService.prototype.updateSession = function (user) {
                 var encodedUser = JSON.stringify(user);
-                console.info(encodedUser);
+                console.log(user);
                 if (encodedUser) {
                     this.$window.sessionStorage.setItem('user', encodedUser);
                     this.$window.localStorage.setItem('user', encodedUser);
@@ -39,18 +39,18 @@ var Quizdom;
                 this.clearSession();
                 return false;
             };
-            UserService.prototype.clearSession = function () {
+            LoginService.prototype.clearSession = function () {
                 this.$window.sessionStorage.clear();
                 this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
             };
-            UserService.prototype.loginUser = function (user) {
+            LoginService.prototype.loginUser = function (user) {
                 var _this = this;
                 return this.$http.post('api/Account/Login', user, {
                     cache: false
                 })
                     .then(function (response) {
                     console.info('User login was successful.');
-                    response.data.avatarUrl = _this.AvatarService.getAvatarUrl(response.data.avatarId);
+                    _this.AuthenticationService.setUser(response.data);
                     return _this.updateSession(response.data);
                 })
                     .catch(function () {
@@ -58,10 +58,10 @@ var Quizdom;
                     return _this.updateSession(null);
                 });
             };
-            UserService.prototype.addAvatarUrl = function (avatarUrl) {
+            LoginService.prototype.addAvatarUrl = function (avatarUrl) {
                 this.authUser.avatarUrl = avatarUrl;
             };
-            UserService.prototype.logOut = function () {
+            LoginService.prototype.logOut = function () {
                 var _this = this;
                 this.$http.post('api/Account/Logout', {
                     cache: false
@@ -74,14 +74,14 @@ var Quizdom;
                     console.info('User was not logged out.');
                 });
             };
-            return UserService;
+            return LoginService;
         }());
-        UserService.$inject = [
+        LoginService.$inject = [
             '$http',
             '$window',
             'AvatarService',
             'AuthenticationService'
         ];
-        Services.UserService = UserService;
+        Services.LoginService = LoginService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

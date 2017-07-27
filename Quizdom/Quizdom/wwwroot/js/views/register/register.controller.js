@@ -5,9 +5,9 @@ var Quizdom;
         var Register;
         (function (Register) {
             var RegisterController = (function () {
-                function RegisterController(RegistrationService, UserService, $state, AvatarService, AuthenticationService) {
+                function RegisterController(RegistrationService, LoginService, $state, AvatarService, AuthenticationService) {
                     this.RegistrationService = RegistrationService;
-                    this.UserService = UserService;
+                    this.LoginService = LoginService;
                     this.$state = $state;
                     this.AvatarService = AvatarService;
                     this.AuthenticationService = AuthenticationService;
@@ -49,17 +49,17 @@ var Quizdom;
                         _this.authUser.password = _this.formData.password;
                         _this.authUser.rememberMe = true;
                         console.log(_this.authUser);
-                        _this.UserService
-                            .loginUser(_this.authUser)
+                        _this.LoginService.loginUser(_this.authUser)
                             .then(function (result) {
+                            console.log("Login process result: " + result);
                             if (result) {
                                 _this.goToUser();
                             }
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                            return error;
                         });
-                    })
-                        .catch(function (error) {
-                        console.log(error);
-                        return error;
                     });
                 };
                 RegisterController.prototype.goToUser = function () {
@@ -69,7 +69,7 @@ var Quizdom;
             }());
             RegisterController.$inject = [
                 'RegistrationService',
-                'UserService',
+                'LoginService',
                 '$state',
                 'AvatarService',
                 'AuthenticationService'

@@ -2,17 +2,22 @@ namespace Quizdom {
     export class AppController {
 
         static $inject = [
-            'UserService',
+            'LoginService',
             'AuthenticationService',
+            'FriendService',
             '$state'
         ];
 
         constructor(
-            private UserService: Services.UserService,
+            private LoginService: Services.LoginService,
             private AuthenticationService: Services.AuthenticationService,
+            private FriendService: Services.FriendService,
             private $state: ng.ui.IStateService
         ) {
-
+            this.LoginService.getSessionData();
+            if (this.isUserLoggedIn) {
+                this.FriendService.getMyFriends(this.user.userName);
+            }
         }
 
         public get isUserLoggedIn(): boolean {
@@ -24,7 +29,7 @@ namespace Quizdom {
         }
 
         public logOut(): void {
-            this.UserService.logOut();
+            this.LoginService.logOut();
             this.$state.go('Welcome');
         }
 

@@ -7,7 +7,7 @@
           <span class="card-title">{{ vm.title }}</span>
           <div class="row">
             <div class="input-field col s12 m4">
-              <select name="categorySelect" id="categorySelect" ng-model="vm.category">
+              <select name="categorySelect" id="categorySelect" ng-model="vm.category" ng-cloak>
                 <option value="" selected>Show all</option>
                 <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
               </select>
@@ -42,7 +42,7 @@
   <!-- angular list of questions -->
   <div class="row">
     <ul id='question-list' class="collapsible popout" data-collapsible="accordion" watch>
-      <li ng-cloak dir-paginate="q in vm.questions | filter: vm.category | filter: vm.difficulty | filter: vm.search | itemsPerPage: 10">
+      <li ng-cloak dir-paginate="q in vm.QuestionService.questions | filter: vm.category | filter: vm.difficulty | filter: vm.search | itemsPerPage: 10">
         <div class="collapsible-header scale-transition" ng-click='vm.onViewQuestion(q.id)'>
           <div class="col s1">{{ q.id }}.</div>
           <div>{{ q.question }}</div>

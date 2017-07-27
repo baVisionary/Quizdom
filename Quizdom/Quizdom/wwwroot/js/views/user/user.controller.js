@@ -6,7 +6,7 @@ var Quizdom;
         (function (User) {
             var UserController = (function () {
                 function UserController(
-                    // private UserService: Services.UserService,
+                    // private LoginService: Services.LoginService,
                     // private AvatarService: Services.AvatarService,
                     FriendService, AuthenticationService, $scope, $state) {
                     this.FriendService = FriendService;
@@ -26,7 +26,7 @@ var Quizdom;
                 return UserController;
             }());
             UserController.$inject = [
-                // 'UserService',
+                // 'LoginService',
                 // 'AvatarService',
                 'FriendService',
                 'AuthenticationService',

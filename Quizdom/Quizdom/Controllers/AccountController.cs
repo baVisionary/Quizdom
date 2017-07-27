@@ -225,6 +225,33 @@ namespace Quizdom.Controllers
             return Ok();
         }
 
+        // api/account/GetInactivityTimeForUsername/{username}
+        [HttpGet("GetInactivityTimeForUsername/{username}")]
+        public IActionResult GetInactivityTimeForUsername(string username)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var validateUserName = (from c in _context.UserActivity
+                                    where c.Username == username
+                                    select c).FirstOrDefault();
+
+
+            if (validateUserName == null)
+            {
+                return NotFound($"Username {username} does not exists!");
+            }
+
+            DateTime dt1 = Convert.ToDateTime(validateUserName.LastActivity);
+            DateTime dt2 = DateTime.UtcNow;
+            double totalminutes = (dt2 - dt1).TotalMinutes;
+            int minutesRounded = (int)Math.Round(totalminutes);
+
+
+            return Ok(minutesRounded);
+        }
+
+
         #region Helpers
 
         private void AddErrors(IdentityResult result)

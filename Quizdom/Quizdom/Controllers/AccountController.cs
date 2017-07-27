@@ -66,7 +66,7 @@ namespace Quizdom.Controllers
                         // UPDATE USER TRACKING INFORMATION
                         userTracker.UpdateUserActivity(Request);
 
-                        authUser.AvatarURL = record.ImageUrl;
+                        authUser.AvatarUrl = record.ImageUrl;
                         
                             return Ok(authUser);
                     }

@@ -52,12 +52,23 @@ namespace Quizdom.Controllers
 
                     if (result.Succeeded)
                     {
+
+
                         var authUser = await GetUser(user);
+
+                        List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+
+                        var record = (from c in _context.Avatars
+                                      where c.Id == authUser.AvatarId
+                                      select c).FirstOrDefault();
 
                         _logger.LogInformation(1, "User logged in.");
                         // UPDATE USER TRACKING INFORMATION
                         userTracker.UpdateUserActivity(Request);
-                        return Ok(authUser);
+
+                        authUser.AvatarUrl = record.ImageUrl;
+                        
+                            return Ok(authUser);
                     }
                 }
 
@@ -162,6 +173,7 @@ namespace Quizdom.Controllers
             userTracker.UpdateUserActivity(Request);
 
             List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+
             var unregisteredUsers = 0;
 
             var record = (from c in _context.Friends
@@ -178,6 +190,11 @@ namespace Quizdom.Controllers
                     {
                         var user = await _userManager.FindByNameAsync(item.friendUserName);
                         authUser = await GetUser(user);
+                        var record2 = (from c in _context.Avatars
+                                       where c.Id == authUser.AvatarId
+                                       select c).FirstOrDefault();
+
+                        authUser.AvatarUrl = record2.ImageUrl;
                         authUser.FriendId = item.Id;
                         authModel.Add(authUser);
                     }
@@ -190,9 +207,11 @@ namespace Quizdom.Controllers
                 if (authModel.Count() > 0)
                     return Ok(authModel);
 
-                return NotFound("No Registered Users were located!");
+                //return NotFound("No Registered Users were located!");
+                return NoContent();
             }
-            return NotFound($"No Results Found for Primary User: {userName}");
+            //return NotFound($"No Results Found for Primary User: {userName}");
+            return NoContent();
         }
 
 

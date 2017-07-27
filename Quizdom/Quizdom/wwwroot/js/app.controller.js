@@ -1,27 +1,32 @@
 var Quizdom;
 (function (Quizdom) {
     var AppController = (function () {
-        function AppController(UserService, $state) {
-            this.UserService = UserService;
+        function AppController(LoginService, AuthenticationService, FriendService, $state) {
+            this.LoginService = LoginService;
+            this.AuthenticationService = AuthenticationService;
+            this.FriendService = FriendService;
             this.$state = $state;
-            this.UserService = UserService;
+            this.LoginService.getSessionData();
+            if (this.isUserLoggedIn) {
+                this.FriendService.getMyFriends(this.user.userName);
+            }
         }
         Object.defineProperty(AppController.prototype, "isUserLoggedIn", {
             get: function () {
-                return this.UserService.isLoggedIn;
+                return this.AuthenticationService.isLoggedIn;
             },
             enumerable: true,
             configurable: true
         });
         Object.defineProperty(AppController.prototype, "user", {
             get: function () {
-                return this.UserService.user;
+                return this.AuthenticationService.getUser();
             },
             enumerable: true,
             configurable: true
         });
         AppController.prototype.logOut = function () {
-            this.UserService.logOut();
+            this.LoginService.logOut();
             this.$state.go('Welcome');
         };
         AppController.prototype.myState = function (current) {
@@ -30,7 +35,9 @@ var Quizdom;
         return AppController;
     }());
     AppController.$inject = [
-        'UserService',
+        'LoginService',
+        'AuthenticationService',
+        'FriendService',
         '$state'
     ];
     Quizdom.AppController = AppController;

@@ -3,23 +3,23 @@ namespace Quizdom.Views.Register {
         public formData: Models.RegisterModel = new Models.RegisterModel();
         private authUser: Models.LoginModel = new Models.LoginModel();
         public pattern: string = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
-        public avatars: Models.IAvatar[];
-        // public RegistrationServices: angular.IServiceProvider;
 
         static $inject = [
             'RegistrationService',
-            'UserService',
+            'LoginService',
             '$state',
-            'AvatarResource'
+            'AvatarService',
+            'AuthenticationService'
         ];
 
         constructor(
             private RegistrationService: Services.RegistrationService,
-            private UserService: Services.UserService,
+            private LoginService: Services.LoginService,
             private $state: ng.ui.IStateService,
-            private Avatar: Models.IAvatarResource
+            private AvatarService: Services.AvatarService,
+            private AuthenticationService: Services.AuthenticationService
         ) {
-            this.avatars = Avatar.query();
+            this.AvatarService.getAllAvatars();
         }
 
         public checkRegExp(reg: string, str: string): boolean {
@@ -51,28 +51,28 @@ namespace Quizdom.Views.Register {
 
             this.RegistrationService
                 .registerUser(this.formData)
-                .then((user) => {
+                .then((user: Models.UserModel) => {
                     console.log(user);
                     this.authUser.email = user.email;
                     this.authUser.password = this.formData.password;
                     this.authUser.rememberMe = true;
                     console.log(this.authUser);
-                    this.UserService
-                        .loginUser(this.authUser)
+                    this.LoginService.loginUser(this.authUser)
                         .then((result: boolean) => {
+                            console.log(`Login process result: ${result}`);
                             if (result) {
-                                this.$state.go('User', {
-                                    userName: this.UserService.user.userName
-                                });
+                                this.goToUser();
                             }
+                        })
+                        .catch((error) => {
+                            console.log(error);
+                            return error;
                         });
-                })
-                .catch((error) => {
-                    console.log(error);
-                    return error;
-                    
                 });
         }
 
+        public goToUser() {
+            this.$state.go('User');
+        }
     }
 }

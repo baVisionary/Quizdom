@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Quizdom.Data;
 using Quizdom.Models;
 using System;
@@ -32,11 +33,33 @@ namespace Quizdom.Services
         public void UpdateUserActivity(HttpRequest request)
         {
             UserActivity userActivity = new UserActivity();
+
             string username = ExtractUsernameHeader(request);
-            userActivity.LastActivity = DateTime.UtcNow;
-            userActivity.Username = username;
-            _context.UserActivity.Add(userActivity);
-            _context.SaveChanges();
+            if (username == null)
+                username = "guest";
+
+            var validatedUserNameRecord = (from c in _context.UserActivity
+                                    where c.Username == username
+                                    select c).FirstOrDefault();
+
+
+            if (validatedUserNameRecord == null)
+            {
+                userActivity.LastActivity = DateTime.UtcNow;
+                userActivity.Username = username;
+                _context.UserActivity.Add(userActivity);
+                _context.SaveChanges();
+            }
+            else
+            {
+                validatedUserNameRecord.LastActivity = DateTime.UtcNow;                
+
+                _context.UserActivity.Update(validatedUserNameRecord);
+                _context.SaveChanges();
+            }
+            
+
+
         }
     }
 }

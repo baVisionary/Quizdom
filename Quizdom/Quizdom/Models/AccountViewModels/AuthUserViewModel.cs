@@ -12,6 +12,6 @@ namespace Quizdom.Models.AccountViewModels
         public int AvatarId { get; set; }
         public bool IsAdmin { get; set; }
         public int FriendId { get; set; }
-
+        public string AvatarUrl { get; set; }
     }
 }

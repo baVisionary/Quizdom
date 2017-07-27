@@ -3,65 +3,54 @@ var Quizdom;
 (function (Quizdom) {
     var Services;
     (function (Services) {
-        var UserService = (function () {
-            function UserService($http, $window, AvatarService) {
+        var LoginService = (function () {
+            function LoginService($http, $window, AvatarService, AuthenticationService) {
                 this.$http = $http;
                 this.$window = $window;
                 this.AvatarService = AvatarService;
+                this.AuthenticationService = AuthenticationService;
                 this.isUserLoggedIn = false;
                 this.authUser = new Quizdom.Models.UserModel();
-                this.getSessionData();
             }
-            Object.defineProperty(UserService.prototype, "isLoggedIn", {
-                get: function () {
-                    return this.isUserLoggedIn;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            Object.defineProperty(UserService.prototype, "user", {
-                get: function () {
-                    return this.authUser;
-                },
-                enumerable: true,
-                configurable: true
-            });
-            UserService.prototype.getSessionData = function () {
+            // public get isLoggedIn(): boolean {
+            //     return this.isUserLoggedIn;
+            // }
+            // public get user(): Models.UserModel {
+            //     return this.authUser;
+            // }
+            LoginService.prototype.getSessionData = function () {
                 var user = this.$window.sessionStorage.getItem('user');
                 if (user) {
-                    this.authUser = JSON.parse(user);
-                    this.isUserLoggedIn = true;
+                    this.AuthenticationService.setUser(JSON.parse(user));
                     return;
                 }
-                this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
-                this.isUserLoggedIn = false;
+                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
                 return;
             };
-            UserService.prototype.updateSession = function (user) {
+            LoginService.prototype.updateSession = function (user) {
                 var encodedUser = JSON.stringify(user);
-                console.info(encodedUser);
+                console.log(user);
                 if (encodedUser) {
                     this.$window.sessionStorage.setItem('user', encodedUser);
-                    this.authUser = user;
-                    this.isUserLoggedIn = true;
+                    this.$window.localStorage.setItem('user', encodedUser);
+                    this.AuthenticationService.setUser(user);
                     return true;
                 }
                 this.clearSession();
                 return false;
             };
-            UserService.prototype.clearSession = function () {
+            LoginService.prototype.clearSession = function () {
                 this.$window.sessionStorage.clear();
-                this.authUser = Quizdom.Models.UserModel.getAnonymousUser();
-                this.isUserLoggedIn = false;
+                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
             };
-            UserService.prototype.loginUser = function (user) {
+            LoginService.prototype.loginUser = function (user) {
                 var _this = this;
                 return this.$http.post('api/Account/Login', user, {
                     cache: false
                 })
                     .then(function (response) {
                     console.info('User login was successful.');
-                    response.data.avatarUrl = _this.AvatarService.getAvatarUrl(response.data.avatarId);
+                    _this.AuthenticationService.setUser(response.data);
                     return _this.updateSession(response.data);
                 })
                     .catch(function () {
@@ -69,10 +58,10 @@ var Quizdom;
                     return _this.updateSession(null);
                 });
             };
-            UserService.prototype.addAvatarUrl = function (avatarUrl) {
+            LoginService.prototype.addAvatarUrl = function (avatarUrl) {
                 this.authUser.avatarUrl = avatarUrl;
             };
-            UserService.prototype.logOut = function () {
+            LoginService.prototype.logOut = function () {
                 var _this = this;
                 this.$http.post('api/Account/Logout', {
                     cache: false
@@ -85,13 +74,14 @@ var Quizdom;
                     console.info('User was not logged out.');
                 });
             };
-            return UserService;
+            return LoginService;
         }());
-        UserService.$inject = [
+        LoginService.$inject = [
             '$http',
             '$window',
-            'AvatarService'
+            'AvatarService',
+            'AuthenticationService'
         ];
-        Services.UserService = UserService;
+        Services.LoginService = LoginService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

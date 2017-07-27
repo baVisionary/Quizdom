@@ -23,7 +23,7 @@
   </div>
   <div class="row">
     <ul class="col s12 center-align" id="avatars">
-      <li ng-repeat="avatar in vm.avatars">
+      <li ng-repeat="avatar in vm.AvatarService.avatars">
         <label>
           <input type="radio" name="avatarId" id="av{{avatar.id}}" ng-value={{avatar.id}} ng-model="vm.formData.avatarId">
           <img ng-src="/images/{{avatar.imageUrl}}" alt="Avatar {{avatar.id}}" class="circle">

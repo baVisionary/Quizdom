@@ -4,7 +4,18 @@ namespace Quizdom.Services {
 
   export class QuestionService {
 
-    static $inject = ['$resource'];
+    static $inject = [
+      '$resource',
+      '$q'
+    ];
+
+    constructor(
+      private $resource,
+      private $q
+    ) {
+      // this.getAllQs();
+      // this.getAllCats();
+    }
 
     private _Resource_question = this.$resource('/api/quiz/:questionId', null, {
       'update': {
@@ -12,7 +23,6 @@ namespace Quizdom.Services {
       }
     });
     private _Resource_categories = this.$resource('/api/quiz/categories');
-
 
     public questions = [];
     public categories = [];
@@ -23,34 +33,32 @@ namespace Quizdom.Services {
     ];
     private _Question: Models.QuestionModel = new Models.QuestionModel();
 
-    constructor(
-      private $resource
-    ) {
-      this.getAllQs();
-      this.getAllCats();
-    }
-
     public getAllQs() {
       if (this.questions.length == 0) {
-        return this.questions = this._Resource_question.query();
+        this.questions = this._Resource_question.query();
+        return this.questions.$promise;
       } else {
-        return this.questions;
+        let questions = this.$q.defer();
+        questions.resolve(this.questions);
+        return questions;
       }
     }
 
     public getAllCats() {
       if (this.categories.length == 0) {
-        this._Resource_categories.query().$promise.then((data) => {
-          this.categories = data.sort();
-          return this.categories;
-        });
+        this.categories = this._Resource_categories.query();
+        return this.categories.$promise;
       } else {
-        return this.categories;
+        let categories = this.$q.defer();
+        categories.resolve(this.categories);
+        console.log(categories);
+        return categories;
+        
       }
     }
-    
+
     public sortCategories(a, b): number {
-      return ( a == "User Added" ) ? 100 : a - b;
+      return (a == "User Added") ? 1 : 0;
     }
 
     public getOneQuestionId(questionId: number) {

@@ -5,12 +5,13 @@ var Quizdom;
         var Questions;
         (function (Questions) {
             var QuestionsController = (function () {
-                function QuestionsController(QuestionService, $state) {
+                function QuestionsController(QuestionService, $state, $q) {
                     this.QuestionService = QuestionService;
                     this.$state = $state;
+                    this.$q = $q;
                     this.title = "Quiz Questions";
-                    this.questions = this.QuestionService.getAllQs();
-                    this.categories = this.QuestionService.getAllCats();
+                    this.QuestionService.getAllQs();
+                    this.QuestionService.getAllCats();
                     this.preDelete = false;
                     this.deleteText = "Delete";
                 }
@@ -20,7 +21,7 @@ var Quizdom;
                     this.$state.go('Questions');
                 };
                 QuestionsController.prototype.addQuestion = function () {
-                    var i = Math.max.apply(Math, this.questions.map(function (o) { return o.id; })) + 1;
+                    var i = Math.max.apply(Math, this.QuestionService.questions.map(function (o) { return o.id; })) + 1;
                     this.questionToEdit = this.QuestionService.newQuestion();
                     this.questionToEdit.id = i;
                     this.questionToEdit.UserId = "Quizdom User";
@@ -38,8 +39,8 @@ var Quizdom;
                     console.log(this.questionToEdit);
                     this.questionToEdit.dateModified = new Date();
                     this.QuestionService.updateOne(this.questionToEdit).then(function () {
-                        var i = _this.questions.findIndex(function (q) { return q.id == _this.questionToEdit.id; });
-                        _this.questions[i] = angular.copy(_this.questionToEdit);
+                        var i = _this.QuestionService.questions.findIndex(function (q) { return q.id == _this.questionToEdit.id; });
+                        _this.QuestionService.questions[i] = angular.copy(_this.questionToEdit);
                         _this.$state.go('Questions');
                     });
                 };
@@ -47,9 +48,9 @@ var Quizdom;
                     var _this = this;
                     if (this.preDelete) {
                         return this.QuestionService.deleteOne(questionId).then(function () {
-                            var i = _this.questions.findIndex(function (q) { return q.id == questionId; });
+                            var i = _this.QuestionService.questions.findIndex(function (q) { return q.id == questionId; });
                             console.log("questionId: " + questionId + " i: " + i);
-                            _this.questions.splice(i, 1);
+                            _this.QuestionService.questions.splice(i, 1);
                             _this.preDelete = false;
                             _this.$state.go('Questions');
                         });
@@ -66,7 +67,7 @@ var Quizdom;
                 QuestionsController.prototype.saveNewQuestion = function () {
                     var _this = this;
                     this.QuestionService.createOne(this.questionToEdit).$promise.then(function () {
-                        _this.questions.push(_this.QuestionService.getOneQuestionId(_this.questionToEdit.id));
+                        _this.QuestionService.questions.push(_this.QuestionService.getOneQuestionId(_this.questionToEdit.id));
                         _this.search = _this.questionToEdit.id;
                         _this.$state.go('Questions');
                     });
@@ -76,7 +77,7 @@ var Quizdom;
             QuestionsController.$inject = [
                 'QuestionService',
                 '$state',
-                '$stateParams'
+                '$q'
             ];
             Questions.QuestionsController = QuestionsController;
         })(Questions = Views.Questions || (Views.Questions = {}));

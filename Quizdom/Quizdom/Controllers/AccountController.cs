@@ -52,12 +52,23 @@ namespace Quizdom.Controllers
 
                     if (result.Succeeded)
                     {
+
+
                         var authUser = await GetUser(user);
+
+                        List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+
+                        var record = (from c in _context.Avatars
+                                      where c.Id == authUser.AvatarId
+                                      select c).FirstOrDefault();
 
                         _logger.LogInformation(1, "User logged in.");
                         // UPDATE USER TRACKING INFORMATION
                         userTracker.UpdateUserActivity(Request);
-                        return Ok(authUser);
+
+                        authUser.AvatarURL = record.ImageUrl;
+                        
+                            return Ok(authUser);
                     }
                 }
 
@@ -120,8 +131,7 @@ namespace Quizdom.Controllers
             return Ok(false);
         }
 
-
-        // api/account/getInactivityForUser/{username}
+        // api/account/searchuserbyname?username={value}
         [HttpGet("searchuserbyname")]
         public async Task<IActionResult> SearchUserByName([FromQuery]string userName)
         {
@@ -136,33 +146,6 @@ namespace Quizdom.Controllers
 
             var authUser = await GetUser(user);
             return Ok(authUser);
-        }
-
-
-        // api/account/GetInactivityTimeForUsername/{username}
-        [HttpGet("GetInactivityTimeForUsername/{username}")]
-        public IActionResult GetInactivityTimeForUsername(string username)
-        {
-            // UPDATE USER TRACKING INFORMATION
-            userTracker.UpdateUserActivity(Request);
-
-            var validateUserName = (from c in _context.UserActivity
-                                    where c.Username == username
-                                    select c).FirstOrDefault();
-
-
-            if (validateUserName == null)
-            {
-                return NotFound($"Username {username} does not exists!");
-            }
-
-            DateTime dt1 = Convert.ToDateTime(validateUserName.LastActivity);
-            DateTime dt2 = DateTime.UtcNow;
-            double totalminutes = (dt2 - dt1).TotalMinutes;
-            int minutesRounded = (int)Math.Round(totalminutes);
-
-
-            return Ok(minutesRounded);
         }
 
         // api/account/searchuserbyemail?email={value}
@@ -190,6 +173,7 @@ namespace Quizdom.Controllers
             userTracker.UpdateUserActivity(Request);
 
             List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+
             var unregisteredUsers = 0;
 
             var record = (from c in _context.Friends

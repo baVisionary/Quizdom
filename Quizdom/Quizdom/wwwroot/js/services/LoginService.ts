@@ -1,7 +1,7 @@
 // Managing account logged in status
 
 namespace Quizdom.Services {
-    export class UserService {
+    export class LoginService {
         private isUserLoggedIn: boolean = false;
         private authUser: Models.UserModel = new Models.UserModel();
 
@@ -21,39 +21,34 @@ namespace Quizdom.Services {
 
         }
 
-        public get isLoggedIn(): boolean {
-            return this.isUserLoggedIn;
-        }
+        // public get isLoggedIn(): boolean {
+        //     return this.isUserLoggedIn;
+        // }
 
-        public get user(): Models.UserModel {
-            return this.authUser;
-        }
+        // public get user(): Models.UserModel {
+        //     return this.authUser;
+        // }
 
-        private getSessionData(): void {
+        public getSessionData(): void {
             let user = this.$window.sessionStorage.getItem('user');
 
             if (user) {
-                this.authUser = <Models.UserModel>JSON.parse(user);
-                this.isUserLoggedIn = true;
-                this.AuthenticationService.setUser(this.authUser);
+                this.AuthenticationService.setUser(<Models.UserModel>JSON.parse(user));
                 return;
             }
 
-            this.authUser = Models.UserModel.getAnonymousUser();
-            this.isUserLoggedIn = false;
+            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
             return;
         }
 
-        private updateSession(user: Models.UserModel|null): boolean {
+        private updateSession(user: Models.UserModel | null): boolean {
             var encodedUser = JSON.stringify(user);
-            console.info(encodedUser);
+            console.log(user);
 
             if (encodedUser) {
                 this.$window.sessionStorage.setItem('user', encodedUser);
                 this.$window.localStorage.setItem('user', encodedUser);
-                this.authUser = user;
-                this.isUserLoggedIn = true;
-                this.AuthenticationService.setUser(this.authUser);
+                this.AuthenticationService.setUser(user);
                 return true;
             }
 
@@ -63,9 +58,7 @@ namespace Quizdom.Services {
 
         private clearSession(): void {
             this.$window.sessionStorage.clear();
-            this.authUser = Models.UserModel.getAnonymousUser();
-            this.isUserLoggedIn = false;
-            this.AuthenticationService.setUser(this.authUser);
+            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {
@@ -74,7 +67,7 @@ namespace Quizdom.Services {
             })
                 .then((response: ng.IRequestShortcutConfig) => {
                     console.info('User login was successful.');
-                    response.data.avatarUrl = this.AvatarService.getAvatarUrl(response.data.avatarId);
+                    this.AuthenticationService.setUser(response.data);
                     return this.updateSession(response.data);
                 })
                 .catch(() => {
@@ -82,7 +75,7 @@ namespace Quizdom.Services {
                     return this.updateSession(null);
                 });
         }
-        
+
         public addAvatarUrl(avatarUrl) {
             this.authUser.avatarUrl = avatarUrl;
         }

@@ -6,7 +6,7 @@ var Quizdom;
         module.service('RegistrationService', Services.RegistrationService);
         module.service('AuthenticationService', Services.AuthenticationService);
         module.service('AvatarService', Services.AvatarService);
-        module.service('UserService', Services.UserService);
+        module.service('LoginService', Services.LoginService);
         module.service('FriendService', Services.FriendService);
         module.service('QuestionService', Services.QuestionService);
     })(Services = Quizdom.Services || (Quizdom.Services = {}));

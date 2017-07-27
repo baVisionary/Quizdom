@@ -7,15 +7,15 @@ namespace Quizdom.Services {
     private oneAvatarUrl: string = 'avatar_generic.png';
 
     static $inject = [
-      '$resource'
+      '$resource',
+      '$q'
     ]
 
     constructor(
-      private $resource: ng.resource.IResourceService
-      // private AvatarResource: ,
-      // private Avatar: Models.IAvatarResource
+      private $resource: ng.resource.IResourceService,
+      private $q
     ) {
-      // this.avatars = this.getAllAvatars();
+      // this.getAllAvatars();
     }
 
     /**
@@ -53,9 +53,12 @@ namespace Quizdom.Services {
 
     public getAllAvatars() {
       if (this.avatars.length == 0) {
-        return this.avatars = this._Resource_avatar.query();
+        this.avatars = this._Resource_avatar.query();
+        return this.avatars.$promise;
       }
-      return this.avatars;
+      let avatars = this.$q.defer();
+      avatars.resolve(this.avatars);
+      return avatars;
     }
 
     public getAvatarUrl(avatarId: number) {
@@ -68,13 +71,7 @@ namespace Quizdom.Services {
         this.oneAvatar = this._Resource_avatar.get({
           avatarId: avatarId
         });
-        this.oneAvatar.$promise.then(() => {
-          return this.oneAvatar.imageUrl;
-        })
-          .catch((error) => {
-            console.log(`${error.status}: ${error.data}`);
-            return error;
-          });
+        return this.oneAvatar.imageUrl;
       }
     }
 

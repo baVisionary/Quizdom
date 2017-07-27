@@ -4,14 +4,17 @@ namespace Quizdom.Services {
 
   export class QuestionService {
 
-    static $inject = ['$resource'];
+    static $inject = [
+      '$resource',
+      '$q'
+    ];
 
     constructor(
       private $resource,
-      private UserService: Services.UserService
+      private $q
     ) {
-      this.getAllQs();
-      this.getAllCats();
+      // this.getAllQs();
+      // this.getAllCats();
     }
 
     private _Resource_question = this.$resource('/api/quiz/:questionId', null, {
@@ -32,20 +35,25 @@ namespace Quizdom.Services {
 
     public getAllQs() {
       if (this.questions.length == 0) {
-        return this.questions = this._Resource_question.query();
+        this.questions = this._Resource_question.query();
+        return this.questions.$promise;
       } else {
-        return this.questions;
+        let questions = this.$q.defer();
+        questions.resolve(this.questions);
+        return questions;
       }
     }
 
     public getAllCats() {
       if (this.categories.length == 0) {
-        this._Resource_categories.query().$promise.then((data) => {
-          this.categories = data.sort()
-          return this.categories;
-        });
+        this.categories = this._Resource_categories.query();
+        return this.categories.$promise;
       } else {
-        return this.categories;
+        let categories = this.$q.defer();
+        categories.resolve(this.categories);
+        console.log(categories);
+        return categories;
+        
       }
     }
 

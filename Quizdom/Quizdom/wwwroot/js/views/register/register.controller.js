@@ -5,11 +5,12 @@ var Quizdom;
         var Register;
         (function (Register) {
             var RegisterController = (function () {
-                function RegisterController(RegistrationService, UserService, $state, AvatarService) {
+                function RegisterController(RegistrationService, LoginService, $state, AvatarService, AuthenticationService) {
                     this.RegistrationService = RegistrationService;
-                    this.UserService = UserService;
+                    this.LoginService = LoginService;
                     this.$state = $state;
                     this.AvatarService = AvatarService;
+                    this.AuthenticationService = AuthenticationService;
                     this.formData = new Quizdom.Models.RegisterModel();
                     this.authUser = new Quizdom.Models.LoginModel();
                     this.pattern = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
@@ -48,29 +49,30 @@ var Quizdom;
                         _this.authUser.password = _this.formData.password;
                         _this.authUser.rememberMe = true;
                         console.log(_this.authUser);
-                        _this.UserService
-                            .loginUser(_this.authUser)
+                        _this.LoginService.loginUser(_this.authUser)
                             .then(function (result) {
+                            console.log("Login process result: " + result);
                             if (result) {
-                                _this.$state.go('User', {
-                                    userName: _this.UserService.user.userName
-                                });
+                                _this.goToUser();
                             }
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                            return error;
                         });
-                    })
-                        .catch(function (error) {
-                        console.log(error);
-                        return error;
                     });
+                };
+                RegisterController.prototype.goToUser = function () {
+                    this.$state.go('User');
                 };
                 return RegisterController;
             }());
-            // public RegistrationServices: angular.IServiceProvider;
             RegisterController.$inject = [
                 'RegistrationService',
-                'UserService',
+                'LoginService',
                 '$state',
-                'AvatarService'
+                'AvatarService',
+                'AuthenticationService'
             ];
             Register.RegisterController = RegisterController;
         })(Register = Views.Register || (Views.Register = {}));

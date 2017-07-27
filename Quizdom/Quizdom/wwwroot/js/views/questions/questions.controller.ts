@@ -7,8 +7,10 @@ namespace Quizdom.Views.Questions {
     ];
 
     public title: string;
+    // rewrite to remove controller variables for questions & categories
     public questions;
     public categories: string[];
+
     public category: string;
     public difficulty: string;
     public search: string;
@@ -35,7 +37,7 @@ namespace Quizdom.Views.Questions {
     }
 
     public addQuestion() {
-      let i = Math.max.apply(Math, this.questions.map(o => { return o.id; })) + 1;
+      let i = Math.max.apply(Math, this.QuestionService.questions.map(o => { return o.id; })) + 1;
       this.questionToEdit = this.QuestionService.newQuestion();
       this.questionToEdit.id = i;
       this.questionToEdit.UserId = "Quizdom User";
@@ -54,8 +56,8 @@ namespace Quizdom.Views.Questions {
       console.log(this.questionToEdit);
       this.questionToEdit.dateModified = new Date();
       this.QuestionService.updateOne(this.questionToEdit).then(() => {
-        let i = this.questions.findIndex(q => { return q.id == this.questionToEdit.id })
-        this.questions[i] = angular.copy(this.questionToEdit);
+        let i = this.QuestionService.questions.findIndex(q => { return q.id == this.questionToEdit.id })
+        this.QuestionService.questions[i] = angular.copy(this.questionToEdit);
         this.$state.go('Questions');
       });
     }
@@ -63,9 +65,9 @@ namespace Quizdom.Views.Questions {
     public deleteQuestion(questionId) {
       if (this.preDelete) {
         return this.QuestionService.deleteOne(questionId).then(() => {
-          let i = this.questions.findIndex(q => { return q.id == questionId });
+          let i = this.QuestionService.questions.findIndex(q => { return q.id == questionId });
           console.log(`questionId: ${questionId} i: ${i}`);
-          this.questions.splice(i, 1);
+          this.QuestionService.questions.splice(i, 1);
           this.preDelete = false;
           this.$state.go('Questions');
         });
@@ -82,7 +84,7 @@ namespace Quizdom.Views.Questions {
 
     public saveNewQuestion() {
       this.QuestionService.createOne(this.questionToEdit).$promise.then(() => {
-        this.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
+        this.QuestionService.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
         this.search = this.questionToEdit.id;
         this.$state.go('Questions');
       });

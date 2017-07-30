@@ -144,7 +144,17 @@ namespace Quizdom.Controllers
                 return NoContent();
             }
 
+            var friend = await _userManager.FindByNameAsync(userName);
+
+
+
             var authUser = await GetUser(user);
+            authUser = await GetUser(friend);
+            var record2 = (from c in _context.Avatars
+                           where c.Id == authUser.AvatarId
+                           select c).FirstOrDefault();
+            authUser.AvatarUrl = record2.ImageUrl;
+
             return Ok(authUser);
         }
 
@@ -161,7 +171,10 @@ namespace Quizdom.Controllers
                 return NoContent();
             }
             var authUser = await GetUser(user);
-
+            var record2 = (from c in _context.Avatars
+                           where c.Id == authUser.AvatarId
+                           select c).FirstOrDefault();
+            authUser.AvatarUrl = record2.ImageUrl;
             return Ok(authUser);
         }
 

@@ -47,7 +47,7 @@ namespace Quizdom.Controllers
             
             if (user == null)
             {
-                return NotFound("User is not logged in!");
+                return NoContent();
             }
             return Ok(user);
         }
@@ -75,7 +75,7 @@ namespace Quizdom.Controllers
 
             if (record == null)
             {
-                return NotFound($"Quiz #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -92,7 +92,7 @@ namespace Quizdom.Controllers
 
             if (record == null)
             {
-                return NotFound($"No categories exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -110,7 +110,7 @@ namespace Quizdom.Controllers
 
             if (record == null)
             {
-                return NotFound($"Quiz Category {category} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -128,7 +128,7 @@ namespace Quizdom.Controllers
 
             if (record == null)
             {
-                return NotFound($"Quiz difficulty level {difficulty} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -214,13 +214,13 @@ namespace Quizdom.Controllers
 
             if (record2 == 0)
             {
-                return NotFound($"Quiz #{id} does not exist!");
+                return NoContent();
             }
 
             quiz.Id = id;
             _context.Quiz.Update(quiz);
             _context.SaveChanges();
-            return Ok();
+            return Ok(quiz);
         }
 
         [HttpDelete("{id}")]

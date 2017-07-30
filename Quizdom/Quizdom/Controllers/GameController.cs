@@ -58,7 +58,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -88,13 +88,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Game #{id} does not exist!");
+                return NoContent();
             }
 
             games.Id = id;
             _context.Games.Update(games);
             _context.SaveChanges();
-            return Ok();
+            return Ok(games);
         }
 
         // DELETE /api/game/1
@@ -143,13 +143,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"GamePlayerEmail ID: #{id} does not exist!");
+                return NoContent();
             }
 
             email.Id = id;
             _context.GamePlayersEmail.Update(email);
             _context.SaveChanges();
-            return Ok();
+            return Ok(email);
         }
 
         // DELETE /api/game/email/1  ** Delete GamePlayersEmail record by id
@@ -187,7 +187,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -206,7 +206,7 @@ namespace Quizdom.Models
 
             if (record == 0)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -235,7 +235,7 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Player #{id} does not exist!");
+                return NoContent();
             }
 
             player.Id = id;
@@ -280,7 +280,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -299,7 +299,7 @@ namespace Quizdom.Models
 
             if (record == 0)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -328,13 +328,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Gameboard #{id} does not exist!");
+                return NoContent();
             }
 
             gameBoard.Id = id;
             _context.GameBoards.Update(gameBoard);
             _context.SaveChanges();
-            return Ok();
+            return Ok(gameBoard);
         }
 
         // DELETE /api/game/board/1  ** Delete GameBoard record by id
@@ -382,13 +382,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"GameCategories ID: #{id} does not exist!");
+                return NoContent();
             }
 
             GameCategories.Id = id;
             _context.GameCategories.Update(GameCategories);
             _context.SaveChanges();
-            return Ok();
+            return Ok(GameCategories);
         }
 
         // DELETE /api/game/gamecategories/1  ** Delete GameCategories record by id
@@ -437,13 +437,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Avatar ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Avatar.Id = id;
             _context.Avatars.Update(Avatar);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Avatar);
         }
 
         // DELETE /api/game/avatar/1  ** Delete avatar record by id
@@ -471,7 +471,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Avatar Id #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -511,13 +511,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Category ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Category.Id = id;
             _context.Categories.Update(Category);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Category);
         }
 
         // DELETE /api/game/categories/1  ** Delete game record by id
@@ -566,13 +566,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Friend ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Friend.Id = id;
             _context.Friends.Update(Friend);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Friend);
         }
 
         // DELETE /api/game/friends/1  ** Delete friend record by id
@@ -597,7 +597,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Friend Id #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -616,7 +616,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Username #{username} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -634,7 +634,7 @@ namespace Quizdom.Models
 
             if (userActivityRecord == null)
             {
-                return NotFound($"Username: {username} does not exist!");
+                return NoContent();
             }
             
             userActivityRecord.GameId = gameid;

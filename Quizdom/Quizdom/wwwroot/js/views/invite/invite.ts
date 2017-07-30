@@ -1,4 +1,4 @@
-namespace Quizdom.Views.Login {
+namespace Quizdom.Views.Invite {
     let module: ng.IModule = angular.module('View.Invite', []);
 
     module.config(Invite.Configuration);

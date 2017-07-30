@@ -3,7 +3,8 @@ namespace Quizdom.Services {
   export class FriendService {
 
     public friends = [];
-    public friendsId = [];
+    public friendsById = [];
+    public newFriend;
 
     static $inject = [
       '$resource',
@@ -11,7 +12,8 @@ namespace Quizdom.Services {
     ]
 
     private _Resource_find_friends = this.$resource('/api/Account/:verb');
-    private _Resource_friend = this.$resource('/api/game/friends');
+    private _Resource_friend = this.$resource('/api/game/friends/:friendId');
+    private _Resource_friendsById = this.$resource('/api/game/friends/primaryusername/:userName');
 
     constructor(
       private $resource: ng.resource.IResourceService,
@@ -21,8 +23,9 @@ namespace Quizdom.Services {
     }
 
     public getMyFriends(userName: string): Array<Models.UserModel> {
-      this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName })
-      console.log(this.friends);
+      this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName });
+      this.friendsById = this._Resource_friendsById.query({ userName: userName });
+      // console.log(this.friends);
       // .$promise.then((friends) => {
       //   this.friends = friends;
       //   this.friends.forEach(friend => {
@@ -34,16 +37,29 @@ namespace Quizdom.Services {
     }
 
     public findByEmail(email: string) {
-      this._Resource_find_friends.query({ verb: 'searchuserbyemail', email: email });
-
+      this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
+      return this.newFriend.$promise;
     }
 
     public findByUserName(userName: string) {
-      this._Resource_find_friends.query({ verb: 'searchuserbyname', userName: userName });
+      this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
+      return this.newFriend.$promise
+    }
+    
+    public addFriend(primaryUserName, friendUser) {
+      return this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friendUser.userName })      
     }
 
-    public addFriend(primaryUserName, friendUserName) {
-      this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friendUserName });
+    public isNewFriend(search: string): any {
+      if (this.friends.length > 0) {
+        this.friends.findIndex()
+      }
+    }
+
+    public removeFriend(primaryUserName, friendId: number) {
+      console.log(`Deleting friendId: ${friendId}`);
+      
+      return this._Resource_friend.remove({friendId: friendId});
     }
 
   }

@@ -7,7 +7,7 @@
           <span class="card-title">{{ vm.title }}</span>
           <div class="row">
             <div class="input-field col s12 m4">
-              <select name="categorySelect" id="categorySelect" ng-model="vm.category" ng-cloak>
+              <select name="categorySelect" id="categorySelect" ng-model="vm.category">
                 <option value="" selected>Show all</option>
                 <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
               </select>

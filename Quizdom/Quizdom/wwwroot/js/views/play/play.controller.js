@@ -5,11 +5,14 @@ var Quizdom;
         var Play;
         (function (Play) {
             var PlayController = (function () {
-                function PlayController() {
+                function PlayController(AuthenticationService) {
+                    this.AuthenticationService = AuthenticationService;
                 }
                 return PlayController;
             }());
-            PlayController.$inject = [];
+            PlayController.$inject = [
+                'AuthenticationService'
+            ];
             Play.PlayController = PlayController;
         })(Play = Views.Play || (Views.Play = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

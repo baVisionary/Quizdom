@@ -56,28 +56,36 @@ namespace Quizdom.Services {
       return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName })
     }
 
-    // check whether newly seaerched friend is already listed
-    public isNewFriend(search: string): any {
-      // check if search refers to self
+    // check whether search is logged in user info
+    public isMe(search: string): boolean {
+      // Normalize search case for smarter comparisons
       let upperSearch = search.toUpperCase();
-      // console.log(upperSearch);
-
+      // check against username & email
       let myUserName = this.AuthenticationService.User.userName.toUpperCase() == upperSearch;
       let myEmail = this.AuthenticationService.User.email.toUpperCase() == upperSearch;
+      // display results of search
+      console.log(`${search} is myUserName: ${myUserName} myEmail: ${myEmail}`);
+      return (myUserName || myEmail);
+    }
+
+    // check whether newly seaerched friend is already listed
+    public isNewFriend(search: string): boolean {
+      // Normalize search case for smarter comparisons
+      let upperSearch = search.toUpperCase();
+
       let friendUserName = false;
       let friendEmail = false;
       // check if search is already a friend
       friendUserName = this.friends.findIndex(f => {
-        // console.log(f.userName.toUpperCase());
         return f.userName.toUpperCase() == upperSearch
       }) >= 0;
       friendEmail = this.friends.findIndex(f => {
-        // console.log(`${f.email.toUpperCase()} `);
         return f.email.toUpperCase() == upperSearch
       }) >= 0;
-      console.log(`${search} is myUserName: ${myUserName} myEmail: ${myEmail} friendUserName: ${friendUserName} friendEmail: ${friendEmail}`);
+      // display results of search
+      console.log(`${search} is friendUserName: ${friendUserName} friendEmail: ${friendEmail}`);
 
-      if (myUserName || myEmail || friendUserName || friendEmail) {
+      if (friendUserName || friendEmail) {
         return false;
       }
       return true;

@@ -5,32 +5,107 @@ var Quizdom;
         var User;
         (function (User) {
             var UserController = (function () {
-                function UserController(
-                    // private LoginService: Services.LoginService,
-                    // private AvatarService: Services.AvatarService,
-                    FriendService, AuthenticationService, $scope, $state) {
+                function UserController(FriendService, AuthenticationService, $state) {
+                    var _this = this;
                     this.FriendService = FriendService;
                     this.AuthenticationService = AuthenticationService;
-                    this.$scope = $scope;
                     this.$state = $state;
                     this.friendEdit = false;
+                    this.searchTerm = "";
+                    this.feedback = "";
+                    this.friendError = "";
+                    this.friendSuccess = "";
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName);
+                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+                        .then(function () {
+                        console.log(_this.FriendService.friends);
+                    })
+                        .catch(function (error) {
+                        _this.friendError = error.data;
+                    });
                 }
                 UserController.prototype.editFriends = function () {
                     this.friendEdit = !this.friendEdit;
                     console.log("friendEdit: " + this.friendEdit);
                 };
+                UserController.prototype.findFriend = function (search) {
+                    var _this = this;
+                    var found = new Quizdom.Models.UserModel;
+                    this.feedback = "";
+                    if (this.FriendService.isNewFriend(search)) {
+                        this.FriendService.findByUserName(search)
+                            .then(function (found) {
+                            // Need to confirm that 204 not returned or 200 returned
+                            console.log(found.hasOwnProperty('userName'));
+                            if (found.hasOwnProperty('userName')) {
+                                _this.updateFriends(found);
+                                return found;
+                            }
+                            else {
+                                _this.FriendService.findByEmail(search)
+                                    .then(function (found) {
+                                    console.log(found.hasOwnProperty('userName'));
+                                    if (found.hasOwnProperty('userName')) {
+                                        _this.updateFriends(found);
+                                        return found;
+                                    }
+                                    _this.feedback = search + " not found as Username or Email";
+                                    return;
+                                });
+                            }
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                            _this.feedback = error.status + ": " + error.statusText;
+                            return;
+                        });
+                    }
+                    else {
+                        this.searchTerm = "";
+                        this.feedback = search + " is already a friend";
+                        return;
+                    }
+                };
+                UserController.prototype.updateFriends = function (newFriend) {
+                    var _this = this;
+                    this.searchTerm = "";
+                    this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend).$promise
+                        .then(function () {
+                        return _this.FriendService.newFriendId(_this.AuthenticationService.User.userName, newFriend).$promise
+                            .then(function (addFriendId) {
+                            console.log(addFriendId[0]);
+                            newFriend.friendId = addFriendId[0].id;
+                            console.log(newFriend);
+                            _this.FriendService.friends.push(newFriend);
+                            console.log(_this.FriendService.friends);
+                        });
+                    })
+                        .catch(function () {
+                    });
+                };
+                UserController.prototype.deleteFriend = function (friendId) {
+                    var _this = this;
+                    if (this.editFriends) {
+                        this.FriendService.removeFriend(this.AuthenticationService.User.userName, friendId).$promise
+                            .then(function () {
+                            var oldFriendIndex = _this.FriendService.friends.findIndex(function (f) { return f.friendId == friendId; });
+                            if (oldFriendIndex >= 0) {
+                                console.log(oldFriendIndex);
+                                _this.FriendService.friends.splice(oldFriendIndex, 1);
+                                console.log("Deleted friendId: " + friendId);
+                            }
+                        })
+                            .catch(function () {
+                        });
+                    }
+                };
                 return UserController;
             }());
             UserController.$inject = [
-                // 'LoginService',
-                // 'AvatarService',
                 'FriendService',
                 'AuthenticationService',
-                '$scope',
                 '$state'
             ];
             User.UserController = UserController;

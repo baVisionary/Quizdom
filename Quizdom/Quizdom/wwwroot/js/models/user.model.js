@@ -12,7 +12,7 @@ var Quizdom;
                 this.friendId = 0;
             }
             UserModel.getAnonymousUser = function () {
-                var user = new Models.UserModel();
+                var user = new Models.UserModel;
                 return user;
             };
             return UserModel;

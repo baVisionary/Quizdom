@@ -603,6 +603,8 @@ namespace Quizdom.Models
             return Ok(record);
         }
 
+        // TODO ADD PRIMARY AND FRIENDUSERNAME LOOKUP *****
+
         // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
         [HttpGet("friends/primaryusername/{username}")]
         public IActionResult GetFriendsByUserName(string username)
@@ -621,6 +623,31 @@ namespace Quizdom.Models
 
             return Ok(record);
         }
+
+        // GET /api/game/friends/rickco   - get's id from primaryusername and friendusername combo
+        [HttpGet("friends/primaryusername/{primaryusername}/friendusername/{friendusername}")]
+        public IActionResult GetFriendsByFriendUserName(string primaryusername, string friendusername)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Friends
+                          where c.primaryUserName == primaryusername
+                          && c.friendUserName == friendusername
+                          select c).ToList();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
+
+
+
+
 
         // PUT /api/game/updateuseractivitygameid/username/gameid   ** updates useractivity table by username
         [HttpPut("updateuseractivitygameid/{username}/{gameid}")]

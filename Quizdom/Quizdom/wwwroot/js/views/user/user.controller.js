@@ -34,7 +34,12 @@ var Quizdom;
                     var _this = this;
                     var found = new Quizdom.Models.UserModel;
                     this.feedback = "";
-                    if (this.FriendService.isNewFriend(search)) {
+                    if (this.FriendService.isMe(search)) {
+                        this.searchTerm = "";
+                        this.feedback = search + " is your info, ya bonehead!";
+                        return;
+                    }
+                    else if (this.FriendService.isNewFriend(search)) {
                         this.FriendService.findByUserName(search)
                             .then(function (found) {
                             // Need to confirm that 204 not returned or 200 returned

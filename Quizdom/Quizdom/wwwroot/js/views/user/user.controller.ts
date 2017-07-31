@@ -39,7 +39,11 @@ namespace Quizdom.Views.User {
         public findFriend(search: string): any {
             let found: Models.UserModel = new Models.UserModel;
             this.feedback = "";
-            if (this.FriendService.isNewFriend(search)) {
+            if (this.FriendService.isMe(search)) {
+                this.searchTerm = "";
+                this.feedback = `${search} is your info, ya bonehead!`
+                return;
+            } else if (this.FriendService.isNewFriend(search)) {
                 this.FriendService.findByUserName(search)
                     .then((found) => {
                         // Need to confirm that 204 not returned or 200 returned

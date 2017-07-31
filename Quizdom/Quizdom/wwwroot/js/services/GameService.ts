@@ -6,19 +6,37 @@ namespace Quizdom.Services {
   export class GameService {
 
     static $inject = [
+      'AuthenticationService',
       '$resource'
     ];
-    private _Resource_game = this.$resource('/api/quiz/:gameId', null, {
+
+    constructor(
+      private AuthenticationService: Services.AuthenticationService,
+      private $resource: ng.resource.IResourceService
+    ) {
+
+    }
+
+    // manage 'Games' table
+    private _Resource_game = this.$resource('/api/game/:gameId', null, {
       'update': {
         method: 'PUT'
       }
     });
 
-    constructor(
-      private $resource
-    ) {
+    // manage 'GameCategories' - lists the categories selected for each gameId
+    private _Resource_game_categories = this.$resource('/api/gamecategories/:id', null, {
+      'update': {
+        method: 'PUT'
+      }
+    });
 
-    }
+    // access 'Categories' to correlate categoryId to short & long name
+    private _Resource_categories = this.$resource('/api/game/categories/:id', null, {
+      'update': {
+        method: 'PUT'
+      }
+    });
 
   }
 

@@ -10,6 +10,7 @@ namespace Quizdom.Views {
     'View.User',
     'View.Invite',
     'View.Setup',
-    'View.Play'
+    'View.Play',
+    'View.Chat'
   ]);
 }

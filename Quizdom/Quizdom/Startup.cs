@@ -159,6 +159,10 @@ namespace Quizdom
             {
                 c.SwaggerEndpoint("/swagger/v1/swagger.json", "My API V1");
             });
+            
+            // SIGNAL R 
+            app.UseWebSockets();
+            app.UseSignalR();
 
             app.UseMvc(routes =>
             {
@@ -172,9 +176,6 @@ namespace Quizdom
                     defaults: new { controller = "Home", action = "Index" });
             });
 
-            // SIGNAL R 
-            app.UseWebSockets();
-            app.UseSignalR();
         }
     }
 }

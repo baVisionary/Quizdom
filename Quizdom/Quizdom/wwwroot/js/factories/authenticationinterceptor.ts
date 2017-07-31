@@ -21,13 +21,6 @@ namespace Quizdom.Factories {
 
                 return config;
             },
-            // response: (response) => {
-            //     if (response.status === 204) {
-            //         response.data = {status: 204};
-            //     }
-
-            //     return $q.resolve(response);
-            // },
             responseError: (rejection: any) => {
                 if (rejection.status === 401 || rejection.status === 403) {
                     $location.path('/login');

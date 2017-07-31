@@ -66,13 +66,13 @@ var Quizdom;
             FriendService.prototype.removeFriend = function (primaryUserName, friendId) {
                 return this._Resource_friend.remove({ friendId: friendId });
             };
+            FriendService.$inject = [
+                'AvatarService',
+                'AuthenticationService',
+                '$resource'
+            ];
             return FriendService;
         }());
-        FriendService.$inject = [
-            'AvatarService',
-            'AuthenticationService',
-            '$resource'
-        ];
         Services.FriendService = FriendService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

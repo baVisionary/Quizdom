@@ -65,15 +65,15 @@ var Quizdom;
                 RegisterController.prototype.goToUser = function () {
                     this.$state.go('User');
                 };
+                RegisterController.$inject = [
+                    'RegistrationService',
+                    'LoginService',
+                    '$state',
+                    'AvatarService',
+                    'AuthenticationService'
+                ];
                 return RegisterController;
             }());
-            RegisterController.$inject = [
-                'RegistrationService',
-                'LoginService',
-                '$state',
-                'AvatarService',
-                'AuthenticationService'
-            ];
             Register.RegisterController = RegisterController;
         })(Register = Views.Register || (Views.Register = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

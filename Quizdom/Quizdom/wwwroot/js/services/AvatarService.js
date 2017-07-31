@@ -67,12 +67,12 @@ var Quizdom;
                     return this.oneAvatar.imageUrl;
                 }
             };
+            AvatarService.$inject = [
+                '$resource',
+                '$q'
+            ];
             return AvatarService;
         }());
-        AvatarService.$inject = [
-            '$resource',
-            '$q'
-        ];
         Services.AvatarService = AvatarService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

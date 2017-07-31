@@ -32,13 +32,13 @@ var Quizdom;
         AppController.prototype.myState = function (current) {
             return this.$state.current.name == current;
         };
+        AppController.$inject = [
+            'LoginService',
+            'AuthenticationService',
+            'FriendService',
+            '$state'
+        ];
         return AppController;
     }());
-    AppController.$inject = [
-        'LoginService',
-        'AuthenticationService',
-        'FriendService',
-        '$state'
-    ];
     Quizdom.AppController = AppController;
 })(Quizdom || (Quizdom = {}));

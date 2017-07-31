@@ -19,11 +19,11 @@ var Quizdom;
                     return error;
                 });
             };
+            RegistrationService.$inject = [
+                '$http'
+            ];
             return RegistrationService;
         }());
-        RegistrationService.$inject = [
-            '$http'
-        ];
         Services.RegistrationService = RegistrationService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

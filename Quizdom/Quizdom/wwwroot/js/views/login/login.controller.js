@@ -34,13 +34,13 @@ var Quizdom;
                 LoginController.prototype.goToUser = function () {
                     this.$state.go('User');
                 };
+                LoginController.$inject = [
+                    '$state',
+                    'LoginService',
+                    'AuthenticationService'
+                ];
                 return LoginController;
             }());
-            LoginController.$inject = [
-                '$state',
-                'LoginService',
-                'AuthenticationService'
-            ];
             Login.LoginController = LoginController;
         })(Login = Views.Login || (Views.Login = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

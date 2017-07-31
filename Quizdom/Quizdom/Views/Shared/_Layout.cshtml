@@ -20,7 +20,7 @@
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
-        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true" >
+        <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true">
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
 </head>
@@ -29,28 +29,28 @@
     <div class="container body-content">
         <nav>
             <div class="nav-wrapper" ng-controller="AppController as vm">
-                <a href="#!" class="brand-logo hide-on-med-and-up"><i class="large material-icons left">question_answer</i>Quizdom</a> 
+                <a href="#!" class="brand-logo hide-on-med-and-up"><i class="large material-icons left">question_answer</i>Quizdom</a>
                 <a href="#" data-activates="mobile-demo" class="button-collapse hide-on-med-and-up"><i class="material-icons">menu</i></a>
                 <ul class="align-center hide-on-small-only">
                     <li ng-class="{active: vm.myState('Welcome')}"><a ui-sref="Welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
                     <li ng-class="{active: vm.myState('Questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
                     <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
-                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}"git c><a ui-sref="Login">Log in</a></li>
+                    <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}" git c><a ui-sref="Login">Log in</a></li>
                     <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
                 </ul>
-                 <ul class="side-nav" id="mobile-demo">
+                <ul class="side-nav" id="mobile-demo">
                     <li ng-class="{active: vm.myState('Welcome')}"><a ui-sref="Welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
                     <li ng-class="{active: vm.myState('Questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}"><a ui-sref="Login">Log in</a></li>
                     <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
                     <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
-                </ul> 
+                </ul>
             </div>
         </nav>
 
-         <ui-view></ui-view> 
+        <ui-view></ui-view>
     </div>
 
     <!-- third-party libraries -->
@@ -60,6 +60,11 @@
     <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="~/lib/angular-resource/angular-resource.js"></script>
     <script src="~/lib/angularUtils-pagination/dirPagination.js"></script>
+
+    <!--ajax & SignalR libraries  -->
+    <script src="~/lib/signalr/jquery.signalR.min.js"></script>
+    <!-- <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script> -->
+    <script src="/signalr/hubs"></script>
 
     <!-- Models -->
     <script src="~/js/models/user.model.js"></script>
@@ -90,7 +95,6 @@
     <script src="~/js/services/AuthenticationService.js"></script>
     <script src="~/js/services/ActiveService.js"></script>
     <script src="~/js/services/Services.js"></script>
-
 
     <!-- Application Views  -->
     <script src="~/js/views/welcome/welcome.controller.js"></script>
@@ -125,6 +129,10 @@
     <script src="~/js/views/play/play.config.js"></script>
     <script src="~/js/views/play/play.js"></script>
 
+    <script src="~/js/views/chat/chat.controller.js"></script>
+    <script src="~/js/views/chat/chat.config.js"></script>
+    <script src="~/js/views/chat/chat.js"></script>
+
     <script src="~/js/views/forgotpassword/forgotpassword.controller.js"></script>
     <script src="~/js/views/forgotpassword/forgotpassword.config.js"></script>
     <script src="~/js/views/forgotpassword/forgotpassword.js"></script>
@@ -139,11 +147,12 @@
     <script src="~/js/app.config.js"></script>
     <script src="~/js/app.js"></script>
 
-     <script>
+    <!-- Materialize leftside navbar -->
+    <script>
         $(document).ready(function () {
             $(".button-collapse").sideNav();
         })
-    </script> 
+    </script>
 
     <!-- Must be present or app will not find linked Angular files
         @RenderBody()

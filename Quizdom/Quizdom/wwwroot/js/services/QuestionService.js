@@ -72,12 +72,12 @@ var Quizdom;
             QuestionService.prototype.createOne = function (q) {
                 return this._Resource_question.save(q);
             };
+            QuestionService.$inject = [
+                '$resource',
+                '$q'
+            ];
             return QuestionService;
         }());
-        QuestionService.$inject = [
-            '$resource',
-            '$q'
-        ];
         Services.QuestionService = QuestionService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

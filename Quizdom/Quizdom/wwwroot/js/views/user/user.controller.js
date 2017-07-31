@@ -78,7 +78,7 @@ var Quizdom;
                     this.searchTerm = "";
                     this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend).$promise
                         .then(function () {
-                        return _this.FriendService.newFriendId(_this.AuthenticationService.User.userName, newFriend).$promise
+                        _this.FriendService.newFriendId(_this.AuthenticationService.User.userName, newFriend).$promise
                             .then(function (addFriendId) {
                             console.log(addFriendId[0]);
                             newFriend.friendId = addFriendId[0].id;
@@ -106,13 +106,13 @@ var Quizdom;
                         });
                     }
                 };
+                UserController.$inject = [
+                    'FriendService',
+                    'AuthenticationService',
+                    '$state'
+                ];
                 return UserController;
             }());
-            UserController.$inject = [
-                'FriendService',
-                'AuthenticationService',
-                '$state'
-            ];
             User.UserController = UserController;
         })(User = Views.User || (Views.User = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

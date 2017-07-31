@@ -13,7 +13,8 @@ var Quizdom;
             'View.User',
             'View.Invite',
             'View.Setup',
-            'View.Play'
+            'View.Play',
+            'View.Chat'
         ]);
     })(Views = Quizdom.Views || (Quizdom.Views = {}));
 })(Quizdom || (Quizdom = {}));

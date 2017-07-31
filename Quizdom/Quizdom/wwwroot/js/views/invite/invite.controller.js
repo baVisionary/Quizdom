@@ -33,14 +33,14 @@ var Quizdom;
                         console.log(error);
                     });
                 };
+                InviteController.$inject = [
+                    'AuthenticationService',
+                    'FriendService',
+                    'ActiveService',
+                    '$state'
+                ];
                 return InviteController;
             }());
-            InviteController.$inject = [
-                'AuthenticationService',
-                'FriendService',
-                'ActiveService',
-                '$state'
-            ];
             Invite.InviteController = InviteController;
         })(Invite = Views.Invite || (Views.Invite = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

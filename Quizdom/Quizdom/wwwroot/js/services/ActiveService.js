@@ -19,11 +19,11 @@ var Quizdom;
                 enumerable: true,
                 configurable: true
             });
+            ActiveService.$inject = [
+                '$resource'
+            ];
             return ActiveService;
         }());
-        ActiveService.$inject = [
-            '$resource'
-        ];
         Services.ActiveService = ActiveService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

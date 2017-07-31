@@ -74,14 +74,14 @@ var Quizdom;
                     console.info('User was not logged out.');
                 });
             };
+            LoginService.$inject = [
+                '$http',
+                '$window',
+                'AvatarService',
+                'AuthenticationService'
+            ];
             return LoginService;
         }());
-        LoginService.$inject = [
-            '$http',
-            '$window',
-            'AvatarService',
-            'AuthenticationService'
-        ];
         Services.LoginService = LoginService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

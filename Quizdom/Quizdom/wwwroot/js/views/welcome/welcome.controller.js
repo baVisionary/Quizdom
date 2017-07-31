@@ -15,13 +15,13 @@ var Quizdom;
                     this.QuestionService.getAllQs();
                     this.QuestionService.getAllCats();
                 }
+                WelcomeController.$inject = [
+                    'AvatarService',
+                    'QuestionService',
+                    'FriendService'
+                ];
                 return WelcomeController;
             }());
-            WelcomeController.$inject = [
-                'AvatarService',
-                'QuestionService',
-                'FriendService'
-            ];
             Welcome.WelcomeController = WelcomeController;
         })(Welcome = Views.Welcome || (Views.Welcome = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

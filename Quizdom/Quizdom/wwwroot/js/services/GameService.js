@@ -27,12 +27,13 @@ var Quizdom;
                     }
                 });
             }
+            GameService.$inject = [
+                'AuthenticationService',
+                '$resource'
+            ];
             return GameService;
         }());
-        GameService.$inject = [
-            'AuthenticationService',
-            '$resource'
-        ];
+
         Services.GameService = GameService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

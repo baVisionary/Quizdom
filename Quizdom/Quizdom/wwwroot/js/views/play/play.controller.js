@@ -8,11 +8,11 @@ var Quizdom;
                 function PlayController(AuthenticationService) {
                     this.AuthenticationService = AuthenticationService;
                 }
+                PlayController.$inject = [
+                    'AuthenticationService'
+                ];
                 return PlayController;
             }());
-            PlayController.$inject = [
-                'AuthenticationService'
-            ];
             Play.PlayController = PlayController;
         })(Play = Views.Play || (Views.Play = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

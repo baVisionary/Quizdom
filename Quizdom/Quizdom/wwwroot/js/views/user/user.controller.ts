@@ -81,7 +81,7 @@ namespace Quizdom.Views.User {
             this.searchTerm = "";
             this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend).$promise
                 .then(() => {
-                    return this.FriendService.newFriendId(this.AuthenticationService.User.userName, newFriend).$promise
+                    this.FriendService.newFriendId(this.AuthenticationService.User.userName, newFriend).$promise
                         .then((addFriendId) => {
                             console.log(addFriendId[0]);
                             newFriend.friendId = addFriendId[0].id;

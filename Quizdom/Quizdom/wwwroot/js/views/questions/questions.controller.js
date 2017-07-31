@@ -72,13 +72,13 @@ var Quizdom;
                         _this.$state.go('Questions');
                     });
                 };
+                QuestionsController.$inject = [
+                    'QuestionService',
+                    '$state',
+                    '$q'
+                ];
                 return QuestionsController;
             }());
-            QuestionsController.$inject = [
-                'QuestionService',
-                '$state',
-                '$q'
-            ];
             Questions.QuestionsController = QuestionsController;
         })(Questions = Views.Questions || (Views.Questions = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

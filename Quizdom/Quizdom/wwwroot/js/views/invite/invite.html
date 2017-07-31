@@ -1,10 +1,20 @@
-<h1>Invite friends to Quizdom</h1>
+<h1>Invite friends to play</h1>
 <h4>Friends</h4>
-<div class="chip" ng-repeat="friend in vm.FriendService.friends" id="{{friend.friendId}}">
-  <img src="/images/{{friend.avatarUrl}}" alt="Friend">&nbsp;{{friend.userName}}
+<div class="chip" ng-repeat="friend in vm.FriendService.friends" id="{{friend.userName}}">
+  <img src="/images/{{friend.avatarUrl}}" alt="Friend">
+  <div class="valign-wrapper">
+    &nbsp;{{friend.userName}}&nbsp;
+    <i class="material-icons">add</i>
+  </div>
 </div>
 <h4>Active Players</h4>
-
+<div class="chip" ng-repeat="user in vm.ActiveService.ActiveUsers" id="{{user.userName}}">
+  <img src="/images/{{user.avatarUrl}}" alt="User">
+  <div class="valign-wrapper">
+    &nbsp;{{user.userName}}&nbsp;
+    <i class="material-icons">add</i>
+  </div>
+</div>
 <h4>Game Players</h4>
-<a class="btn" ui-sref="User">{{vm.AuthenticationService.User.userName}}</a>
+<a class="btn" ui-sref="User">Friends</a>
 <a class="btn" ui-sref="Setup">Setup</a>

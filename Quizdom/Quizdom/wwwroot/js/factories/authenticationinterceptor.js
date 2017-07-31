@@ -16,6 +16,12 @@ var Quizdom;
                     config.headers['Role'] = (authUser.isAdmin) ? 'Admin' : (authUser.userName == 'Guest') ? 'Guest' : 'Normal';
                     return config;
                 },
+                // response: (response) => {
+                //     if (response.status === 204) {
+                //         response.data = {status: 204};
+                //     }
+                //     return $q.resolve(response);
+                // },
                 responseError: function (rejection) {
                     if (rejection.status === 401 || rejection.status === 403) {
                         $location.path('/login');

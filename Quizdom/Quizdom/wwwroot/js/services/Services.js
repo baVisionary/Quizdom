@@ -9,5 +9,6 @@ var Quizdom;
         module.service('LoginService', Services.LoginService);
         module.service('FriendService', Services.FriendService);
         module.service('QuestionService', Services.QuestionService);
+        module.service('ActiveService', Services.ActiveService);
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

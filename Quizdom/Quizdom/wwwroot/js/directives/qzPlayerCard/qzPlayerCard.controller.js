@@ -12,11 +12,11 @@ var Quizdom;
                 };
                 console.log($scope);
             }
+            qzPlayerCardController.$inject = [
+                '$scope'
+            ];
             return qzPlayerCardController;
         }());
-        qzPlayerCardController.$inject = [
-            '$scope'
-        ];
         Directives.qzPlayerCardController = qzPlayerCardController;
     })(Directives = Quizdom.Directives || (Quizdom.Directives = {}));
 })(Quizdom || (Quizdom = {}));

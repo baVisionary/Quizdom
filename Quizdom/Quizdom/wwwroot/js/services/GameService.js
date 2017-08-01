@@ -13,11 +13,11 @@ var Quizdom;
                     }
                 });
             }
+            GameService.$inject = [
+                '$resource'
+            ];
             return GameService;
         }());
-        GameService.$inject = [
-            '$resource'
-        ];
         Services.GameService = GameService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

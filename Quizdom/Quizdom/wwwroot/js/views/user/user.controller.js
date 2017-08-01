@@ -23,16 +23,16 @@ var Quizdom;
                     this.friendEdit = !this.friendEdit;
                     console.log("friendEdit: " + this.friendEdit);
                 };
+                UserController.$inject = [
+                    // 'LoginService',
+                    // 'AvatarService',
+                    'FriendService',
+                    'AuthenticationService',
+                    '$scope',
+                    '$state'
+                ];
                 return UserController;
             }());
-            UserController.$inject = [
-                // 'LoginService',
-                // 'AvatarService',
-                'FriendService',
-                'AuthenticationService',
-                '$scope',
-                '$state'
-            ];
             User.UserController = UserController;
         })(User = Views.User || (Views.User = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

@@ -12,9 +12,9 @@ var Quizdom;
                     // TODO: Complete process
                     console.log('testing request password');
                 };
+                ForgotPasswordController.$inject = [];
                 return ForgotPasswordController;
             }());
-            ForgotPasswordController.$inject = [];
             ForgotPassword.ForgotPasswordController = ForgotPasswordController;
         })(ForgotPassword = Views.ForgotPassword || (Views.ForgotPassword = {}));
     })(Views = Quizdom.Views || (Quizdom.Views = {}));

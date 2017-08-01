@@ -32,12 +32,12 @@ var Quizdom;
             FriendService.prototype.addFriend = function (primaryUserName, friendUserName) {
                 this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friendUserName });
             };
+            FriendService.$inject = [
+                '$resource',
+                'AvatarService'
+            ];
             return FriendService;
         }());
-        FriendService.$inject = [
-            '$resource',
-            'AvatarService'
-        ];
         Services.FriendService = FriendService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

@@ -141,10 +141,20 @@ namespace Quizdom.Controllers
             var user = await _userManager.FindByNameAsync(userName);
             if (user == null)
             {
-                return NotFound($"Username {userName} was not found");
+                return NoContent();
             }
 
+            var friend = await _userManager.FindByNameAsync(userName);
+
+
+
             var authUser = await GetUser(user);
+            authUser = await GetUser(friend);
+            var record2 = (from c in _context.Avatars
+                           where c.Id == authUser.AvatarId
+                           select c).FirstOrDefault();
+            authUser.AvatarUrl = record2.ImageUrl;
+
             return Ok(authUser);
         }
 
@@ -158,10 +168,13 @@ namespace Quizdom.Controllers
             var user = await _userManager.FindByEmailAsync(email);
             if (user == null)
             {
-                return NotFound($"Email Address: {email} was not found");
+                return NoContent();
             }
             var authUser = await GetUser(user);
-
+            var record2 = (from c in _context.Avatars
+                           where c.Id == authUser.AvatarId
+                           select c).FirstOrDefault();
+            authUser.AvatarUrl = record2.ImageUrl;
             return Ok(authUser);
         }
 
@@ -174,38 +187,37 @@ namespace Quizdom.Controllers
 
             List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
 
-            var unregisteredUsers = 0;
-
-            var record = (from c in _context.Friends
+            var friendsList = (from c in _context.Friends
                           where c.primaryUserName == userName
                           select c).Distinct().ToList();
 
-            if (record.Count > 0)
+            if (friendsList.Count > 0)
             {
                 var authUser = new AuthUserViewModel();
 
-                foreach (var item in record)
+                foreach (var item in friendsList)
                 {
                     try
                     {
-                        var user = await _userManager.FindByNameAsync(item.friendUserName);
-                        authUser = await GetUser(user);
+                        var friend = await _userManager.FindByNameAsync(item.friendUserName);
+                        authUser = await GetUser(friend);
                         var record2 = (from c in _context.Avatars
                                        where c.Id == authUser.AvatarId
                                        select c).FirstOrDefault();
-
                         authUser.AvatarUrl = record2.ImageUrl;
-                        authUser.FriendId = item.Id;
-                        authModel.Add(authUser);
                     }
                     catch
                     {
-                        unregisteredUsers++;
+                        authUser.AvatarUrl = "avatar_generic.png";
                     }
+                    authUser.FriendId = item.Id;
+                    authModel.Add(authUser);
                 }
 
                 if (authModel.Count() > 0)
+                {
                     return Ok(authModel);
+                }
 
                 //return NotFound("No Registered Users were located!");
                 return NoContent();
@@ -249,6 +261,56 @@ namespace Quizdom.Controllers
 
 
             return Ok(minutesRounded);
+        }
+
+
+        // api/account/GetInactivityTimeForUsername/{username}
+        [HttpGet("getactiveusers")]
+        public async Task<IActionResult> GetActiveUsers()
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            List<AuthUserViewModel> authModel = new List<AuthUserViewModel>();
+            var authUser = new AuthUserViewModel();
+
+            var userList = _context.UserActivity;
+
+            if (userList == null)
+            {
+                return NoContent();
+            }
+
+            List<string> activeUsers = new List<string>();
+
+            foreach (var item in userList)
+            {
+                DateTime dt1 = Convert.ToDateTime(item.LastActivity);
+                DateTime dt2 = DateTime.UtcNow;
+                double totalminutes = (dt2 - dt1).TotalMinutes;
+                int minutesRounded = (int)Math.Round(totalminutes);
+
+                if (minutesRounded < 30)
+                {
+                    activeUsers.Add(item.Username);
+                }
+            }
+
+            foreach (var username in activeUsers)
+            {
+                var user = await _userManager.FindByNameAsync(username);
+                if (user != null)
+                {
+                    authUser = await GetUser(user);
+                    var record2 = (from c in _context.Avatars
+                                   where c.Id == authUser.AvatarId
+                                   select c).FirstOrDefault();
+                    authUser.AvatarUrl = record2.ImageUrl;
+                    authModel.Add(authUser);
+                }
+            }
+
+            return Ok(authModel);
         }
 
 

@@ -5,15 +5,30 @@ var Quizdom;
     var Services;
     (function (Services) {
         var GameService = (function () {
-            function GameService($resource) {
+            function GameService(AuthenticationService, $resource) {
+                this.AuthenticationService = AuthenticationService;
                 this.$resource = $resource;
-                this._Resource_game = this.$resource('/api/quiz/:gameId', null, {
+                // manage 'Games' table
+                this._Resource_game = this.$resource('/api/game/:gameId', null, {
+                    'update': {
+                        method: 'PUT'
+                    }
+                });
+                // manage 'GameCategories' - lists the categories selected for each gameId
+                this._Resource_game_categories = this.$resource('/api/gamecategories/:id', null, {
+                    'update': {
+                        method: 'PUT'
+                    }
+                });
+                // access 'Categories' to correlate categoryId to short & long name
+                this._Resource_categories = this.$resource('/api/game/categories/:id', null, {
                     'update': {
                         method: 'PUT'
                     }
                 });
             }
             GameService.$inject = [
+                'AuthenticationService',
                 '$resource'
             ];
             return GameService;

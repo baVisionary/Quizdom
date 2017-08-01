@@ -8,23 +8,12 @@ namespace Quizdom.Models {
         public friendId?: number = 0;
 
         public static getAnonymousUser(): Models.UserModel {
-            let user = new Models.UserModel();
+            let user = new Models.UserModel;
             return user;
         }
     }
 
-    export interface IUser extends ng.resource.IResource<IUser> {
-        userName: string;
-        email: string;
-        avatarId: number;
-        avatarUrl?: string;
-        isAdmin?: boolean;
-        friendId?: number;
+    export interface IUser extends ng.resource.IResource<UserModel> { }
 
-        getAnonymousUser();
-    }
-
-    export interface IUserResource extends ng.resource.IResource<IUser> {
-        
-    }
+    export interface IUserResource extends ng.resource.IResourceClass<IUser> { }
 }

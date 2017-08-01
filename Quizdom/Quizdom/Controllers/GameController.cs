@@ -58,7 +58,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -67,13 +67,15 @@ namespace Quizdom.Models
 
         // POST /api/game
         [HttpPost]
-        public void Post([FromBody]Game game)
+        public IActionResult Post([FromBody]Game game)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Games.Add(game);
             _context.SaveChanges();
+
+            return Created("api/game/" + game.Id ,game.Id);
         }
 
         // PUT /api/game/1   ** updates game record by game id
@@ -88,13 +90,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Game #{id} does not exist!");
+                return NoContent();
             }
 
             games.Id = id;
             _context.Games.Update(games);
             _context.SaveChanges();
-            return Ok();
+            return Ok(games);
         }
 
         // DELETE /api/game/1
@@ -112,13 +114,15 @@ namespace Quizdom.Models
 
         // POST /api/game/email  ** Add new gameplayers email record
         [HttpPost("email")]
-        public void Post([FromBody]GamePlayersEmail gamePlayersEmail)
+        public IActionResult Post([FromBody]GamePlayersEmail gamePlayersEmail)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GamePlayersEmail.Add(gamePlayersEmail);
             _context.SaveChanges();
+
+            return Created("api/game/email/" + gamePlayersEmail.Id, gamePlayersEmail.Id);
         }
 
         // GET: /api/game/email  * get's all game players Email
@@ -143,13 +147,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"GamePlayerEmail ID: #{id} does not exist!");
+                return NoContent();
             }
 
             email.Id = id;
             _context.GamePlayersEmail.Update(email);
             _context.SaveChanges();
-            return Ok();
+            return Ok(email);
         }
 
         // DELETE /api/game/email/1  ** Delete GamePlayersEmail record by id
@@ -187,7 +191,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -206,7 +210,7 @@ namespace Quizdom.Models
 
             if (record == 0)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -214,13 +218,15 @@ namespace Quizdom.Models
 
         // POST /api/game/players  ** Add new gameplayers record
         [HttpPost("players")]
-        public void Post([FromBody]GamePlayers gamePlayers)
+        public IActionResult Post([FromBody]GamePlayers gamePlayers)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GamePlayers.Add(gamePlayers);
             _context.SaveChanges();
+
+            return Created("api/game/players/" + gamePlayers.Id, gamePlayers.Id);
         }
 
         // PUT /api/game/players1   ** updates gamePlayers record by id
@@ -235,7 +241,7 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Player #{id} does not exist!");
+                return NoContent();
             }
 
             player.Id = id;
@@ -280,7 +286,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -299,7 +305,7 @@ namespace Quizdom.Models
 
             if (record == 0)
             {
-                return NotFound($"Game #{gameId} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -307,13 +313,15 @@ namespace Quizdom.Models
 
         // POST /api/game/board  ** Add new gameboard record
         [HttpPost("board")]
-        public void Post([FromBody]GameBoard gameBoard)
+        public IActionResult Post([FromBody]GameBoard gameBoard)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GameBoards.Add(gameBoard);
             _context.SaveChanges();
+
+            return Created("api/game/board/" + gameBoard.Id, gameBoard.Id);
         }
 
         // PUT /api/game/board/1   ** updates gameBpard record by id
@@ -328,13 +336,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Gameboard #{id} does not exist!");
+                return NoContent();
             }
 
             gameBoard.Id = id;
             _context.GameBoards.Update(gameBoard);
             _context.SaveChanges();
-            return Ok();
+            return Ok(gameBoard);
         }
 
         // DELETE /api/game/board/1  ** Delete GameBoard record by id
@@ -361,13 +369,15 @@ namespace Quizdom.Models
 
         // POST /api/game/gamecategories  ** Add new GameCategories record
         [HttpPost("gamecategories")]
-        public void PostGameCategories([FromBody]GameCategories GameCategories)
+        public IActionResult PostGameCategories([FromBody]GameCategories GameCategories)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GameCategories.Add(GameCategories);
             _context.SaveChanges();
+
+            return Created("api/game/gamecategories/" + GameCategories.Id, GameCategories.Id);
         }
 
         // PUT /api/game/gamecategories/1   ** updates gameBpard record by id
@@ -382,13 +392,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"GameCategories ID: #{id} does not exist!");
+                return NoContent();
             }
 
             GameCategories.Id = id;
             _context.GameCategories.Update(GameCategories);
             _context.SaveChanges();
-            return Ok();
+            return Ok(GameCategories);
         }
 
         // DELETE /api/game/gamecategories/1  ** Delete GameCategories record by id
@@ -416,13 +426,15 @@ namespace Quizdom.Models
 
         // POST /api/game/avatar  ** Add new GameCategories record
         [HttpPost("avatar")]
-        public void PostAvatar([FromBody]Avatar Avatar)
+        public IActionResult PostAvatar([FromBody]Avatar Avatar)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Avatars.Add(Avatar);
             _context.SaveChanges();
+
+            return Created("api/game/avatar/" + Avatar.Id, Avatar.Id);
         }
 
         // PUT /api/game/avatar/1   ** updates avatar record by id
@@ -437,13 +449,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Avatar ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Avatar.Id = id;
             _context.Avatars.Update(Avatar);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Avatar);
         }
 
         // DELETE /api/game/avatar/1  ** Delete avatar record by id
@@ -471,7 +483,7 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Avatar Id #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
@@ -490,13 +502,15 @@ namespace Quizdom.Models
 
         // POST /api/game/categories  ** Add new category record
         [HttpPost("categories")]
-        public void PostCategory([FromBody]Category Category)
+        public IActionResult PostCategory([FromBody]Category Category)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Categories.Add(Category);
             _context.SaveChanges();
+
+            return Created("api/game/categories/" + Category.Id, Category.Id);
         }
 
         // PUT /api/game/categories/1   ** updates category record by id
@@ -511,13 +525,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Category ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Category.Id = id;
             _context.Categories.Update(Category);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Category);
         }
 
         // DELETE /api/game/categories/1  ** Delete game record by id
@@ -545,13 +559,15 @@ namespace Quizdom.Models
 
         // POST /api/game/friends  ** Add new friends record
         [HttpPost("friends")]
-        public void PostFriend([FromBody]Friend Friend)
+        public IActionResult PostFriend([FromBody]Friend Friend)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Friends.Add(Friend);
             _context.SaveChanges();
+
+            return Created("api/game/friends/" + Friend.Id, Friend.Id);
         }
 
         // PUT /api/game/friend/1   ** updates friend record by id
@@ -566,13 +582,13 @@ namespace Quizdom.Models
 
             if (record2 == 0)
             {
-                return NotFound($"Friend ID: #{id} does not exist!");
+                return NoContent();
             }
 
             Friend.Id = id;
             _context.Friends.Update(Friend);
             _context.SaveChanges();
-            return Ok();
+            return Ok(Friend);
         }
 
         // DELETE /api/game/friends/1  ** Delete friend record by id
@@ -597,11 +613,13 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Friend Id #{id} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
         }
+
+        // TODO ADD PRIMARY AND FRIENDUSERNAME LOOKUP *****
 
         // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
         [HttpGet("friends/primaryusername/{username}")]
@@ -616,11 +634,32 @@ namespace Quizdom.Models
 
             if (record == null)
             {
-                return NotFound($"Username #{username} does not exist!");
+                return NoContent();
             }
 
             return Ok(record);
         }
+
+        // GET /api/game/friends/rickco   - get's id from primaryusername and friendusername combo
+        [HttpGet("friends/primaryusername/{primaryusername}/friendusername/{friendusername}")]
+        public IActionResult GetFriendsByFriendUserName(string primaryusername, string friendusername)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Friends
+                          where c.primaryUserName == primaryusername
+                          && c.friendUserName == friendusername
+                          select c).ToList();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
 
         // PUT /api/game/updateuseractivitygameid/username/gameid   ** updates useractivity table by username
         [HttpPut("updateuseractivitygameid/{username}/{gameid}")]
@@ -634,7 +673,7 @@ namespace Quizdom.Models
 
             if (userActivityRecord == null)
             {
-                return NotFound($"Username: {username} does not exist!");
+                return NoContent();
             }
             
             userActivityRecord.GameId = gameid;

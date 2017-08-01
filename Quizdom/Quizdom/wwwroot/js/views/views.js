@@ -10,7 +10,11 @@ var Quizdom;
             'View.ForgotPassword',
             'View.Questions',
             'View.Error404',
-            'View.User'
+            'View.User',
+            'View.Invite',
+            'View.Setup',
+            'View.Play',
+            'View.Chat'
         ]);
     })(Views = Quizdom.Views || (Quizdom.Views = {}));
 })(Quizdom || (Quizdom = {}));

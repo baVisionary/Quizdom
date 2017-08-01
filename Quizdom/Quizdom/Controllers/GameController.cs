@@ -67,13 +67,15 @@ namespace Quizdom.Models
 
         // POST /api/game
         [HttpPost]
-        public void Post([FromBody]Game game)
+        public IActionResult Post([FromBody]Game game)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Games.Add(game);
             _context.SaveChanges();
+
+            return Created("api/game/" + game.Id ,game.Id);
         }
 
         // PUT /api/game/1   ** updates game record by game id
@@ -112,13 +114,15 @@ namespace Quizdom.Models
 
         // POST /api/game/email  ** Add new gameplayers email record
         [HttpPost("email")]
-        public void Post([FromBody]GamePlayersEmail gamePlayersEmail)
+        public IActionResult Post([FromBody]GamePlayersEmail gamePlayersEmail)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GamePlayersEmail.Add(gamePlayersEmail);
             _context.SaveChanges();
+
+            return Created("api/game/email/" + gamePlayersEmail.Id, gamePlayersEmail.Id);
         }
 
         // GET: /api/game/email  * get's all game players Email
@@ -214,13 +218,15 @@ namespace Quizdom.Models
 
         // POST /api/game/players  ** Add new gameplayers record
         [HttpPost("players")]
-        public void Post([FromBody]GamePlayers gamePlayers)
+        public IActionResult Post([FromBody]GamePlayers gamePlayers)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GamePlayers.Add(gamePlayers);
             _context.SaveChanges();
+
+            return Created("api/game/players/" + gamePlayers.Id, gamePlayers.Id);
         }
 
         // PUT /api/game/players1   ** updates gamePlayers record by id
@@ -307,13 +313,15 @@ namespace Quizdom.Models
 
         // POST /api/game/board  ** Add new gameboard record
         [HttpPost("board")]
-        public void Post([FromBody]GameBoard gameBoard)
+        public IActionResult Post([FromBody]GameBoard gameBoard)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GameBoards.Add(gameBoard);
             _context.SaveChanges();
+
+            return Created("api/game/board/" + gameBoard.Id, gameBoard.Id);
         }
 
         // PUT /api/game/board/1   ** updates gameBpard record by id
@@ -361,13 +369,15 @@ namespace Quizdom.Models
 
         // POST /api/game/gamecategories  ** Add new GameCategories record
         [HttpPost("gamecategories")]
-        public void PostGameCategories([FromBody]GameCategories GameCategories)
+        public IActionResult PostGameCategories([FromBody]GameCategories GameCategories)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.GameCategories.Add(GameCategories);
             _context.SaveChanges();
+
+            return Created("api/game/gamecategories/" + GameCategories.Id, GameCategories.Id);
         }
 
         // PUT /api/game/gamecategories/1   ** updates gameBpard record by id
@@ -416,13 +426,15 @@ namespace Quizdom.Models
 
         // POST /api/game/avatar  ** Add new GameCategories record
         [HttpPost("avatar")]
-        public void PostAvatar([FromBody]Avatar Avatar)
+        public IActionResult PostAvatar([FromBody]Avatar Avatar)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Avatars.Add(Avatar);
             _context.SaveChanges();
+
+            return Created("api/game/avatar/" + Avatar.Id, Avatar.Id);
         }
 
         // PUT /api/game/avatar/1   ** updates avatar record by id
@@ -490,13 +502,15 @@ namespace Quizdom.Models
 
         // POST /api/game/categories  ** Add new category record
         [HttpPost("categories")]
-        public void PostCategory([FromBody]Category Category)
+        public IActionResult PostCategory([FromBody]Category Category)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Categories.Add(Category);
             _context.SaveChanges();
+
+            return Created("api/game/categories/" + Category.Id, Category.Id);
         }
 
         // PUT /api/game/categories/1   ** updates category record by id
@@ -545,13 +559,15 @@ namespace Quizdom.Models
 
         // POST /api/game/friends  ** Add new friends record
         [HttpPost("friends")]
-        public void PostFriend([FromBody]Friend Friend)
+        public IActionResult PostFriend([FromBody]Friend Friend)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Friends.Add(Friend);
             _context.SaveChanges();
+
+            return Created("api/game/friends/" + Friend.Id, Friend.Id);
         }
 
         // PUT /api/game/friend/1   ** updates friend record by id
@@ -643,10 +659,6 @@ namespace Quizdom.Models
 
             return Ok(record);
         }
-
-
-
-
 
 
         // PUT /api/game/updateuseractivitygameid/username/gameid   ** updates useractivity table by username

@@ -155,13 +155,15 @@ namespace Quizdom.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Post([FromBody]Quiz quiz)
+        public IActionResult Post([FromBody]Quiz quiz)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
             _context.Quiz.Add(quiz);
             _context.SaveChanges();
+
+            return Created("api/quiz/" + quiz.Id, quiz.Id);
         }
 
         [HttpPost("multi")]

@@ -5,6 +5,7 @@ namespace Quizdom.Views.User {
         public feedback: string = "";
         public friendError: string = "";
         public friendSuccess: string = "";
+        private tempFriend: any = new Models.UserModel;
 
         static $inject = [
             'FriendService',
@@ -75,17 +76,14 @@ namespace Quizdom.Views.User {
 
         public updateFriends(newFriend) {
             this.searchTerm = "";
-            this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend).$promise
-                .then(() => {
-                    this.FriendService.newFriendId(this.AuthenticationService.User.userName, newFriend).$promise
-                        .then((addFriendId) => {
-                            console.log(addFriendId[0]);
-                            newFriend.friendId = addFriendId[0].id;
-                            console.log(newFriend);
-                            this.FriendService.friends.push(newFriend);
-                            console.log(this.FriendService.friends);
+            this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend)
+                .then((response) => {
+                    console.log(response);
+                    newFriend.friendId = response.id;
+                    console.log(newFriend);
+                    this.FriendService.friends.push(newFriend);
+                    console.log(this.FriendService.friends);
 
-                        })
                 })
                 .catch(() => {
 

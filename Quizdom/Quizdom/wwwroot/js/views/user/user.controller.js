@@ -15,6 +15,7 @@ var Quizdom;
                     this.feedback = "";
                     this.friendError = "";
                     this.friendSuccess = "";
+                    this.tempFriend = new Quizdom.Models.UserModel;
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
@@ -71,16 +72,13 @@ var Quizdom;
                 UserController.prototype.updateFriends = function (newFriend) {
                     var _this = this;
                     this.searchTerm = "";
-                    this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend).$promise
-                        .then(function () {
-                        _this.FriendService.newFriendId(_this.AuthenticationService.User.userName, newFriend).$promise
-                            .then(function (addFriendId) {
-                            console.log(addFriendId[0]);
-                            newFriend.friendId = addFriendId[0].id;
-                            console.log(newFriend);
-                            _this.FriendService.friends.push(newFriend);
-                            console.log(_this.FriendService.friends);
-                        });
+                    this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend)
+                        .then(function (response) {
+                        console.log(response);
+                        newFriend.friendId = response.id;
+                        console.log(newFriend);
+                        _this.FriendService.friends.push(newFriend);
+                        console.log(_this.FriendService.friends);
                     })
                         .catch(function () {
                     });

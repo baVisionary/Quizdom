@@ -6,7 +6,17 @@ namespace Quizdom.Services {
     private newFriend;
 
     private _Resource_find_friends = this.$resource('/api/Account/:verb');
-    private _Resource_friend = this.$resource('/api/game/friends/:friendId');
+    private _Resource_friend = this.$resource('/api/game/friends/:friendId'
+      // , null, { create: {
+      //     method: 'POST',
+      //     responseType: 'text',
+      //     transformResponse: (data, getHeaders) => {
+      //       var obj = { id: angular.fromJson(data) }
+      //       return obj;
+      //     }
+      //   }
+      // }
+    );
     private _Resource_friendId = this.$resource('/api/game/friends/primaryusername/:primaryUserName/friendusername/:friendUserName');
 
     static $inject = [
@@ -45,15 +55,16 @@ namespace Quizdom.Services {
 
     public findByUserName(userName: string) {
       this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
-      return this.newFriend.$promise
+      return this.newFriend.$promise;
     }
 
     public addFriend(primaryUserName, friend) {
-      return this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName })
+      this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
+      return this.newFriend.$promise;
     }
 
     public newFriendId(primaryUserName, friend) {
-      return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName })
+      return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName });
     }
 
     // check whether newly seaerched friend is already listed

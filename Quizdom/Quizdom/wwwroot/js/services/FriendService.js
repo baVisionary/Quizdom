@@ -9,7 +9,17 @@ var Quizdom;
                 this.$resource = $resource;
                 this.friends = [];
                 this._Resource_find_friends = this.$resource('/api/Account/:verb');
-                this._Resource_friend = this.$resource('/api/game/friends/:friendId');
+                this._Resource_friend = this.$resource('/api/game/friends/:friendId'
+                // , null, { create: {
+                //     method: 'POST',
+                //     responseType: 'text',
+                //     transformResponse: (data, getHeaders) => {
+                //       var obj = { id: angular.fromJson(data) }
+                //       return obj;
+                //     }
+                //   }
+                // }
+                );
                 this._Resource_friendId = this.$resource('/api/game/friends/primaryusername/:primaryUserName/friendusername/:friendUserName');
             }
             FriendService.prototype.getMyFriends = function (userName) {
@@ -34,7 +44,8 @@ var Quizdom;
                 return this.newFriend.$promise;
             };
             FriendService.prototype.addFriend = function (primaryUserName, friend) {
-                return this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
+                this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
+                return this.newFriend.$promise;
             };
             FriendService.prototype.newFriendId = function (primaryUserName, friend) {
                 return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName });

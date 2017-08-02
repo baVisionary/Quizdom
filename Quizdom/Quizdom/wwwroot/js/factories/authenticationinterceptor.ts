@@ -11,11 +11,11 @@ namespace Quizdom.Factories {
         $location: ng.ILocationService,
         AuthenticationService: Services.AuthenticationService
     ): ng.IHttpInterceptor {
-        
+
         return <ng.IHttpInterceptor>{
             request: (config: ng.IRequestConfig) => {
                 config.headers = config.headers || {};
-                let authUser = AuthenticationService.getUser() || new Models.UserModel;                
+                let authUser = AuthenticationService.getUser() || new Models.UserModel;
                 config.headers['Username'] = authUser.userName;
                 config.headers['Role'] = (authUser.isAdmin) ? 'Admin' : (authUser.userName == 'Guest') ? 'Guest' : 'Normal';
 
@@ -27,6 +27,13 @@ namespace Quizdom.Factories {
                 }
 
                 return $q.reject(rejection);
+            }            ,
+            response: (response: any) => {
+                // console.log(response);
+                if (response.status === 201) {
+                    response.data = { id: angular.fromJson(response.data) }
+                }
+                return response;
             }
         };
     }

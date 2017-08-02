@@ -1,9 +1,10 @@
 <h1>Let's chat it up!</h1>
 <div>&nbsp;</div>
+<ul id="postsList">
+  <li ng-repeat="post in vm.ChatService.posts | limitTo : -10"><span ng-show='vm.showDate' class="col s2">[{{post.timestamp}}]</span> {{post.author}}: {{post.content}}</li>
+</ul>
 <form>
-  
 <input id="textInput" type="text" placeholder="Your Message" />
-
 <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendMessage()">Send</button>
+<button ng-click="vm.showDate = !vm.showDate" class="btn">Timestamps</button>
 </form>
-<ul id="postsList"></ul>

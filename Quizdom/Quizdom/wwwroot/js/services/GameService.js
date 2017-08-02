@@ -33,7 +33,6 @@ var Quizdom;
             ];
             return GameService;
         }());
-
         Services.GameService = GameService;
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

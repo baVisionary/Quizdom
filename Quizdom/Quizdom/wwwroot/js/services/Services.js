@@ -10,5 +10,6 @@ var Quizdom;
         module.service('FriendService', Services.FriendService);
         module.service('QuestionService', Services.QuestionService);
         module.service('ActiveService', Services.ActiveService);
+        module.service('ChatService', Services.ChatService);
     })(Services = Quizdom.Services || (Quizdom.Services = {}));
 })(Quizdom || (Quizdom = {}));

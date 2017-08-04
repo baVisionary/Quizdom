@@ -5,17 +5,14 @@ var Quizdom;
         var ChatService = (function () {
             function ChatService($http) {
                 this.$http = $http;
-                this.posts = [];
-                // Connect to the broadcaster on the server
+            }
+            // Connect to the broadcaster on the server
+            ChatService.prototype.connect = function () {
                 this.connection = ($.connection);
-                // A function we will call from the server
-                this.connection.broadcaster.client.addChatMessage = this.addPost;
-                this.connection.broadcaster.client.posts = [];
+                console.log(this.connection);
                 // This console.logs a lot of helpful debugging info!
                 this.connection.hub.logging = true;
-                // Let's connect to the hub!
-                this.startConnection(this.connection, 'MainChatroom');
-            }
+            };
             ChatService.prototype.startConnection = function (connection, group) {
                 // Let's connect to the hub!
                 connection.hub.start().done(function (signalr) {
@@ -29,28 +26,6 @@ var Quizdom;
                     // Just in case we fail to connect
                     console.log('Failed to start connection! Error: ', error);
                 });
-            };
-            ChatService.prototype.getPosts = function () {
-                var _this = this;
-                this.$http({ method: 'GET', url: '/Chatroom' }).then(function (response) { _this.addPostsList(response.data); });
-            };
-            ChatService.prototype.addPostsList = function (pastPosts) {
-                var _this = this;
-                pastPosts.forEach(function (post) {
-                    _this.connection.broadcaster.client.posts.push(post);
-                });
-                this.posts = this.connection.broadcaster.client.posts;
-                console.log(this.posts);
-            };
-            // the scope of this proxy Method is this.connection.broadcaster
-            ChatService.prototype.addPost = function (post) {
-                console.log('New post from server: ', post);
-                console.log(this);
-                this.client.posts.push(post);
-            };
-            ChatService.prototype.sendMessage = function (messageText) {
-                var post = { content: messageText };
-                return this.$http.post('/chatroom/', JSON.stringify(post));
             };
             ChatService.$inject = [
                 '$http'

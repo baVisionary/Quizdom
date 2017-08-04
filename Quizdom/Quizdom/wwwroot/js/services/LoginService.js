@@ -41,6 +41,7 @@ var Quizdom;
             };
             LoginService.prototype.clearSession = function () {
                 this.$window.sessionStorage.clear();
+                this.$window.localStorage.clear();
                 this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
             };
             LoginService.prototype.loginUser = function (user) {

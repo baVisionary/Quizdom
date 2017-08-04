@@ -73,7 +73,7 @@ namespace Quizdom.Controllers
             var record = await _chatService.SaveMessage(newMessage);
 
             // Call the client method 'addChatMessage' on all clients in the "MainChatroom" group.
-            this.Clients.Group("MainChatroom").AddChatMessage(new MessageViewModel(record));
+            this.Clients.Group(message.Chatroom).AddChatMessage(new MessageViewModel(record));
 
             return new NoContentResult();
         }

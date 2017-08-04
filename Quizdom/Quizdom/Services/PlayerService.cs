@@ -17,7 +17,8 @@ namespace Quizdom.Services
 
         public async Task<IEnumerable<Message>> GetActivePlayers()
         {
-            return await dbContext.Message.Include(m => m.User).ToArrayAsync();
+            //return await dbContext.Message.Include(m => m.User).ToArrayAsync();
+            return await dbContext.Message.ToArrayAsync();
         }
 
         public async Task<Message> SavePlayerActivity(Message message)

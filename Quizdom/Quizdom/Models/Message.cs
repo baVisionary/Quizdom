@@ -12,14 +12,17 @@ namespace Quizdom.Models
         [Required]
         public string Content { get; set; }
 
-        [Required]
-        [ForeignKey("User")]
-        public string UserId { get; set; }
+        //[Required]
+        //[ForeignKey("User")]
+        //public string UserId { get; set; }
 
         [Required]
         [Timestamp]
         public DateTime DateCreated { get; set; }
 
-        public ApplicationUser User { get; set; }
+        //public ApplicationUser User { get; set; }    
+
+        [Required]
+        public string UserName { get; set; }
     }
 }

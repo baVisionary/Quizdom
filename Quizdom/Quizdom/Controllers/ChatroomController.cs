@@ -60,20 +60,22 @@ namespace Quizdom.Controllers
             }
 
             // Get the current user
-            var user = await GetCurrentUserAsync();
+           // var user = await GetCurrentUserAsync();
 
             // Create a new message to save to the database
             var newMessage = new Message()
             {
                 Content = message.Content,
-                UserId = user.Id,
-                User = user
+                //UserId = user.Id,
+                //User = user
+                UserName = message.UserName
+
             };
 
             var record = await _chatService.SaveMessage(newMessage);
 
             // Call the client method 'addChatMessage' on all clients in the "MainChatroom" group.
-            this.Clients.Group("MainChatroom").AddChatMessage(new MessageViewModel(record));
+            this.Clients.Group(message.Group).AddChatMessage(new MessageViewModel(record));
 
             return new NoContentResult();
         }

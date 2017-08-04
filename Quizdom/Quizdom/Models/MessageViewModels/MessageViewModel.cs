@@ -14,7 +14,7 @@ namespace Quizdom.Models
         public string Content { get; set; }
 
         [Required]
-        public string Author { get; set; }
+        public string UserName { get; set; }
 
         [Required]
         [DataType(DataType.Date)]
@@ -27,7 +27,7 @@ namespace Quizdom.Models
         public MessageViewModel(Message message)
         {
             Content = message.Content;
-            Author = message.User.UserName;
+            UserName = message.UserName;
             Timestamp = message.DateCreated;
         }
     }

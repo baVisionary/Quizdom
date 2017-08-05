@@ -45,7 +45,9 @@ var Quizdom;
                     };
                     $scope.sendMessage = function () {
                         var post = {
-                            content: $("#textInput").val()
+                            content: $("#textInput").val(),
+                            userName: _this.AuthenticationService.User.userName,
+                            group: 'MainChatroom'
                         };
                         _this.$http.post('/chatroom/', JSON.stringify(post))
                             .then(function () {

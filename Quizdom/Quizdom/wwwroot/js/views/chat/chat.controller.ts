@@ -52,7 +52,9 @@ namespace Quizdom.Views.Chat {
 
       $scope.sendMessage = () => {
         var post = {
-          content: $("#textInput").val()
+          content: $("#textInput").val(),
+          userName: this.AuthenticationService.User.userName,
+          group: 'MainChatroom'
         };
         this.$http.post<any>('/chatroom/', JSON.stringify(post))
           .then(function () {
@@ -75,34 +77,7 @@ namespace Quizdom.Views.Chat {
       $scope.connect($scope.connection, "MainChatroom");
 
       $scope.getPosts();
-
-
     }
-
-
-    // public addPostsList(posts: any[]) {
-    //   posts.forEach(post => {
-    //     $("#postsList").append('<li>' + '(' + post.timestamp + ') ' + post.author + ': ' + post.content + '</li>');
-    //   });
-    // }
-
-    // public addPost(post) {
-    //   console.log('New post from server: ', post);
-    //   $("#postsList").append('<li>' + '(' + post.timestamp + ') ' + post.author + ': ' + post.content + '</li>');
-    // }
-
-    // public sendMessage() {
-    //   var post = {
-    //     content: $("#textInput").val()
-    //   };
-    //   this.$http.post<any>('/chatroom/', JSON.stringify(post))
-    //     .then(function () {
-    //       $("#textInput").val("");
-    //     })
-    //     .catch(function (e) {
-    //       console.log(e);
-    //     });
-    // }
 
   }
 }

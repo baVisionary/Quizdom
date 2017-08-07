@@ -8,7 +8,7 @@
         </h4>
       </div>
       <ul id="postsList">
-        <li ng-repeat="post in posts | limitTo : -10">
+        <li ng-repeat="post in vm.posts | limitTo : -10">
           <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{post.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>{{post.userName}}: {{post.content}}
         </li>
       </ul>
@@ -16,11 +16,11 @@
     <div class="card-action">
       <form>
         <div class="input-field">
-          <div class="col s10">
+          <div class="col s9 m10 l11">
             <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
           </div>
-          <div class="col s2">
-            <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="sendMessage()">Send</button>
+          <div class="col s3 m2 l1">
+            <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendMessage()">Send</button>
           </div>
         </div>
       </form>

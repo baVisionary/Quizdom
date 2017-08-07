@@ -5,6 +5,7 @@ namespace Quizdom {
     'ui.router',
     'ngResource',
     'angularUtils.directives.dirPagination',
+    // 'SignalR',
 
     // Modules
     'Quizdom.Directives',

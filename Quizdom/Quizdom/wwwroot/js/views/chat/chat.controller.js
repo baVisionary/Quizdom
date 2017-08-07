@@ -5,49 +5,36 @@ var Quizdom;
         var Chat;
         (function (Chat) {
             var ChatController = (function () {
-                function ChatController(AuthenticationService, $http, $scope) {
+                function ChatController(AuthenticationService, HubService, $http, $scope) {
+                    // $scope.vm.posts = [];
+                    // $scope.vm.group = 'MainChatroom';
                     var _this = this;
                     this.AuthenticationService = AuthenticationService;
+                    this.HubService = HubService;
                     this.$http = $http;
                     this.$scope = $scope;
-                    $scope.posts = [];
-                    $scope.post;
-                    $scope.connect = function (connection, chatroom) {
-                        // Let's connect to the hub!
-                        connection.hub.start().done(function (signalr) {
-                            console.log('Connected!');
-                            console.log('SignalR object: ', signalr);
-                            // The subscribe method lets you subscribe to a specific method on the server
-                            // You could use this method to subscribe to a specific chatroom,
-                            // listen for updates to a specific resource, or whatever you would want to "subscribe" to.
-                            connection.broadcaster.server.subscribe(chatroom);
-                        }).fail(function (error) {
-                            // Just in case we fail to connect
-                            console.log('Failed to start connection! Error: ', error);
+                    this.posts = [];
+                    this.group = 'MainChatroom';
+                    this.getPosts = function () {
+                        _this.$http({ method: 'GET', url: '/Chatroom' })
+                            .then(function (response) {
+                            _this.addPostsList(response.data);
                         });
                     };
-                    $scope.getPosts = function () {
-                        _this.$http({ method: 'GET', url: '/Chatroom' }).then(function (response) { $scope.addPostsList(response.data); });
-                    };
-                    $scope.addPostsList = function (posts) {
+                    this.addPostsList = function (posts) {
+                        _this.posts.length = 0;
                         posts.forEach(function (post) {
-                            // $("#postsList").append('<li>' + '(' + post.timestamp + ') ' + post.author + ': ' + post.content + '</li>');
-                            $scope.posts.push(post);
+                            _this.posts.push(post);
                         });
-                        $scope.posts.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
-                        console.log($scope.posts);
+                        _this.posts.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
+                        // console.log(`$scope`, $scope);
+                        console.log(_this.posts);
                     };
-                    $scope.addPost = function (post) {
-                        console.log('New post from server: ', post);
-                        // $("#postsList").append('<li>' + '(' + post.timestamp + ') ' + post.author + ': ' + post.content + '</li>');
-                        $scope.posts.push(post);
-                        $scope.$applyAsync();
-                    };
-                    $scope.sendMessage = function () {
+                    this.sendMessage = function () {
                         var post = {
                             content: $("#textInput").val(),
                             userName: _this.AuthenticationService.User.userName,
-                            group: 'MainChatroom'
+                            group: _this.group
                         };
                         _this.$http.post('/chatroom/', JSON.stringify(post))
                             .then(function () {
@@ -57,19 +44,30 @@ var Quizdom;
                             console.log(e);
                         });
                     };
-                    // Connect to the broadcaster on the server
-                    $scope.connection = ($.connection);
+                    $scope.addPost = function (post) {
+                        console.log('New post from server: ', post);
+                        _this.posts.push(post);
+                        $scope.$applyAsync();
+                        console.log("$scope.vm.posts", $scope.vm.posts);
+                        // console.log(`this`, this);        
+                    };
+                    this.HubService.startHub();
                     // A function we will call from the server
-                    $scope.connection.broadcaster.client.addChatMessage = $scope.addPost;
-                    // This console.logs a lot of helpful debugging info!
-                    $scope.connection.hub.logging = true;
-                    $scope.connect($scope.connection, "MainChatroom");
-                    $scope.getPosts();
+                    this.HubService.connection.broadcaster.client.addChatMessage = $scope.addPost;
+                    // this.HubService.addConnect($scope.group);
+                    this.HubService.startGroup(this.group);
+                    this.getPosts();
+                    // $scope.$on('$destroy', () => {
+                    //   console.log(`Destroying controller`);
+                    //   this.HubService.disconnect();
+                    // })
                 }
+                // private connection;
                 ChatController.$inject = [
                     'AuthenticationService',
+                    'HubService',
                     '$http',
-                    '$scope'
+                    '$scope',
                 ];
                 return ChatController;
             }());

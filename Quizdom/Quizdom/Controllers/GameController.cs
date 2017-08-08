@@ -64,6 +64,25 @@ namespace Quizdom.Models
             return Ok(record);
         }
 
+        // GET /api/game/rickco   - get's a specific game by initiatoruserid
+        [HttpGet("gameinitiator/{initiatoruserid}")]
+        public IActionResult GetGamebyInitiator(string initiatoruserid)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Games
+                          where c.initiatorUserId == initiatoruserid
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
 
         // POST /api/game
         [HttpPost]
@@ -135,6 +154,26 @@ namespace Quizdom.Models
             return _context.GamePlayersEmail.ToList();
         }
 
+        // GET: /api/game/email  * get's all game players Email by GameId
+        [HttpGet("email/{gameid}")]
+        public IActionResult GameEmailByGameid(int gameid)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+
+            var record = (from c in _context.GamePlayersEmail
+                          where c.gameId == gameid
+                          select c).ToList();
+
+            if (record.Count == 0)
+            {
+                return NoContent();
+            }
+            return Ok(record);
+        }
+
+
         // PUT /api/game/email   ** updates gamePlayersEmail record by id
         [HttpPut("email/{id}")]
         public IActionResult PutEmail(int id, [FromBody]GamePlayersEmail email)
@@ -189,7 +228,7 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record == null)
+            if (record.Count == 0)
             {
                 return NoContent();
             }
@@ -500,6 +539,27 @@ namespace Quizdom.Models
             return _context.Categories.ToList();
         }
 
+
+        // GET /api/game/categories/1   - get's categories for a specific Id
+        [HttpGet("categories/{id}")]
+        public IActionResult GetCategoriesById(int id)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Categories
+                          where c.Id == id
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
+
         // POST /api/game/categories  ** Add new category record
         [HttpPost("categories")]
         public IActionResult PostCategory([FromBody]Category Category)
@@ -618,8 +678,6 @@ namespace Quizdom.Models
 
             return Ok(record);
         }
-
-        // TODO ADD PRIMARY AND FRIENDUSERNAME LOOKUP *****
 
         // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
         [HttpGet("friends/primaryusername/{username}")]

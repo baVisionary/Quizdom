@@ -1,6 +1,7 @@
-﻿using Quizdom.Data;
-using Quizdom.Models;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Quizdom.Data;
+using Quizdom.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,29 +10,31 @@ namespace Quizdom.Services
     public class PlayerService
     {
         private ApplicationDbContext dbContext;
+        private readonly SignInManager<ApplicationUser> _signInManager;
 
-        public PlayerService(ApplicationDbContext context)
+        public PlayerService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
         {
             dbContext = context;
+            _signInManager = signInManager;
         }
 
-        public async Task<IEnumerable<Message>> GetActivePlayers()
-        {
-            //return await dbContext.Message.Include(m => m.User).ToArrayAsync();
-            return await dbContext.Message.ToArrayAsync();
+        public async Task<IEnumerable<UserActivity>> GetActivePlayers()
+        {            
+            return await dbContext.UserActivity.ToArrayAsync();         
         }
 
-        public async Task<Message> SavePlayerActivity(Message message)
-        {
-            await dbContext.AddAsync(message);
+        public async Task<UserActivity> SavePlayerActivity(UserActivity useractivity)
+        {            
+            await dbContext.AddAsync(useractivity);
             await dbContext.SaveChangesAsync();
 
-            return message;
+            return useractivity;
         }
 
-        public void LogoutPlayer()
-        {
 
+        public async void LogoutPlayer()
+        {
+            await _signInManager.SignOutAsync();            
         }
 
         public void TimeoutPlayer()

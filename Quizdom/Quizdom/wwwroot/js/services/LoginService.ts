@@ -58,6 +58,7 @@ namespace Quizdom.Services {
 
         private clearSession(): void {
             this.$window.sessionStorage.clear();
+            this.$window.localStorage.clear();
             this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
         }
 

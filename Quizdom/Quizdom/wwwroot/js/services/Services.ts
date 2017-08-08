@@ -8,5 +8,5 @@ namespace Quizdom.Services {
     module.service('FriendService', Services.FriendService);
     module.service('QuestionService', Services.QuestionService);
     module.service('ActiveService', Services.ActiveService);
-    module.service('ChatService', Services.ChatService);
+    module.service('HubService', Services.HubService);
 }

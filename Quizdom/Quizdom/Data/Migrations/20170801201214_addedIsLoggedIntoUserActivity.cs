@@ -4,21 +4,21 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Quizdom.Data.Migrations
 {
-    public partial class addedGameIdToUserActivityModel : Migration
+    public partial class addedIsLoggedIntoUserActivity : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.AddColumn<int>(
-                name: "GameId",
+            migrationBuilder.AddColumn<bool>(
+                name: "IsLoggedIn",
                 table: "UserActivity",
                 nullable: false,
-                defaultValue: 0);
+                defaultValue: false);
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropColumn(
-                name: "GameId",
+                name: "IsLoggedIn",
                 table: "UserActivity");
         }
     }

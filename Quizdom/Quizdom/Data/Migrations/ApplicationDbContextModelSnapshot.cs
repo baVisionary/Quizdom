@@ -312,12 +312,10 @@ namespace Quizdom.Data.Migrations
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserName")
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Message");
                 });
@@ -409,14 +407,6 @@ namespace Quizdom.Data.Migrations
 
                     b.HasOne("Quizdom.Models.ApplicationUser")
                         .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Quizdom.Models.Message", b =>
-                {
-                    b.HasOne("Quizdom.Models.ApplicationUser", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

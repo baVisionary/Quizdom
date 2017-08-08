@@ -8,8 +8,8 @@ using Quizdom.Data;
 namespace Quizdom.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170711171238_addedGameTable2")]
-    partial class addedGameTable2
+    [Migration("20170804232609_modifiedMessageModel")]
+    partial class modifiedMessageModel
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -130,6 +130,8 @@ namespace Quizdom.Data.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
+                    b.Property<int>("AvatarId");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -199,34 +201,124 @@ namespace Quizdom.Data.Migrations
                     b.ToTable("Categories");
                 });
 
+            modelBuilder.Entity("Quizdom.Models.Friend", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("friendUserName");
+
+                    b.Property<string>("primaryUserName");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Friends");
+                });
+
             modelBuilder.Entity("Quizdom.Models.Game", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("ActiveUserId");
+                    b.Property<string>("activeUserId");
 
-                    b.Property<string>("Categories");
+                    b.Property<int>("gameLength");
 
-                    b.Property<int?>("GameLength");
+                    b.Property<string>("initiatorUserId");
 
-                    b.Property<string>("Initiator_UserId");
-
-                    b.Property<string>("InvitedUserEmails");
-
-                    b.Property<string>("LastActiveUserId");
-
-                    b.Property<string>("Players");
-
-                    b.Property<string>("Questions");
-
-                    b.Property<string>("QuestionsState");
+                    b.Property<string>("lastActiveUserId");
 
                     b.Property<DateTime>("startDateTime");
 
                     b.HasKey("Id");
 
                     b.ToTable("Games");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.GameBoard", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("answeredCorrectlyUserId");
+
+                    b.Property<int>("boardColumn");
+
+                    b.Property<int>("boardRow");
+
+                    b.Property<int>("gameId");
+
+                    b.Property<int>("questionId");
+
+                    b.Property<string>("questionState");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameBoards");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.GameCategories", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("categoryId");
+
+                    b.Property<int>("gameId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GameCategories");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.GamePlayers", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("gameId");
+
+                    b.Property<bool>("initiator");
+
+                    b.Property<string>("userId");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GamePlayers");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.GamePlayersEmail", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("gameId");
+
+                    b.Property<string>("userEmail");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GamePlayersEmail");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Content")
+                        .IsRequired();
+
+                    b.Property<DateTime>("DateCreated")
+                        .IsConcurrencyToken()
+                        .ValueGeneratedOnAddOrUpdate();
+
+                    b.Property<string>("UserName")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Message");
                 });
 
             modelBuilder.Entity("Quizdom.Models.Quiz", b =>
@@ -265,6 +357,22 @@ namespace Quizdom.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Quiz");
+                });
+
+            modelBuilder.Entity("Quizdom.Models.UserActivity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("GameId");
+
+                    b.Property<DateTime>("LastActivity");
+
+                    b.Property<string>("Username");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("UserActivity");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.EntityFrameworkCore.IdentityRoleClaim<string>", b =>

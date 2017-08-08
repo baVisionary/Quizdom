@@ -8,8 +8,8 @@ using Quizdom.Data;
 namespace Quizdom.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20170801201214_addedIsLoggedIntoUserActivity")]
-    partial class addedIsLoggedIntoUserActivity
+    [Migration("20170808231855_addIsLoggedinToUserActivityTable")]
+    partial class addIsLoggedinToUserActivityTable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -313,12 +313,10 @@ namespace Quizdom.Data.Migrations
                         .IsConcurrencyToken()
                         .ValueGeneratedOnAddOrUpdate();
 
-                    b.Property<string>("UserId")
+                    b.Property<string>("UserName")
                         .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Message");
                 });
@@ -368,7 +366,7 @@ namespace Quizdom.Data.Migrations
 
                     b.Property<int>("GameId");
 
-                    b.Property<bool>("IsLoggedIn");
+                    b.Property<bool>("IsLoggedin");
 
                     b.Property<DateTime>("LastActivity");
 
@@ -412,14 +410,6 @@ namespace Quizdom.Data.Migrations
 
                     b.HasOne("Quizdom.Models.ApplicationUser")
                         .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("Quizdom.Models.Message", b =>
-                {
-                    b.HasOne("Quizdom.Models.ApplicationUser", "User")
-                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });

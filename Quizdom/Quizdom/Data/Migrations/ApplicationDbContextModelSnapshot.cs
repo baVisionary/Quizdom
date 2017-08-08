@@ -365,6 +365,8 @@ namespace Quizdom.Data.Migrations
 
                     b.Property<int>("GameId");
 
+                    b.Property<bool>("IsLoggedin");
+
                     b.Property<DateTime>("LastActivity");
 
                     b.Property<string>("Username");

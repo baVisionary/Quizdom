@@ -78,6 +78,7 @@ namespace Quizdom.Views.Chat {
         .catch(function (e) {
           console.log(e);
         });
+
     }
 
   }

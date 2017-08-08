@@ -21,6 +21,13 @@ var Quizdom;
                         $location.path('/login');
                     }
                     return $q.reject(rejection);
+                },
+                response: function (response) {
+                    // console.log(response);
+                    if (response.status === 201) {
+                        response.data = { id: angular.fromJson(response.data) };
+                    }
+                    return response;
                 }
             };
         }

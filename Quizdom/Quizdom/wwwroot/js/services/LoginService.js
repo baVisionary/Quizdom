@@ -10,7 +10,6 @@ var Quizdom;
                 this.AvatarService = AvatarService;
                 this.AuthenticationService = AuthenticationService;
                 this.isUserLoggedIn = false;
-                this.authUser = new Quizdom.Models.UserModel();
             }
             // public get isLoggedIn(): boolean {
             //     return this.isUserLoggedIn;

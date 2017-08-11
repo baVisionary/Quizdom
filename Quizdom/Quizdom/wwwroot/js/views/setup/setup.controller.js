@@ -5,11 +5,26 @@ var Quizdom;
         var Setup;
         (function (Setup) {
             var SetupController = (function () {
-                function SetupController(AuthenticationService) {
+                function SetupController(AuthenticationService, GameService, $state) {
                     this.AuthenticationService = AuthenticationService;
+                    this.GameService = GameService;
+                    this.$state = $state;
+                    if (!this.AuthenticationService.isLoggedIn) {
+                        this.$state.go('Login');
+                    }
+                    this.GameService.loadGame(this.AuthenticationService.User);
                 }
+                SetupController.prototype.addCategory = function (cat) {
+                    console.log("Add category requested:", cat.longDescription);
+                    this.GameService.addCategory(cat);
+                };
+                SetupController.prototype.removeCategory = function (playerId) {
+                    this.GameService.removeCategory(playerId);
+                };
                 SetupController.$inject = [
-                    'AuthenticationService'
+                    'AuthenticationService',
+                    'GameService',
+                    '$state'
                 ];
                 return SetupController;
             }());

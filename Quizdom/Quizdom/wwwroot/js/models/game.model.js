@@ -4,7 +4,7 @@ var Quizdom;
     (function (Models) {
         var GameModel = (function () {
             function GameModel() {
-                this.Id = 0;
+                this.id = 0;
                 this.initiatorUserId = '';
                 this.gameLength = 12;
                 this.activeUserId = '';

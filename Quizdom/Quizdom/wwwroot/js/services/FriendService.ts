@@ -6,24 +6,13 @@ namespace Quizdom.Services {
     private newFriend;
 
     private _Resource_find_friends = this.$resource('/api/Account/:verb');
-    private _Resource_friend = this.$resource('/api/game/friends/:friendId'
-      // , null, { create: {
-      //     method: 'POST',
-      //     responseType: 'text',
-      //     transformResponse: (data, getHeaders) => {
-      //       var obj = { id: angular.fromJson(data) }
-      //       return obj;
-      //     }
-      //   }
-      // }
-    );
+    private _Resource_friend = this.$resource('/api/game/friends/:friendId');
     private _Resource_friendId = this.$resource('/api/game/friends/primaryusername/:primaryUserName/friendusername/:friendUserName');
 
     static $inject = [
       'AvatarService',
       'AuthenticationService',
       '$resource'
-
     ]
 
     constructor(
@@ -48,22 +37,22 @@ namespace Quizdom.Services {
       return this.friends;
     }
 
-    public findByEmail(email: string) {
-      this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
-      return this.newFriend.$promise;
-    }
+    // public findByEmail(email: string) {
+    //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
+    //   return this.newFriend.$promise;
+    // }
 
-    public findByUserName(userName: string) {
-      this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
-      return this.newFriend.$promise;
-    }
+    // public findByUserName(userName: string) {
+    //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
+    //   return this.newFriend.$promise;
+    // }
 
-    public addFriend(primaryUserName, friend) {
+    public addFriend(primaryUserName: string, friend: Models.IUser) {
       this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
       return this.newFriend.$promise;
     }
 
-    public newFriendId(primaryUserName, friend) {
+    public newFriendId(primaryUserName: string, friend: Models.IUser) {
       return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName });
     }
 

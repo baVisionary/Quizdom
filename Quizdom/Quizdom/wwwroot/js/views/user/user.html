@@ -4,7 +4,7 @@
       <div class="card purple lighten-3">
         <div class="row">
           <div class="avatar col s3 l2 align-center">
-            <img ng-cloak ng-src="/images/{{vm.AuthenticationService.User.avatarUrl}}" alt="Avatar" class="circle medium">
+            <img ng-cloak ng-src="/images/{{vm.AuthenticationService.User.avatarUrl}}" alt="Avatar" class="medium">
           </div>
           <div class="col s9 l10">
             <div class="card-content black-text">
@@ -26,7 +26,7 @@
               </div>
             </div>
             <div class="row col s12">
-              <div class="chip" ng-repeat="friend in vm.FriendService.friends" id="{{friend.friendId}}">
+              <div class="chip" ng-repeat="friend in vm.FriendService.friends" tag={{friend.userName}} id={{friend.friendId}}>
                 <img src="/images/{{friend.avatarUrl}}" alt="Friend">&nbsp;{{friend.userName}}
                 <i class="close material-icons" ng-show="vm.friendEdit" ng-click="vm.deleteFriend(friend.friendId)">close</i>
               </div>
@@ -45,14 +45,14 @@
             </form>
           </div>
         </div>
-      </div>
-      <div class="card-action">
-        <a ui-sref="Invite" class="btn">Start Game</a>
-        <a ui-sref="Chat" class="btn">
+        <div class="card-action">
+          <a ui-sref="Invite" class="btn">Start Game</a>
+          <a ui-sref="Chat" class="btn">
           <span class="valign-wrapper">
           <i class="material-icons">chat</i>&nbsp;Chat
           </span>
         </a>
+        </div>
       </div>
     </div>
   </div>

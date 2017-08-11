@@ -3,7 +3,7 @@
 namespace Quizdom.Services {
     export class LoginService {
         private isUserLoggedIn: boolean = false;
-        private authUser: Models.UserModel = new Models.UserModel();
+        private authUser: Models.IUser;
 
         static $inject = [
             '$http',
@@ -33,7 +33,7 @@ namespace Quizdom.Services {
             let user = this.$window.sessionStorage.getItem('user');
 
             if (user) {
-                this.AuthenticationService.setUser(<Models.UserModel>JSON.parse(user));
+                this.AuthenticationService.setUser(<Models.IUser>JSON.parse(user));
                 return;
             }
 
@@ -41,7 +41,7 @@ namespace Quizdom.Services {
             return;
         }
 
-        private updateSession(user: Models.UserModel | null): boolean {
+        private updateSession(user: Models.IUser | null): boolean {
             var encodedUser = JSON.stringify(user);
             console.log(user);
 

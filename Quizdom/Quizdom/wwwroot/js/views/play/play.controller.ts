@@ -2,13 +2,15 @@ namespace Quizdom.Views.Play {
   export class PlayController {
 
     static $inject = [
-      'AuthenticationService'
+      'AuthenticationService',
+      'GameService'
     ]
 
     constructor(
-      private AuthenticationService: Services.AuthenticationService
+      private AuthenticationService: Services.AuthenticationService,
+      private GameService: Services.GameService
     ) {
-      
+      this.GameService.loadGame(this.AuthenticationService.User);
     }
   }
 }

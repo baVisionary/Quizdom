@@ -1,7 +1,39 @@
-<h1>Let's Play Quizdom!</h1>
-<h4>Categories</h4>
+<div id="player-card">
+  <div class="row">
+    <div class="col s12 offset-m1 m10">
+      <div class="card blue darken-2">
+        <div class="card-content white-text">
+          <span class="card-title">Play Quizdom</span>
+          <div class="row">
+            <h6>Categories</h6>
+            <div class="chip" ng-repeat="cat in vm.GameService.gameCategories" tag={{cat.longDescription}} id={{cat.categoryId}}>
+              <div class="valign-wrapper">{{cat.categoryId}}. {{cat.longDescription}}</div>
+            </div>
+          </div>
+          <div class="row">
+            <h6>Quizdom</h6>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">{{user.userName}}</div>
+            </div>
+            <span class="h5">VS.</span>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">{{user.userName}}</div>
+            </div>
+          </div>
+          <div class="card-action">
+            <a class="btn" ui-sref="Invite">Invite</a>
+            <a class="btn" ui-sref="Setup">Categories</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-<h5>Questions</h5>
-<a class="btn" ui-sref="User">{{vm.AuthenticationService.User.userName}}</a>
-<a class="btn" ui-sref="Invite">Invite</a>
-<a class="btn" ui-sref="Setup">Setup</a>
+<script>
+  $(document).ready(function () {
+    $('select').material_select();
+  });
+</script>

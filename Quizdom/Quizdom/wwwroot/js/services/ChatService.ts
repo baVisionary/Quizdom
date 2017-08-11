@@ -58,7 +58,7 @@ namespace Quizdom.Services {
       console.log('New post from server: ', post);
       console.log(this);
 
-      this.client.posts.push(post);
+      // this.client.posts.push(post);
     }
 
     public sendMessage(messageText) {

@@ -1,5 +1,57 @@
-<h1>Choose up to 3 categories to include</h1>
-<h4>Each one adds 12 questions (4 easy, 4 medium, 4 hard)</h4>
-<a class="btn" ui-sref="User">{{vm.AuthenticationService.User.userName}}</a>
-<a class="btn" ui-sref="Invite">Invite</a>
-<a class="btn" ui-sref="Play">Play</a>
+<div id="player-card">
+  <div class="row">
+    <div class="col s12 offset-m1 m10">
+      <div class="card blue lighten-3">
+        <div class="card-content black-text">
+          <span class="card-title">Select Categories</span>
+          <div class="row">
+            <form name="categoryForm" class="col s12">
+              <div class="row">
+                <div class="chip" ng-repeat="cat in vm.GameService.allCategories" tag={{cat.longDescription}} id={{cat.id}} ng-click="vm.addCategory(cat)">
+                  <div class="valign-wrapper">
+                    {{cat.longDescription}}
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="row">
+            <h6>Categories</h6>
+            <div class="chip" ng-repeat="cat in vm.GameService.gameCategories" tag={{cat.longDescription}} id={{cat.categoryId}}>
+              <div class="valign-wrapper">
+                {{cat.categoryId}}. {{cat.longDescription}}
+                <i class="close material-icons" ng-click="vm.removeCategory(cat.categoryId)">close</i>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <h6>Quizdom</h6>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">
+                &nbsp;{{user.userName}}
+              </div>
+            </div>
+            <span class="h5">VS.</span>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">
+                &nbsp;{{user.userName}}
+              </div>
+            </div>
+          </div>
+          <div class="card-action">
+            <a class="btn" ui-sref="Invite">Invite</a>
+            <a class="btn" ui-sref="Play">Play Quizdom</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  $(document).ready(function () {
+    $('select').material_select();
+  });
+</script>

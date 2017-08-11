@@ -46,7 +46,7 @@ var Quizdom;
             ChatService.prototype.addPost = function (post) {
                 console.log('New post from server: ', post);
                 console.log(this);
-                this.client.posts.push(post);
+                // this.client.posts.push(post);
             };
             ChatService.prototype.sendMessage = function (messageText) {
                 var post = { content: messageText };

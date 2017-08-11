@@ -10,14 +10,14 @@ namespace Quizdom.Services {
     ];
 
     constructor(
-      private $resource,
-      private $q
+      private $resource: ng.resource.IResourceService,
+      private $q: ng.IQService
     ) {
       // this.getAllQs();
       // this.getAllCats();
     }
 
-    private _Resource_question = this.$resource('/api/quiz/:questionId', null, {
+    private _Resource_question = <Models.IQuestionResource> this.$resource('/api/quiz/:questionId', null, {
       'update': {
         method: 'PUT'
       }

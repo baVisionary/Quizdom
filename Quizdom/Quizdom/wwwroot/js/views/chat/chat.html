@@ -1,29 +1,36 @@
-<div class="row">
-  <div class="col s10 offset-s1 card">
-    <div class="card-content ">
-      <div class="">
-        <h4>
-          <a ng-click="vm.showDate = !vm.showDate" class="btn-floating yellow darken-2"><i class="material-icons">access_time</i></a>
-          <span>Let's chat it up!</span>
-        </h4>
-      </div>
-      <ul id="postsList">
-        <li ng-repeat="post in vm.posts | limitTo : -10">
-          <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{post.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>{{post.userName}}: {{post.content}}
-        </li>
-      </ul>
-    </div>
-    <div class="card-action">
-      <form>
-        <div class="input-field">
-          <div class="col s9 m10 l11">
-            <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
+<div id="chat-card">
+  <div class="row">
+    <div class="col s12 offset-m1 m10">
+      <div class="card grey lighten-2">
+        <div class="card-content">
+          <div class="row">
+            <h4>
+              <a ng-click="vm.showDate = !vm.showDate" class="btn-floating yellow darken-2"><i class="material-icons">access_time</i></a>
+              <span>Let's chat it up!</span>
+            </h4>
           </div>
-          <div class="col s3 m2 l1">
-            <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendMessage()">Send</button>
+          <ul id="postsList">
+            <li ng-repeat="post in vm.posts | limitTo : -10">
+              <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{post.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>{{post.userName}}:
+              {{post.content}}
+            </li>
+          </ul>
+        </div>
+        <div class="card-action">
+          <div class="row">
+            <form class="chat-form">
+              <div class="input-field">
+                <div class="col s9 m10 l11">
+                  <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
+                </div>
+                <div class="col s3 m2 l1">
+                  <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendMessage()">Send</button>
+                </div>
+              </div>
+            </form>
           </div>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </div>

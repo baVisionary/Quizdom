@@ -1,7 +1,7 @@
 namespace Quizdom.Services {
 
   export class AuthenticationService {
-    private authUser: Models.UserModel;
+    private authUser: Models.IUser;
     private isUserLoggedIn: boolean = false;
 
     constructor (
@@ -18,7 +18,7 @@ namespace Quizdom.Services {
       return this.authUser
     }
 
-    public setUser(user: Models.UserModel) {
+    public setUser(user: Models.IUser) {
       this.authUser = user;
       if (user.userName == 'Guest') {
         this.isUserLoggedIn = false;

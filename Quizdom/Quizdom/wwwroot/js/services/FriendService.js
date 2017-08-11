@@ -9,17 +9,7 @@ var Quizdom;
                 this.$resource = $resource;
                 this.friends = [];
                 this._Resource_find_friends = this.$resource('/api/Account/:verb');
-                this._Resource_friend = this.$resource('/api/game/friends/:friendId'
-                // , null, { create: {
-                //     method: 'POST',
-                //     responseType: 'text',
-                //     transformResponse: (data, getHeaders) => {
-                //       var obj = { id: angular.fromJson(data) }
-                //       return obj;
-                //     }
-                //   }
-                // }
-                );
+                this._Resource_friend = this.$resource('/api/game/friends/:friendId');
                 this._Resource_friendId = this.$resource('/api/game/friends/primaryusername/:primaryUserName/friendusername/:friendUserName');
             }
             FriendService.prototype.getMyFriends = function (userName) {
@@ -35,14 +25,14 @@ var Quizdom;
                 // });
                 return this.friends;
             };
-            FriendService.prototype.findByEmail = function (email) {
-                this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
-                return this.newFriend.$promise;
-            };
-            FriendService.prototype.findByUserName = function (userName) {
-                this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
-                return this.newFriend.$promise;
-            };
+            // public findByEmail(email: string) {
+            //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
+            //   return this.newFriend.$promise;
+            // }
+            // public findByUserName(userName: string) {
+            //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
+            //   return this.newFriend.$promise;
+            // }
             FriendService.prototype.addFriend = function (primaryUserName, friend) {
                 this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
                 return this.newFriend.$promise;

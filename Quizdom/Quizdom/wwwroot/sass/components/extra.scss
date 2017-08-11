@@ -31,6 +31,8 @@ select {
     min-width: 100px;
     height: auto;
     padding: 5%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #avatars li {
@@ -50,5 +52,16 @@ select {
         width: 100%;
         height: auto;
         padding: 15%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+}
+
+.chips-add:hover {
+    img {
+        display: none;
+         ::before {
+            content: "<i class='material-icons'>add</i>"
+        }
     }
 }

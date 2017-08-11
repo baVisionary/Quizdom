@@ -5,38 +5,96 @@ var Quizdom;
         var Invite;
         (function (Invite) {
             var InviteController = (function () {
-                function InviteController(AuthenticationService, FriendService, ActiveService, $state) {
-                    var _this = this;
+                function InviteController(AuthenticationService, PlayerService, FriendService, ActiveService, GameService, $state) {
                     this.AuthenticationService = AuthenticationService;
+                    this.PlayerService = PlayerService;
                     this.FriendService = FriendService;
                     this.ActiveService = ActiveService;
+                    this.GameService = GameService;
                     this.$state = $state;
+                    this.player = "";
+                    this.feedback = "";
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
-                        .then(function () {
-                        console.log(_this.FriendService.friends);
-                    })
-                        .catch(function (error) {
-                        console.log(error);
-                    });
+                    this.loadMyFriends();
                     this.loadActiveUsers();
+                    this.GameService.loadGame(this.AuthenticationService.User);
                 }
                 InviteController.prototype.loadActiveUsers = function () {
                     var _this = this;
                     this.ActiveService.getActiveUsers()
                         .then(function () {
-                        console.log(_this.ActiveService.ActiveUsers);
+                        console.log("Active:", _this.ActiveService.ActiveUsers);
                     })
                         .catch(function (error) {
                         console.log(error);
                     });
                 };
+                InviteController.prototype.loadMyFriends = function () {
+                    var _this = this;
+                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+                        .then(function () {
+                        console.log("Friends:", _this.FriendService.friends);
+                    })
+                        .catch(function (error) {
+                        console.log(error);
+                    });
+                };
+                InviteController.prototype.findPlayer = function (search) {
+                    var _this = this;
+                    var found = new Quizdom.Models.UserModel;
+                    this.feedback = "";
+                    if (this.FriendService.isMe(search)) {
+                        this.player = "";
+                        this.feedback = search + " is you, ya bonehead!";
+                        return;
+                    }
+                    this.PlayerService.findByUserName(search)
+                        .then(function (found) {
+                        // Need to confirm that 204 not returned or 200 returned
+                        // console.log(found.hasOwnProperty('userName'));
+                        if (found.hasOwnProperty('userName')) {
+                            _this.GameService.addPlayer(_this.GameService.newGameId, found, false);
+                            _this.player = "";
+                            return found;
+                        }
+                        else {
+                            _this.PlayerService.findByEmail(search)
+                                .then(function (found) {
+                                console.log(found.hasOwnProperty('userName'));
+                                if (found.hasOwnProperty('userName')) {
+                                    _this.GameService.addPlayer(_this.GameService.newGameId, found, false);
+                                    _this.player = "";
+                                    return found;
+                                }
+                                // Check if search is formatted as email
+                                // YES - offer to send email invite
+                                // NO - feedback "User not found - Enter email to send Quizdom invitation" 
+                                _this.feedback = search + " not found as Username or Email";
+                                return;
+                            });
+                        }
+                    })
+                        .catch(function (error) {
+                        console.log(error);
+                        _this.feedback = error.status + ": " + error.statusText;
+                        return;
+                    });
+                };
+                InviteController.prototype.addPlayer = function (user) {
+                    console.log("Add player requested:", user.userName);
+                    this.GameService.addPlayer(this.GameService.newGameId, user, false);
+                };
+                InviteController.prototype.removePlayer = function (playerId) {
+                    this.GameService.removePlayer(playerId);
+                };
                 InviteController.$inject = [
                     'AuthenticationService',
+                    'PlayerService',
                     'FriendService',
                     'ActiveService',
+                    'GameService',
                     '$state'
                 ];
                 return InviteController;

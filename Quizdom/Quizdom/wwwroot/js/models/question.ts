@@ -19,4 +19,28 @@ namespace Quizdom.Models {
     public categoryId: number = 0;
 
   }
+
+  export interface IQuestion extends ng.resource.IResource<IQuestion> {
+
+    id: number;
+    category: string;
+    type: string;
+    difficulty: string;
+    question: string;
+    correct_Answer: string;
+    incorrect_Answer1: string;
+    incorrect_Answer2: string;
+    incorrect_Answer3: string;
+    incorrect_Answer4: string;
+    source: string;
+    dateModified: Date;
+    userId: string;
+    avatarId: number;
+    categoryId: number;
+  }
+
+  export interface IQuestionResource extends ng.resource.IResourceClass<IQuestion> {
+    update: any;
+  }
+
 }

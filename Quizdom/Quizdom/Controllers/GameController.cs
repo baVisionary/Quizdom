@@ -406,6 +406,28 @@ namespace Quizdom.Models
             return _context.GameCategories.ToList();
         }
 
+
+        // GET /api/game/gamecategories/1   - get's all gamecategories for a specific game Id
+        [HttpGet("gamecategories/{gameId}")]
+        public IActionResult GetGameCategoriesByGameId(int gameId)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.GameCategories
+                          where c.gameId == gameId
+                          select c).ToList();
+
+            if (record.Count == 0)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
+
+
         // POST /api/game/gamecategories  ** Add new GameCategories record
         [HttpPost("gamecategories")]
         public IActionResult PostGameCategories([FromBody]GameCategories GameCategories)

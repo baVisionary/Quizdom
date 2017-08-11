@@ -398,12 +398,18 @@ namespace Quizdom.Models
 
         // GET: /api/game/gameCategories * get's all gamecategories
         [HttpGet("gamecategories")]
-        public IEnumerable<GameCategories> GameCategories()
+        public IActionResult GameCategories()
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
-            return _context.GameCategories.ToList();
+            var record = _context.GameCategories.ToList();
+
+            if(record.Count == 0)
+            {
+                return NoContent();
+            }
+            return Ok(record);
         }
 
 

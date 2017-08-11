@@ -1,12 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace Quizdom.Models
 {
     public class Game
     {
+        public Game() { }
+
         public int Id { get; set; }
         public DateTime startDateTime { get; set; }
         public string initiatorUserId { get; set; }

@@ -4,6 +4,15 @@ namespace Quizdom.Services {
 
   export class QuestionService {
 
+    public questions = [];
+    public categories = [];
+    public difficulty = [
+      "easy",
+      "medium",
+      "hard"
+    ];
+    private _Question: Models.QuestionModel = new Models.QuestionModel();
+
     static $inject = [
       '$resource',
       '$q'
@@ -22,16 +31,16 @@ namespace Quizdom.Services {
         method: 'PUT'
       }
     });
-    private _Resource_categories = this.$resource('/api/quiz/categories');
+    private _Resource_categories = <ng.resource.IResourceClass<ng.resource.IResource<string>>> this.$resource('/api/quiz/categories');
 
-    public questions = [];
-    public categories = [];
-    public difficulty = [
-      "easy",
-      "medium",
-      "hard"
-    ];
-    private _Question: Models.QuestionModel = new Models.QuestionModel();
+    private _Resource_Qs_by_category = <Models.IQuestionResource> this.$resource('api/quiz/category/:category', null, {
+      'diff': {
+        method: 'GET',
+        isArray: true,
+        url: 'api/quiz/category/:category/difficulty/:difficulty',
+        // params: {category: '@longDescription', difficulty: '@difficulty'}
+      }
+    })
 
     public getAllQs() {
       if (this.questions.length == 0) {
@@ -53,8 +62,15 @@ namespace Quizdom.Services {
         categories.resolve(this.categories);
         console.log(categories);
         return categories;
-        
       }
+    }
+
+    public getQsByCategory(cat: string) {
+      return this._Resource_Qs_by_category.query({ category: cat });
+    }
+
+    public getQsByCatAndDiff(cat: string, diff: string) {
+      return this._Resource_Qs_by_category.diff({ category: cat, difficulty: diff });
     }
 
     public sortCategories(a, b): number {
@@ -67,10 +83,10 @@ namespace Quizdom.Services {
       });
     }
 
-    public updateOne(q: Models.QuestionModel) {
+    public updateOne(question: Models.IQuestion) {
       return this._Resource_question.update({
-        questionId: q.id
-      }, q).$promise;
+        questionId: question.id
+      }, question).$promise;
     }
 
     public deleteOne(questionId: number) {

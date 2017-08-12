@@ -23,7 +23,7 @@ namespace Quizdom.Models {
         friendId?: number;
         playerId?: number;
 
-        getAnonymousUser: any;
+        getAnonymousUser(): any;
      }
 
     export interface IUserResource extends ng.resource.IResourceClass<IUser> { }

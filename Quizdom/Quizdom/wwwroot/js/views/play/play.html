@@ -1,23 +1,58 @@
 <div id="player-card">
   <div class="row">
-    <div class="col s12 offset-m1 m10">
+    <div class="col s12">
       <div class="card blue darken-2">
         <div class="card-content white-text">
-          <span class="card-title">Play Quizdom</span>
+          <span class="card-title center-align">Play Quizdom</span>
           <div class="row">
-            <h6>Categories</h6>
-            <div class="chip" ng-repeat="cat in vm.GameService.gameCategories" tag={{cat.longDescription}} id={{cat.categoryId}}>
-              <div class="valign-wrapper">{{cat.categoryId}}. {{cat.longDescription}}</div>
+            <div class="col s12">
+              <!-- <h6>Categories — {{ vm.GameService.gameDifficulty }}</h6> -->
+              <div class="row">
+                <div class="col s4" ng-repeat="cat in vm.GameService.gameCategories">
+                  <div class="card-panel blue darken-4">
+                    <span class="card-title center-align">{{cat.id}}. {{cat.shortDescription}}</span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
           <div class="row">
-            <h6>Quizdom</h6>
-            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
-              <img src="/images/{{user.avatarUrl}}" alt="User">
-              <div class="valign-wrapper">{{user.userName}}</div>
+            <div class="col s12">
+              <div class="card grey-text text-darken-4" ng-show="vm.showQ">
+                <div class="card-content">
+                  <div class="col s12">
+                    <span class="card-title">{{vm.question.questionText}}</span>
+                    <div class="row">
+                      <div class="col s12">
+                        <div class="card blue lighten-2 black-text" ng-repeat="a in vm.question.answers" ng-click="vm.showQ = !vm.showQ">
+                          <div class="" value="{{ $index }}">{{ 'ABCD'[$index] }}. {{a.answer}}</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="game-question col s4 m2" ng-show="!vm.showQ" ng-repeat="q in vm.GameService.gameQuestions">
+                <div class="card" ng-click="vm.showThisQuestion(q.questionId)">
+                  <div class="card-image waves-effect waves-block waves-light">
+                    <img src="/images/avatar_generic.png">
+                  </div>
+                  <div class="card-content">
+                    <span class="grey-text text-darken-4 center-align">
+                    <!-- <span class="col s3 center-align"><i class="material-icons">star_rate</i></span>                    -->
+                    <!-- <span class="card-title">Q{{ q.questionId }}</span> -->
+                    <!-- <span class="">R{{ q.boardRow }} C{{ q.boardColumn }}</span> -->
+                    <span class="">{{ q.categoryId }}. {{ q.difficulty }}</span>
+                    <!-- <span class="col s3 center-align"><i class="material-icons">star_rate</i></span> -->
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
-            <span class="h5">VS.</span>
-            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+          </div>
+          <div class="row">
+            <h6>Players</h6>
+            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" tag={{user.userName}} id={{user.playerId}}>
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">{{user.userName}}</div>
             </div>

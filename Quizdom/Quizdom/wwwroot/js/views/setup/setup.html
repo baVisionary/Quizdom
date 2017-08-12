@@ -19,21 +19,30 @@
             <h6>Categories</h6>
             <div class="chip" ng-repeat="cat in vm.GameService.gameCategories" tag={{cat.longDescription}} id={{cat.categoryId}}>
               <div class="valign-wrapper">
-                {{cat.categoryId}}. {{cat.longDescription}}
+                {{cat.id}}. {{cat.longDescription}}
                 <i class="close material-icons" ng-click="vm.removeCategory(cat.categoryId)">close</i>
               </div>
             </div>
           </div>
           <div class="row">
+            <h6>Difficulty</h6>
+            <div class="input-field col s12 m6">
+              <select name="categorySelect" id="categorySelect" ng-model="vm.GameService.gameDifficulty">
+                <option value="all" selected>All Levels</option>
+                <option ng-repeat="diff in vm.GameService.difficulty" value={{diff.value}}>{{diff.label}}</option>
+              </select>
+            </div>
+          </div>
+          <div class="row">
             <h6>Quizdom</h6>
-            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
+            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">
                 &nbsp;{{user.userName}}
               </div>
             </div>
             <span class="h5">VS.</span>
-            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">
                 &nbsp;{{user.userName}}

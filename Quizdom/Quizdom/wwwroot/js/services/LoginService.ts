@@ -9,14 +9,16 @@ namespace Quizdom.Services {
             '$http',
             '$window',
             'AvatarService',
-            'AuthenticationService'
+            'AuthenticationService',
+            'GameService'
         ];
 
         constructor(
             private $http: ng.IHttpService,
             private $window: ng.IWindowService,
             private AvatarService: Services.AvatarService,
-            private AuthenticationService: Services.AuthenticationService
+            private AuthenticationService: Services.AuthenticationService,
+            private GameService: Services.GameService
         ) {
 
         }
@@ -60,6 +62,7 @@ namespace Quizdom.Services {
             this.$window.sessionStorage.clear();
             this.$window.localStorage.clear();
             this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
+            this.GameService.destroyGame();
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {

@@ -12,7 +12,7 @@ namespace Quizdom.Models {
     public incorrect_Answer2: string = '';
     public incorrect_Answer3: string = '';
     public incorrect_Answer4: string = '';
-    public source: string = 'UserId';
+    public source: string = '';
     public dateModified: Date = new Date();
     public userId: string = '';
     public avatarId: number = 0;
@@ -40,7 +40,8 @@ namespace Quizdom.Models {
   }
 
   export interface IQuestionResource extends ng.resource.IResourceClass<IQuestion> {
-    update: any;
+    update(questionId, IQuestion): IQuestion;
+    diff({category, difficulty}): IQuestion[]; 
   }
 
 }

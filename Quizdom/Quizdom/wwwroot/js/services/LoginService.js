@@ -4,11 +4,12 @@ var Quizdom;
     var Services;
     (function (Services) {
         var LoginService = (function () {
-            function LoginService($http, $window, AvatarService, AuthenticationService) {
+            function LoginService($http, $window, AvatarService, AuthenticationService, GameService) {
                 this.$http = $http;
                 this.$window = $window;
                 this.AvatarService = AvatarService;
                 this.AuthenticationService = AuthenticationService;
+                this.GameService = GameService;
                 this.isUserLoggedIn = false;
             }
             // public get isLoggedIn(): boolean {
@@ -42,6 +43,7 @@ var Quizdom;
                 this.$window.sessionStorage.clear();
                 this.$window.localStorage.clear();
                 this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
+                this.GameService.destroyGame();
             };
             LoginService.prototype.loginUser = function (user) {
                 var _this = this;
@@ -78,7 +80,8 @@ var Quizdom;
                 '$http',
                 '$window',
                 'AvatarService',
-                'AuthenticationService'
+                'AuthenticationService',
+                'GameService'
             ];
             return LoginService;
         }());

@@ -8,12 +8,6 @@ var Quizdom;
             function QuestionService($resource, $q) {
                 this.$resource = $resource;
                 this.$q = $q;
-                this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
-                    'update': {
-                        method: 'PUT'
-                    }
-                });
-                this._Resource_categories = this.$resource('/api/quiz/categories');
                 this.questions = [];
                 this.categories = [];
                 this.difficulty = [
@@ -22,6 +16,19 @@ var Quizdom;
                     "hard"
                 ];
                 this._Question = new Quizdom.Models.QuestionModel();
+                this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
+                    'update': {
+                        method: 'PUT'
+                    }
+                });
+                this._Resource_categories = this.$resource('/api/quiz/categories');
+                this._Resource_Qs_by_category = this.$resource('api/quiz/category/:category', null, {
+                    'diff': {
+                        method: 'GET',
+                        isArray: true,
+                        url: 'api/quiz/category/:category/difficulty/:difficulty',
+                    }
+                });
                 // this.getAllQs();
                 // this.getAllCats();
             }
@@ -48,6 +55,12 @@ var Quizdom;
                     return categories;
                 }
             };
+            QuestionService.prototype.getQsByCategory = function (cat) {
+                return this._Resource_Qs_by_category.query({ category: cat });
+            };
+            QuestionService.prototype.getQsByCatAndDiff = function (cat, diff) {
+                return this._Resource_Qs_by_category.diff({ category: cat, difficulty: diff });
+            };
             QuestionService.prototype.sortCategories = function (a, b) {
                 return (a == "User Added") ? 1 : 0;
             };
@@ -56,10 +69,10 @@ var Quizdom;
                     questionId: questionId
                 });
             };
-            QuestionService.prototype.updateOne = function (q) {
+            QuestionService.prototype.updateOne = function (question) {
                 return this._Resource_question.update({
-                    questionId: q.id
-                }, q).$promise;
+                    questionId: question.id
+                }, question).$promise;
             };
             QuestionService.prototype.deleteOne = function (questionId) {
                 return this._Resource_question.delete({

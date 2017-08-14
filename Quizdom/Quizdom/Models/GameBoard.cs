@@ -16,5 +16,15 @@ namespace Quizdom.Models
         public int questionId { get; set; }
         public string questionState { get; set; }
         public string answeredCorrectlyUserId { get; set; }
+        public int prizePoints { get; set; }
+        public string questionText { get; set; }
+        public string answerA { get; set; }
+        public string answerB { get; set; }
+        public string answerC { get; set; }
+        public string answerD { get; set; }
+        public string correctAnswer { get; set; }
+        public int answerOrder { get; set; }
+        public string difficulty { get; set; }
+        public int categoryId { get; set; }
     }
 }

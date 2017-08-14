@@ -13,5 +13,6 @@ namespace Quizdom.Models
 
         public string userId { get; set; }
         public bool initiator { get; set; }
+        public int prizePoints { get; set; }
     }
 }

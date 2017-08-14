@@ -62,7 +62,7 @@ namespace Quizdom.Services {
             this.$window.sessionStorage.clear();
             this.$window.localStorage.clear();
             this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
-            this.GameService.destroyGame();
+            this.GameService.destroyGame(this.GameService.newGameId);
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {

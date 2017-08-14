@@ -21,7 +21,8 @@ var Quizdom;
                 this.gamePlayers = [];
                 this.gameCategories = [];
                 this.gameDifficulty = 'all';
-                this.gameQuestions = [];
+                this.gameSource = "";
+                this.gameBoards = [];
                 this.numQuestions = 0;
                 // manage 'Games' table
                 this._Resource_game = this.$resource('/api/game/:gameId', null, {
@@ -107,26 +108,28 @@ var Quizdom;
             // NO - create new game resource
             GameService.prototype.loadGame = function (user) {
                 var _this = this;
-                this.findLastGame(user).$promise
+                return this.findLastGame(user).$promise
                     .then(function (lastGame) {
                     // console.log(`lastGame`, lastGame);
                     if (lastGame.hasOwnProperty('initiatorUserId')) {
                         _this.newGameData = lastGame;
                         console.log("newGameData", _this.newGameData);
-                        _this.$q.all([_this.loadGameCategories(), _this.loadPlayers(user)])
+                        return _this.$q.all([_this.loadGameCategories(), _this.loadPlayers(user)])
                             .then(function () {
                             console.log("Game Player length:", _this.gamePlayers.length);
                             console.log("Game Category length:", _this.gameCategories.length);
-                            _this.setupGameBoard();
-                            return true;
+                        })
+                            .catch(function (error) {
+                            console.log("Unable to load players & categories");
+                            console.log("error", error);
                         });
                     }
                     else {
                         var newGame = _this._Resource_game.save({ initiatorUserId: user.userName });
-                        newGame.$promise
+                        return newGame.$promise
                             .then(function (game) {
                             // this.newGameData = newGame;
-                            _this._Resource_game.get({ gameId: game.id }).$promise
+                            return _this._Resource_game.get({ gameId: game.id }).$promise
                                 .then(function (newGame) {
                                 _this.newGameData = newGame;
                                 console.log("newGameData", _this.newGameData);
@@ -140,16 +143,22 @@ var Quizdom;
                             .catch(function (error) {
                             console.log(error);
                         });
-                        return false;
                     }
                 });
             };
-            GameService.prototype.destroyGame = function () {
-                this.newGameData = {};
-                this.gamePlayers = [];
-                this.gameCategories = [];
-                this.gameDifficulty = 'all';
-                this.gameQuestions = [];
+            GameService.prototype.destroyGame = function (gameId) {
+                var _this = this;
+                this._Resource_game.delete({ id: gameId }).$promise
+                    .then(function (gameData) {
+                    _this.newGameData = {};
+                    _this.gamePlayers = [];
+                    _this.gameCategories = [];
+                    _this.gameDifficulty = 'all';
+                    _this.gameBoards = [];
+                })
+                    .catch(function (error) {
+                    console.log("error", error);
+                });
             };
             // Show the players assigned to the current gameId
             GameService.prototype.loadPlayers = function (user) {
@@ -273,7 +282,8 @@ var Quizdom;
             // Build the game board using the categories
             GameService.prototype.setupGameBoard = function () {
                 var _this = this;
-                this.gameQuestions.length = 0;
+                console.log("Creating GameBoards");
+                this.gameBoards.length = 0;
                 if (this.gamePlayers.length < 2 || this.gameCategories.length < 1) {
                     console.log("Unable to setup game - invite players & select categories");
                     return false;
@@ -290,29 +300,39 @@ var Quizdom;
                             // console.log(`questions`, questions);
                             QsByCatAndDiff.length = 0;
                             questions.forEach(function (q) {
-                                var gameQ = new Quizdom.Models.GameQuestionModel;
+                                var gameQ = new Quizdom.Models.GameBoardModel;
+                                gameQ.categoryId = cat.id;
+                                gameQ.difficulty = q.difficulty;
                                 gameQ.questionId = q.id;
                                 gameQ.questionText = q.question;
-                                gameQ.categoryId = cat.id;
-                                _this.addInRandomOrder(gameQ.answers, [
+                                var answers = [];
+                                _this.addInRandomOrder(answers, [
                                     { answer: q.correct_Answer, correct: true },
                                     { answer: q.incorrect_Answer1, correct: false },
                                     { answer: q.incorrect_Answer2, correct: false },
                                     { answer: q.incorrect_Answer3, correct: false }
                                 ], 4);
-                                gameQ.difficulty = q.difficulty;
+                                answers.forEach(function (a, i) {
+                                    var parameter = 'answer' + 'ABCD'[i];
+                                    gameQ[parameter] = a.answer;
+                                    if (a.correct) {
+                                        gameQ.correctAnswer = 'ABCD'[i];
+                                    }
+                                    ;
+                                });
+                                // console.log(`gameQ`, gameQ);
                                 QsByCatAndDiff.push(gameQ);
                             });
                             // console.log(`QsByCatAndDiff`, QsByCatAndDiff);
                             var numQs = (_this.gameDifficulty == 'all' || _this.gameDifficulty == diff.value ? numQuestions : 0);
-                            _this.addInRandomOrder(_this.gameQuestions, QsByCatAndDiff, numQs);
+                            _this.addInRandomOrder(_this.gameBoards, QsByCatAndDiff, numQs);
                         })
                             .catch(function (error) {
                             console.log("error:", error);
                         });
                     });
                 });
-                console.log("gameQuestions:", this.gameQuestions);
+                console.log("gameBoards:", this.gameBoards);
             };
             GameService.$inject = [
                 'PlayerService',

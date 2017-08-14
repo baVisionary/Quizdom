@@ -7,7 +7,7 @@ namespace Quizdom.Services {
 
     private allGames: any[] = [];
     public allCategories: Models.ICategory[] = [];
-    private questionsByCatDiff: Models.GameQuestionModel[] = [];
+    private questionsByCatDiff: Models.GameBoardModel[] = [];
     private difficulty = [
       { label: 'Easy', value: 'easy' },
       { label: 'Medium', value: 'medium' },
@@ -18,7 +18,8 @@ namespace Quizdom.Services {
     public gamePlayers: Models.IUser[] = [];
     public gameCategories: Models.ICategory[] = [];
     public gameDifficulty: string = 'all';
-    public gameQuestions: Models.GameQuestionModel[] = [];
+    public gameSource: string = "";
+    public gameBoards: Models.GameBoardModel[] = [];
     private numQuestions: number = 0;
 
     static $inject = [
@@ -123,25 +124,27 @@ namespace Quizdom.Services {
     // YES - use last gameId again
     // NO - create new game resource
     public loadGame(user) {
-      this.findLastGame(user).$promise
+      return this.findLastGame(user).$promise
         .then((lastGame) => {
           // console.log(`lastGame`, lastGame);
           if (lastGame.hasOwnProperty('initiatorUserId')) {
             this.newGameData = lastGame;
             console.log(`newGameData`, this.newGameData);
-            this.$q.all([this.loadGameCategories(), this.loadPlayers(user)])
+            return this.$q.all([this.loadGameCategories(), this.loadPlayers(user)])
               .then(() => {
                 console.log(`Game Player length:`, this.gamePlayers.length);
                 console.log(`Game Category length:`, this.gameCategories.length);
-                this.setupGameBoard();
-                return true;
               })
+              .catch((error) =>{
+                console.log(`Unable to load players & categories`);
+                console.log(`error`, error);
+              })  
           } else {
             let newGame = this._Resource_game.save({ initiatorUserId: user.userName });
-            newGame.$promise
+            return newGame.$promise
               .then((game) => {
                 // this.newGameData = newGame;
-                this._Resource_game.get({ gameId: game.id }).$promise
+                return this._Resource_game.get({ gameId: game.id }).$promise
                   .then((newGame) => {
                     this.newGameData = newGame;
                     console.log(`newGameData`, this.newGameData);
@@ -155,18 +158,23 @@ namespace Quizdom.Services {
               .catch((error) => {
                 console.log(error);
               });
-            return false;
           }
         })
     }
 
 
-    public destroyGame() {
-      this.newGameData = {};
-      this.gamePlayers = [];
-      this.gameCategories = [];
-      this.gameDifficulty = 'all';
-      this.gameQuestions = [];
+    public destroyGame(gameId) {
+      this._Resource_game.delete({ id: gameId }).$promise
+        .then((gameData) => {
+          this.newGameData = {};
+          this.gamePlayers = [];
+          this.gameCategories = [];
+          this.gameDifficulty = 'all';
+          this.gameBoards = [];
+        })
+        .catch((error) => {
+          console.log(`error`, error);
+        })
     }
 
     // Show the players assigned to the current gameId
@@ -291,7 +299,8 @@ namespace Quizdom.Services {
 
     // Build the game board using the categories
     public setupGameBoard() {
-      this.gameQuestions.length  = 0;
+      console.log(`Creating GameBoards`);
+      this.gameBoards.length = 0;
       if (this.gamePlayers.length < 2 || this.gameCategories.length < 1) {
         console.log(`Unable to setup game - invite players & select categories`);
         return false
@@ -310,23 +319,30 @@ namespace Quizdom.Services {
               // console.log(`questions`, questions);
               QsByCatAndDiff.length = 0;
               questions.forEach(q => {
-                let gameQ = new Models.GameQuestionModel;
+                let gameQ = new Models.GameBoardModel;
+                gameQ.categoryId = cat.id;
+                gameQ.difficulty = q.difficulty;
                 gameQ.questionId = q.id;
                 gameQ.questionText = q.question;
-                gameQ.categoryId = cat.id;
-                this.addInRandomOrder(gameQ.answers, [
+                let answers = [];
+                this.addInRandomOrder(answers, [
                   { answer: q.correct_Answer, correct: true },
                   { answer: q.incorrect_Answer1, correct: false },
                   { answer: q.incorrect_Answer2, correct: false },
                   { answer: q.incorrect_Answer3, correct: false }
                 ], 4);
-                gameQ.difficulty = q.difficulty;
+                answers.forEach((a, i) => {
+                  let parameter = 'answer' + 'ABCD'[i];
+                  gameQ[parameter] = a.answer;
+                  if (a.correct) { gameQ.correctAnswer = 'ABCD'[i] };
+                });
+                // console.log(`gameQ`, gameQ);
                 QsByCatAndDiff.push(gameQ);
               });
               // console.log(`QsByCatAndDiff`, QsByCatAndDiff);
 
               let numQs = (this.gameDifficulty == 'all' || this.gameDifficulty == diff.value ? numQuestions : 0);
-              this.addInRandomOrder(this.gameQuestions, QsByCatAndDiff, numQs);
+              this.addInRandomOrder(this.gameBoards, QsByCatAndDiff, numQs);
             })
             .catch((error) => {
               console.log(`error:`, error);
@@ -334,7 +350,7 @@ namespace Quizdom.Services {
         });
       });
 
-      console.log(`gameQuestions:`, this.gameQuestions);
+      console.log(`gameBoards:`, this.gameBoards);
     }
 
   }

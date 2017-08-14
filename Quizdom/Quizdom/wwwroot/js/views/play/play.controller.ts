@@ -1,6 +1,6 @@
 namespace Quizdom.Views.Play {
   export class PlayController {
-    public question: Models.GameQuestionModel;
+    public question: Models.GameBoardModel;
     public showQ = false;
 
 
@@ -14,11 +14,14 @@ namespace Quizdom.Views.Play {
       private GameService: Services.GameService
     ) {
       this.GameService.loadGame(this.AuthenticationService.User)
+        .then(() => {
+          this.GameService.setupGameBoard();
+        })
     }
 
     public showThisQuestion(questionId) {
-      this.question = this.GameService.gameQuestions.find(q => { return q.questionId == questionId });
-      this.question.questionState = "revealed"
+      this.question = this.GameService.gameBoards.find(q => { return q.questionId == questionId });
+      this.question.questionState = "ask"
       this.showQ = true;
     }
 

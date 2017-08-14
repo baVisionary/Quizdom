@@ -43,7 +43,7 @@ var Quizdom;
                 this.$window.sessionStorage.clear();
                 this.$window.localStorage.clear();
                 this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
-                this.GameService.destroyGame();
+                this.GameService.destroyGame(this.GameService.newGameId);
             };
             LoginService.prototype.loginUser = function (user) {
                 var _this = this;

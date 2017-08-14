@@ -8,7 +8,7 @@
             <div class="col s12">
               <!-- <h6>Categories — {{ vm.GameService.gameDifficulty }}</h6> -->
               <div class="row">
-                <div class="col s4" ng-repeat="cat in vm.GameService.gameCategories">
+                <div class="col" ng-class="{'s4': vm.GameService.categories.length == 3, 's6': vm.GameService.categories.length == 2, 's12': vm.GameService.categories.length == 1}" ng-repeat="cat in vm.GameService.gameCategories">
                   <div class="card-panel blue darken-4">
                     <span class="card-title center-align">{{cat.id}}. {{cat.shortDescription}}</span>
                   </div>
@@ -21,18 +21,18 @@
               <div class="card grey-text text-darken-4" ng-show="vm.showQ">
                 <div class="card-content">
                   <div class="col s12">
-                    <span class="card-title">{{vm.question.questionText}}</span>
+                    <span class="card-title" ng-click="vm.showQ = !vm.showQ">{{ vm.question.questionId }}. {{vm.question.questionText}}</span>
                     <div class="row">
                       <div class="col s12">
-                        <div class="card blue lighten-2 black-text" ng-repeat="a in vm.question.answers" ng-click="vm.showQ = !vm.showQ">
-                          <div class="" value="{{ $index }}">{{ 'ABCD'[$index] }}. {{a.answer}}</div>
+                        <div class="card blue lighten-2 black-text" ng-repeat="a in ['answerA', 'answerB', 'answerC', 'answerD']">
+                          <div class="" value="{{ $index }}">{{ 'ABCD'[$index] }}. {{vm.question.a}}</div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="game-question col s4 m2" ng-show="!vm.showQ" ng-repeat="q in vm.GameService.gameQuestions">
+              <div class="game-question col s4 m2" ng-show="!vm.showQ" ng-repeat="q in vm.GameService.gameBoards">
                 <div class="card" ng-click="vm.showThisQuestion(q.questionId)">
                   <div class="card-image waves-effect waves-block waves-light">
                     <img src="/images/avatar_generic.png">
@@ -41,8 +41,9 @@
                     <span class="grey-text text-darken-4 center-align">
                     <!-- <span class="col s3 center-align"><i class="material-icons">star_rate</i></span>                    -->
                     <!-- <span class="card-title">Q{{ q.questionId }}</span> -->
-                    <!-- <span class="">R{{ q.boardRow }} C{{ q.boardColumn }}</span> -->
-                    <span class="">{{ q.categoryId }}. {{ q.difficulty }}</span>
+                    <span class="">R{{ q.boardRow }} C{{ q.boardColumn }}</span>
+                    <span class="">CatId: {{ q.categoryId }}</span>
+                    <span class="">{{ q.difficulty }}</span>
                     <!-- <span class="col s3 center-align"><i class="material-icons">star_rate</i></span> -->
                     </span>
                   </div>

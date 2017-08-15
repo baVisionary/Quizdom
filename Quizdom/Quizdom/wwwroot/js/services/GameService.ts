@@ -7,7 +7,7 @@ namespace Quizdom.Services {
 
     private allGames: any[] = [];
     public allCategories: Models.ICategory[] = [];
-    private questionsByCatDiff: Models.GameQuestionModel[] = [];
+    private questionsByCatDiff: Models.GameBoardModel[] = [];
     private difficulty = [
       { label: 'Easy', value: 'easy' },
       { label: 'Medium', value: 'medium' },
@@ -17,9 +17,14 @@ namespace Quizdom.Services {
     private newGameData;
     public gamePlayers: Models.IUser[] = [];
     public gameCategories: Models.ICategory[] = [];
+    public gameCatClass: string = 'col s12';
     public gameDifficulty: string = 'all';
-    public gameQuestions: Models.GameQuestionModel[] = [];
+    public gameSource: string = "";
+    public gameBoards: Models.GameBoardModel[] = [];
     private numQuestions: number = 0;
+    private row: number = 0;
+    private column: number = 0;
+    private perRow: number = 6;
 
     static $inject = [
       'PlayerService',
@@ -123,50 +128,56 @@ namespace Quizdom.Services {
     // YES - use last gameId again
     // NO - create new game resource
     public loadGame(user) {
-      this.findLastGame(user).$promise
-        .then((lastGame) => {
-          // console.log(`lastGame`, lastGame);
-          if (lastGame.hasOwnProperty('initiatorUserId')) {
-            this.newGameData = lastGame;
-            console.log(`newGameData`, this.newGameData);
-            this.$q.all([this.loadGameCategories(), this.loadPlayers(user)])
-              .then(() => {
-                console.log(`Game Player length:`, this.gamePlayers.length);
-                console.log(`Game Category length:`, this.gameCategories.length);
-                this.setupGameBoard();
-                return true;
-              })
-          } else {
-            let newGame = this._Resource_game.save({ initiatorUserId: user.userName });
-            newGame.$promise
-              .then((game) => {
-                // this.newGameData = newGame;
-                this._Resource_game.get({ gameId: game.id }).$promise
-                  .then((newGame) => {
-                    this.newGameData = newGame;
-                    console.log(`newGameData`, this.newGameData);
-                    // return this.loadPlayers(user);
-                    return true;
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                  });
-              })
-              .catch((error) => {
-                console.log(error);
-              });
-            return false;
-          }
-        })
+      let gameLoaded = new Promise((res, er) => {
+        this.findLastGame(user).$promise
+          .then((lastGame) => {
+            // console.log(`lastGame`, lastGame);
+            if (lastGame.hasOwnProperty('initiatorUserId')) {
+              this.newGameData = lastGame;
+              console.log(`newGameData`, this.newGameData);
+              this.$q.all([this.loadGameCategories(), this.loadPlayers(user), this.loadGameBoards()])
+                .then(() => {
+                  console.log(`Game Player length:`, this.gamePlayers.length);
+                  console.log(`Game Category length:`, this.gameCategories.length);
+                  console.log(`Game Boards:`, this.gameBoards.length);
+                  res(true);
+                })
+                .catch((error) => {
+                  console.log(`Unable to load players/categories/gameboard`);
+                  console.log(`error`, error);
+                })
+            } else {
+              this._Resource_game.save({ initiatorUserId: user.userName }).$promise
+                .then((newGame) => {
+                  console.log(`newGame`, newGame);
+                  this.newGameData.id = newGame.id;
+                  this.newGameData.initiatorUserId = user;
+                  console.log(`newGameData`, this.newGameData);
+                  this.loadPlayers(user);
+                  res(true);
+                })
+                .catch((error) => {
+                  console.log(error);
+                });
+            }
+          })
+      })
+      return gameLoaded;
     }
 
 
     public destroyGame() {
-      this.newGameData = {};
-      this.gamePlayers = [];
-      this.gameCategories = [];
-      this.gameDifficulty = 'all';
-      this.gameQuestions = [];
+      this._Resource_game.remove({ gameId: this.newGameId }).$promise
+        .then((gameData) => {
+          this.newGameData = {};
+          this.gamePlayers = [];
+          this.gameCategories = [];
+          this.gameDifficulty = 'all';
+          this.gameBoards.length = 0;
+        })
+        .catch((error) => {
+          console.log(`error`, error);
+        })
     }
 
     // Show the players assigned to the current gameId
@@ -191,20 +202,31 @@ namespace Quizdom.Services {
         })
         .catch((error) => {
           console.log(`error`, error);
-        })
+        });
     }
 
     // Show the gamecategories assigned to the current gameId
     private loadGameCategories() {
       return this._Resource_game_categories.query({ id: this.newGameId }).$promise
         .then((gameCategories) => {
-          // let gameCategories = allGameCategories.filter(c => { return c.gameId == this.newGameId});
           gameCategories.forEach((gameCategory, i) => {
             let category = this.allCategories.find(c => { return c.id == gameCategory.categoryId })
             category.categoryId = gameCategory.id;
             this.gameCategories[i] = category;
           })
           console.log(`Game Categories`, this.gameCategories);
+        })
+    }
+
+    // Show the gameBoards assigned to the current gameId
+    private loadGameBoards() {
+      this.gameBoards.length = 0;
+      return this._Resource_gameBoard.query({ id: this.newGameId }).$promise
+        .then((gameBoards) => {
+          gameBoards.forEach(gameBoard => {
+            this.gameBoards.push(gameBoard);
+          })
+          console.log(`Game Boards`, this.gameBoards);
         })
     }
 
@@ -270,71 +292,133 @@ namespace Quizdom.Services {
     }
 
     // select random items from arraySelect and add to arrayToAdd
-    private addInRandomOrder(arrayToAdd, arraySelect, amount: number): void {
-      // might be nice to support if fewer in list than amount
-      for (var i = 0; i < amount; i++) {
-        let last = arraySelect.length - 1 - i;
-        let randomOne = this.randomInt(0, last);
-        arrayToAdd.push(arraySelect[randomOne])
-        let temp = arraySelect[randomOne];
-        arraySelect[randomOne] = arraySelect[last];
-        arraySelect[last] = temp;
-      }
+    private addInRandomOrder(arrayToAdd, arraySelect, wanted: number): any {
+      let shuffling = new Promise((res, err) => {
+        // might be nice to support if fewer in list than amount
+        // if arraySelect.length < amount then randomize arraySelect.length repeatedly until amount reached
+        let assigned = 0;
+        do {
+          let avail = Math.min(arraySelect.length, wanted - assigned);
+          for (var i = 0; i < avail; i++) {
+            let last = arraySelect.length - 1 - i;
+            let randomOne = this.randomInt(0, last);
+            arrayToAdd.push(arraySelect[randomOne])
+            let temp = arraySelect[randomOne];
+            arraySelect[randomOne] = arraySelect[last];
+            arraySelect[last] = temp;
+          }
+          assigned += avail;
+        } while (assigned < wanted);
+        res(arrayToAdd);
+      })
+      return shuffling;
     }
 
-    // Load all the Qs with a specific Category and Difficulty
-    // Store only the question data to play the game
-    // Randomize the answer order
-    private loadQsByCatAndDiff(cat: string, diff: string) {
-      return this.QuestionService.getQsByCatAndDiff(cat, diff)
+    // parse questions into GameBoardQuestions
+    private parseQuizToGameBoard(cat, questions, prizePoints): void {
+      let gameBoardPromise = new Promise((res, err) => {
+        let randomizedQs = [];
+        this.addInRandomOrder(randomizedQs, questions, this.numQuestions);
+        let randomizedGameBoards = [];
+        randomizedQs.forEach(q => {
+          let gameBoard = new Models.GameBoardModel;
+          gameBoard.gameId = this.newGameId;
+          gameBoard.categoryId = cat.id;
+          gameBoard.difficulty = q.difficulty;
+          gameBoard.boardRow = this.row;
+          gameBoard.boardColumn = this.column;
+          gameBoard.questionId = q.id;
+          gameBoard.questionText = q.question;
+          gameBoard.prizePoints = prizePoints;
+          let answers = [];
+          this.addInRandomOrder(answers, [
+            { answer: q.correct_Answer, correct: true },
+            { answer: q.incorrect_Answer1, correct: false },
+            { answer: q.incorrect_Answer2, correct: false },
+            { answer: q.incorrect_Answer3, correct: false }
+          ], 4);
+          answers.forEach((a, i) => {
+            let parameter = 'answer' + 'ABCD'[i];
+            gameBoard[parameter] = a.answer;
+            if (a.correct) { gameBoard.correctAnswer = 'ABCD'[i] };
+          });
+          this.column++;
+          if (this.column == this.perRow) {
+            this.column = 0;
+            this.row++;
+          }
+          if (this.row >= 3) {
+            this.row = 0;
+          }
+          this._Resource_gameBoard.save(gameBoard).$promise
+            .then((data) => {
+              // console.log(`data`, data);
+              gameBoard.id = data.id;
+              this.gameBoards.push(gameBoard);
+              res(true);
+            })
+
+        });
+        return gameBoardPromise;
+      })
+    }
+
+    private loadNewGameBoards(cat, diff) {
+      let promiseGameBoard = new Promise((res, err) => {
+        this.QuestionService.getQsByCatAndDiff(cat.longDescription, diff.value).$promise
+          .then((questions) => {
+            console.log(`${cat.shortDescription} ${diff.value} Qs: ${questions.length}`);
+            let prizePoints = [100, 200, 300][this.difficulty.findIndex(d => { return d.value == diff.value })];
+            this.parseQuizToGameBoard(cat, questions, prizePoints)
+            // console.log(`gameBoards:`, this.gameBoards);
+            res(true);
+          })
+      })
+      return promiseGameBoard;
     }
 
     // Build the game board using the categories
     public setupGameBoard() {
-      this.gameQuestions.length  = 0;
+      console.log(`Creating GameBoards`);
+      this.gameBoards.length = 0;
       if (this.gamePlayers.length < 2 || this.gameCategories.length < 1) {
         console.log(`Unable to setup game - invite players & select categories`);
         return false
       }
+      // set the proper width of the category labels using ng-class "col sX"
+      this.gameCatClass = 'col s' + (12 / this.gameCategories.length).toString();
 
       // assign random question to each row & column based on
       // categories picked (1 = 18 Qs, 2 = 9 Qs, 3 = 6 Qs)
       // difficulty (all = 1/3 Qs each, easy/medium/hard = total Qs)
-      let numQuestions = 18 / this.gameCategories.length / (this.gameDifficulty == 'all' ? 3 : 1);
-      let QsByCatAndDiff = [];
+      this.numQuestions = 18 / this.gameCategories.length / (this.gameDifficulty == 'all' ? 3 : 1);
+      this.row = 0;
+      this.column = 0;
+      this.perRow = 6 / this.gameCategories.length;
 
+      // line up all the promises to fill the gameBoard
+      let gamePromises = this.$q.when();
       this.gameCategories.forEach(cat => {
         this.difficulty.forEach(diff => {
-          this.loadQsByCatAndDiff(cat.longDescription, diff.value).$promise
-            .then((questions) => {
-              // console.log(`questions`, questions);
-              QsByCatAndDiff.length = 0;
-              questions.forEach(q => {
-                let gameQ = new Models.GameQuestionModel;
-                gameQ.questionId = q.id;
-                gameQ.questionText = q.question;
-                gameQ.categoryId = cat.id;
-                this.addInRandomOrder(gameQ.answers, [
-                  { answer: q.correct_Answer, correct: true },
-                  { answer: q.incorrect_Answer1, correct: false },
-                  { answer: q.incorrect_Answer2, correct: false },
-                  { answer: q.incorrect_Answer3, correct: false }
-                ], 4);
-                gameQ.difficulty = q.difficulty;
-                QsByCatAndDiff.push(gameQ);
-              });
-              // console.log(`QsByCatAndDiff`, QsByCatAndDiff);
-
-              let numQs = (this.gameDifficulty == 'all' || this.gameDifficulty == diff.value ? numQuestions : 0);
-              this.addInRandomOrder(this.gameQuestions, QsByCatAndDiff, numQs);
+          if (this.gameDifficulty == 'all' || this.gameDifficulty == diff.value) {
+            gamePromises = gamePromises.then(() => {
+              this.loadNewGameBoards(cat, diff);
             })
-            .catch((error) => {
-              console.log(`error:`, error);
-            });
-        });
-      });
+          }
+        })
+      })
 
-      console.log(`gameQuestions:`, this.gameQuestions);
+      // line up all the promises to save the gameBoard
+      // this.gameBoards.forEach(gameBoard => {
+      //   gamePromises = gamePromises.then(() => {
+
+      //     this._Resource_gameBoard.save(this.newGameId, gameBoard);
+      //   })
+
+      this.$q.when(gamePromises)
+        .then(() => {
+          console.log(`this.gameBoards`, this.gameBoards);
+        })
     }
 
   }

@@ -6,14 +6,18 @@ var Quizdom;
         (function (Play) {
             var PlayController = (function () {
                 function PlayController(AuthenticationService, GameService) {
+                    var _this = this;
                     this.AuthenticationService = AuthenticationService;
                     this.GameService = GameService;
                     this.showQ = false;
-                    this.GameService.loadGame(this.AuthenticationService.User);
+                    this.GameService.loadGame(this.AuthenticationService.User)
+                        .then(function () {
+                        _this.GameService.setupGameBoard();
+                    });
                 }
                 PlayController.prototype.showThisQuestion = function (questionId) {
-                    this.question = this.GameService.gameQuestions.find(function (q) { return q.questionId == questionId; });
-                    this.question.questionState = "revealed";
+                    this.question = this.GameService.gameBoards.find(function (q) { return q.questionId == questionId; });
+                    this.question.questionState = "ask";
                     this.showQ = true;
                 };
                 PlayController.prototype.chooseThisAnswer = function (questionId, answerIndex) {

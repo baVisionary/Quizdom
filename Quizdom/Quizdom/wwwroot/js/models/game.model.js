@@ -6,7 +6,7 @@ var Quizdom;
             function GameModel() {
                 this.id = 0;
                 this.initiatorUserId = '';
-                this.gameLength = 12;
+                this.gameLength = 18;
                 this.activeUserId = '';
                 this.lastActiveUserId = '';
                 this.startDateTime = new Date();

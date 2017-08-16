@@ -1,15 +1,9 @@
 namespace Quizdom.Views.Questions {
   export class QuestionsController {
-    static $inject = [
-      'QuestionService',
-      '$state',
-      '$q'
-    ];
-
     public title: string;
     // rewrite to remove controller variables for questions & categories
-    public questions;
-    public categories: string[];
+    // public questions;
+    // public categories: string[];
 
     public category: string;
     public difficulty: string;
@@ -18,14 +12,23 @@ namespace Quizdom.Views.Questions {
     private preDelete: boolean;
     private deleteText: string;
 
+    static $inject = [
+      'QuestionService',
+      'AuthenticationService',
+      '$state',
+      '$q'
+    ];
+
     constructor(
       private QuestionService: Services.QuestionService,
+      private AuthenticationService: Services.AuthenticationService,
       private $state,
       private $q
     ) {
       this.title = "Quiz Questions";
       this.QuestionService.getAllQs();
-      this.QuestionService.getAllCats()
+      this.QuestionService.getAllCats();
+      this.QuestionService.getAllCatIds();
       this.preDelete = false;
       this.deleteText = "Delete";
     }
@@ -40,7 +43,7 @@ namespace Quizdom.Views.Questions {
       let i = Math.max.apply(Math, this.QuestionService.questions.map(o => { return o.id; })) + 1;
       this.questionToEdit = this.QuestionService.newQuestion();
       this.questionToEdit.id = i;
-      this.questionToEdit.UserId = "Quizdom User";
+      this.questionToEdit.UserId = this.AuthenticationService.User.userName;
       console.log(this.questionToEdit);
       this.$state.go('Questions.new');
     }
@@ -53,13 +56,15 @@ namespace Quizdom.Views.Questions {
     }
 
     public saveQuestion() {
-      console.log(this.questionToEdit);
+      console.log(`QuestionToEdit`, this.questionToEdit);
       this.questionToEdit.dateModified = new Date();
-      this.QuestionService.updateOne(this.questionToEdit).then(() => {
-        let i = this.QuestionService.questions.findIndex(q => { return q.id == this.questionToEdit.id })
-        this.QuestionService.questions[i] = angular.copy(this.questionToEdit);
-        this.$state.go('Questions');
-      });
+      this.questionToEdit.categoryId = this.QuestionService.allCategories.find(cat => { return this.questionToEdit.category == cat.longDescription }).id;
+      this.QuestionService.updateOne(this.questionToEdit)
+        .then(() => {
+          let i = this.QuestionService.questions.findIndex(q => { return q.id == this.questionToEdit.id })
+          this.QuestionService.questions[i] = angular.copy(this.questionToEdit);
+          this.$state.go('Questions');
+        });
     }
 
     public deleteQuestion(questionId) {
@@ -83,11 +88,14 @@ namespace Quizdom.Views.Questions {
     }
 
     public saveNewQuestion() {
-      this.QuestionService.createOne(this.questionToEdit).$promise.then(() => {
-        this.QuestionService.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
-        this.search = this.questionToEdit.id;
-        this.$state.go('Questions');
-      });
+      this.questionToEdit.dateModified = new Date();
+      this.questionToEdit.categoryId = this.QuestionService.allCategories.find(cat => { return this.questionToEdit.category == cat.longDescription }).id;
+      this.QuestionService.createOne(this.questionToEdit).$promise
+        .then((newQuestion) => {
+          this.QuestionService.questions.push(this.QuestionService.getOneQuestionId(this.questionToEdit.id));
+          this.category = this.questionToEdit.category;
+          this.$state.go('Questions');
+        });
     }
   }
 }

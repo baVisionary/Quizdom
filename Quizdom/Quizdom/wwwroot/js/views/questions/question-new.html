@@ -39,7 +39,7 @@
       <div class="input-field col s5">
         <select name="questionCategory" id="questionCategory" required ng-model="vm.questionToEdit.category">
       <option value="" disabled>Change</option>
-      <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
+      <option ng-repeat="cat in vm.QuestionService.allCategories" value={{cat.longDescription}}>{{cat.longDescription}}</option>
     </select>
         <label>Category</label>
       </div>
@@ -52,7 +52,11 @@
       </div>
     </div>
     <div class="row">
-      <div class="col s12">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
+      <div class="input-field col s5">
+        <input type="text" id="source" class="validate" required ng-model="vm.questionToEdit.source">
+        <label>Source</label>
+      </div>
+      <div class="col s6 offset-s1">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
     </div>
     <div class="row card-actions">
       <button class="btn-floating right orange" ui-sref="Questions"><i class="material-icons large">cancel</i></button>

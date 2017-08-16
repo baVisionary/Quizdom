@@ -25,10 +25,9 @@
             </div>
           </div>
           <div class="row">
-            <h6>Difficulty</h6>
             <div class="input-field col s12 m6">
               <select name="categorySelect" id="categorySelect" ng-model="vm.GameService.gameDifficulty">
-                <option value="all" selected>All Levels</option>
+                <option value="all" selected>All Levels of Difficulty</option>
                 <option ng-repeat="diff in vm.GameService.difficulty" value={{diff.value}}>{{diff.label}}</option>
               </select>
             </div>
@@ -51,7 +50,7 @@
           </div>
           <div class="card-action">
             <a class="btn" ui-sref="Invite">Invite</a>
-            <a class="btn" ui-sref="Play">Play Quizdom</a>
+            <a class="btn" ng-click="vm.playQuizdom()">Play Quizdom</a>
           </div>
         </div>
       </div>

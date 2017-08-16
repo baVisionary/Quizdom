@@ -6,13 +6,18 @@ var Quizdom;
         (function (Setup) {
             var SetupController = (function () {
                 function SetupController(AuthenticationService, GameService, $state) {
+                    var _this = this;
                     this.AuthenticationService = AuthenticationService;
                     this.GameService = GameService;
                     this.$state = $state;
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.GameService.loadGame(this.AuthenticationService.User);
+                    this.GameService.loadMyGameData(this.AuthenticationService.User)
+                        .then(function () {
+                        _this.GameService.loadGamePlayers(_this.AuthenticationService.User);
+                        _this.GameService.loadGameCategories({ id: _this.GameService.gameId });
+                    });
                 }
                 SetupController.prototype.addCategory = function (cat) {
                     console.log("Add category requested:", cat.longDescription);
@@ -20,6 +25,13 @@ var Quizdom;
                 };
                 SetupController.prototype.removeCategory = function (playerId) {
                     this.GameService.removeCategory(playerId);
+                };
+                SetupController.prototype.playQuizdom = function () {
+                    var _this = this;
+                    this.GameService.setupGameBoards()
+                        .then(function () {
+                        _this.$state.go('Play');
+                    });
                 };
                 SetupController.$inject = [
                     'AuthenticationService',

@@ -5,22 +5,22 @@ namespace Quizdom.Services {
 
   export class GameService {
 
-    private allGames: any[] = [];
+    // private allGames: any[] = [];
+    // private questionsByCatDiff: Models.GameBoardModel[] = [];
     public allCategories: Models.ICategory[] = [];
-    private questionsByCatDiff: Models.GameBoardModel[] = [];
     private difficulty = [
-      { label: 'Easy', value: 'easy' },
-      { label: 'Medium', value: 'medium' },
-      { label: 'Hard', value: 'hard' }
+      { label: 'Casual', value: 'easy' },
+      { label: 'Engaging', value: 'medium' },
+      { label: 'Brain bending!', value: 'hard' }
     ];
 
-    private newGameData;
+    private newGameData: any = new Models.GameModel;
     public gamePlayers: Models.IUser[] = [];
     public gameCategories: Models.ICategory[] = [];
     public gameCatClass: string = 'col s12';
     public gameDifficulty: string = 'all';
     public gameSource: string = "";
-    public gameBoards: Models.GameBoardModel[] = [];
+    public gameBoards: Models.IGameBoard[] = [];
     private numQuestions: number = 0;
     private row: number = 0;
     private column: number = 0;
@@ -76,7 +76,7 @@ namespace Quizdom.Services {
     });
 
     // manage 'GameBoard' table throughout game
-    private _Resource_gameBoard = <Models.IGameBoardResource>this.$resource('api/game/board/:gameId', null, {
+    private _Resource_gameBoard = <Models.IGameBoardResource>this.$resource('api/game/board/:id', null, {
       'update': {
         method: 'PUT'
       }
@@ -108,8 +108,9 @@ namespace Quizdom.Services {
         this.allCategories = this._Resource_categories.query();
         return this.allCategories.$promise;
       } else {
-        let categories = this.$q.defer();
-        categories.resolve(this.allCategories);
+        let categories = new Promise((res) => {
+          res(this.allCategories);
+        });
         return categories;
       }
     }
@@ -119,7 +120,7 @@ namespace Quizdom.Services {
       return this._Resource_game.search({ username: user.userName });
     }
 
-    public get newGameId(): number {
+    public get gameId(): number {
       return this.newGameData.id;
     }
 
@@ -127,33 +128,23 @@ namespace Quizdom.Services {
     // Check if user already has active game
     // YES - use last gameId again
     // NO - create new game resource
-    public loadGame(user) {
-      let gameLoaded = new Promise((res, er) => {
+    public loadMyGameData(user) {
+      let myGameLoaded = new Promise((res, err) => {
         this.findLastGame(user).$promise
           .then((lastGame) => {
             // console.log(`lastGame`, lastGame);
             if (lastGame.hasOwnProperty('initiatorUserId')) {
               this.newGameData = lastGame;
               console.log(`newGameData`, this.newGameData);
-              this.$q.all([this.loadGameCategories(), this.loadPlayers(user), this.loadGameBoards()])
-                .then(() => {
-                  console.log(`Game Player length:`, this.gamePlayers.length);
-                  console.log(`Game Category length:`, this.gameCategories.length);
-                  console.log(`Game Boards:`, this.gameBoards.length);
-                  res(true);
-                })
-                .catch((error) => {
-                  console.log(`Unable to load players/categories/gameboard`);
-                  console.log(`error`, error);
-                })
+              res(this.newGameData);
             } else {
-              this._Resource_game.save({ initiatorUserId: user.userName }).$promise
+              let newGame = new Models.GameModel;
+              newGame.initiatorUserId = user.userName;
+              this._Resource_game.save(newGame).$promise
                 .then((newGame) => {
-                  console.log(`newGame`, newGame);
+                  // console.log(`newGame`, newGame);
                   this.newGameData.id = newGame.id;
-                  this.newGameData.initiatorUserId = user;
                   console.log(`newGameData`, this.newGameData);
-                  this.loadPlayers(user);
                   res(true);
                 })
                 .catch((error) => {
@@ -162,14 +153,36 @@ namespace Quizdom.Services {
             }
           })
       })
-      return gameLoaded;
+      return myGameLoaded;
     }
 
+    public loadGame(gameId) {
+
+      let gameLoaded: any = this.$q.when();
+      gameLoaded = gameLoaded.then(() => {
+        this.newGameData = this._Resource_game.get({ gameId: gameId })
+        this.newGameData.$promise
+          .then
+      })
+      let gamePromises = [];
+      gamePromises.push(this.gamePlayers.length = this.gameCategories.length = this.gameBoards.length = 0);
+      gamePromises.push(this.loadGamePlayers(Models.UserModel.getAnonymousUser()));
+      gamePromises.push(this.loadGameCategories(gameId));
+      gamePromises.push(this.loadGameBoards(gameId));
+      gameLoaded = gameLoaded.then(() => {
+        gamePromises;
+      })
+
+      this.$q.when(gameLoaded).then(() => {
+        console.log(`Game loaded`);
+      })
+
+    }
 
     public destroyGame() {
-      this._Resource_game.remove({ gameId: this.newGameId }).$promise
+      this._Resource_game.remove({ gameId: this.gameId }).$promise
         .then((gameData) => {
-          this.newGameData = {};
+          this.newGameData = new Models.GameModel;
           this.gamePlayers = [];
           this.gameCategories = [];
           this.gameDifficulty = 'all';
@@ -181,73 +194,109 @@ namespace Quizdom.Services {
     }
 
     // Show the players assigned to the current gameId
-    private loadPlayers(user: Models.IUser) {
-      return this._Resource_game_players.query({ id: this.newGameId }).$promise
-        .then((players) => {
-          // console.log(`players`, players);
-          if (players.length == 0) {
-            this.addPlayer(this.newGameId, user, true);
-            console.log(`Game Players`, this.gamePlayers);
-          } else {
-            players.forEach((p, i) => {
-              // console.log(`p.userId`, p.userId);
-              return this.PlayerService.findByUserName(p.userId)
-                .then((player) => {
-                  player.playerId = p.id;
-                  this.gamePlayers[i] = player;
-                })
-            })
-            console.log(`Game Players`, this.gamePlayers);
-          }
-        })
-        .catch((error) => {
-          console.log(`error`, error);
-        });
+    public loadGamePlayers(user: Models.IUser) {
+      let gamePlayersLoaded = new Promise((res, err) => {
+        this.gamePlayers.length = 0;
+        this._Resource_game_players.query({ id: this.gameId }).$promise
+          .then((players) => {
+            // console.log(`players`, players);
+            if (players.length == 0) {
+              this.addPlayer(this.gameId, user, true);
+              console.log(`Game Players`, this.gamePlayers);
+            } else {
+              players.forEach((p, i) => {
+                // console.log(`p.userId`, p.userId);
+                this.PlayerService.findByUserName(p.userId)
+                  .then((player) => {
+                    player.playerId = p.id;
+                    this.gamePlayers.push(player);
+                  })
+              })
+              console.log(`Game Players`, this.gamePlayers);
+              res(this.gamePlayers);
+            }
+          })
+          .catch((error) => {
+            console.log(`error`, error);
+            err(error)
+          });
+      })
+      return gamePlayersLoaded;
     }
 
     // Show the gamecategories assigned to the current gameId
-    private loadGameCategories() {
-      return this._Resource_game_categories.query({ id: this.newGameId }).$promise
-        .then((gameCategories) => {
-          gameCategories.forEach((gameCategory, i) => {
-            let category = this.allCategories.find(c => { return c.id == gameCategory.categoryId })
-            category.categoryId = gameCategory.id;
-            this.gameCategories[i] = category;
+    public loadGameCategories(gameId) {
+      console.log(`gameId`, gameId);
+      let gameCategoriesLoaded = new Promise((res, err) => {
+        // this.gameCategories = [];
+        // console.log(`Set gameCategories to []`);
+        this._Resource_game_categories.query({ id: gameId }).$promise
+          .then((gameCategories) => {
+            gameCategories.forEach((gameCategory, i) => {
+              let category = this.allCategories.find(c => { return c.id == gameCategory.categoryId })
+              category.categoryId = gameCategory.id;
+              this.gameCategories.push(category);
+            })
+            console.log(`Game Categories`, this.gameCategories);
+            // set the proper width of the category labels using ng-class "col sX"
+            this.gameCatClass = 'col s' + (12 / this.gameCategories.length).toString();
+            res(this.gameCategories);
           })
-          console.log(`Game Categories`, this.gameCategories);
-        })
+      })
+      return gameCategoriesLoaded;
     }
 
     // Show the gameBoards assigned to the current gameId
-    private loadGameBoards() {
-      this.gameBoards.length = 0;
-      return this._Resource_gameBoard.query({ id: this.newGameId }).$promise
-        .then((gameBoards) => {
-          gameBoards.forEach(gameBoard => {
-            this.gameBoards.push(gameBoard);
+    private loadGameBoards(gameId) {
+      let gameBoardsLoaded = new Promise((res, err) => {
+
+        this._Resource_gameBoard.query({ id: gameId }).$promise
+          .then((gameBoards) => {
+            gameBoards.forEach(gameBoard => {
+              this.gameBoards.push(gameBoard);
+            })
+            console.log(`Game Boards`, this.gameBoards);
+            res(this.gameBoards);
           })
-          console.log(`Game Boards`, this.gameBoards);
-        })
+          .catch((error) => {
+            console.log(`Unable to load Gameboard`);
+            err(error);
+          })
+      })
+      return gameBoardsLoaded;
     }
 
     // Add player who is registered
-    public addPlayer(gameId: number, user: Models.IUser, initiator: boolean): boolean {
-      if (this.gamePlayers.length < 3 && this.gamePlayers.findIndex(p => { return p.userName == user.userName }) == -1) {
-        var player = new this._Resource_game_players;
-        player.gameId = gameId;
-        player.userId = user.userName;
-        player.initiator = initiator;
-        player.$save((player) => {
-          user.playerId = player.id;
-          this.gamePlayers.push(user);
-          console.log(`players`, this.gamePlayers);
-          return true;
-        })
-          .catch((error) => {
-            console.log(`Error:`, error);
+    public addPlayer(gameId: number, user: Models.IUser, initiator: boolean): any {
+      let playerAdded = new Promise((res, err) => {
+        if (this.gamePlayers.length < 3 && this.gamePlayers.findIndex(p => { return p.userName == user.userName }) == -1) {
+          var player = new this._Resource_game_players;
+          player.gameId = gameId;
+          player.userId = user.userName;
+          player.initiator = initiator;
+          player.$save((player) => {
+            user.id = player.id;
+            this.gamePlayers.push(user);
+            console.log(`players`, this.gamePlayers);
+            res(true);
           })
-      }
-      return false;
+            .catch((error) => {
+              console.log(`Player not saved to database`);
+              err(error);
+            })
+        }
+      })
+      return playerAdded;
+    }
+
+    public saveGamePlayers(gameId: number) {
+      let gamePlayersSaved = new Promise((res, err) => {
+        this.gamePlayers.forEach(player => {
+
+        })
+
+      })
+      return gamePlayersSaved;
     }
 
     public removePlayer(playerId: number) {
@@ -255,47 +304,53 @@ namespace Quizdom.Services {
         console.log(`Deleting playerId:`, playerId);
         this._Resource_game_players.delete({ id: playerId }).$promise
           .then(() => {
-            this.gamePlayers.splice(this.gamePlayers.findIndex(p => { return p.playerId == playerId }), 1);
+            this.gamePlayers.splice(this.gamePlayers.findIndex(p => { return p.id == playerId }), 1);
           })
       }
     }
 
-    public addCategory(category: Models.ICategory): boolean {
-      if (this.gameCategories.length < 3 && this.gameCategories.findIndex(c => { return c.shortDescription == category.shortDescription }) == -1) {
-        var newGameCat = new this._Resource_game_categories;
-        newGameCat.gameId = this.newGameId;
-        newGameCat.categoryId = category.id;
-        console.log(`newGameCat`, newGameCat);
-        newGameCat.$save((cat) => {
-          console.log(`cat`, cat);
-          category.categoryId = cat.id;
-          console.log(`category`, category);
-          this.gameCategories.push(category);
-          console.log(`selectCategories`, this.gameCategories);
-          return true;
-        })
-          .catch((error) => {
-            console.log(`Error:`, error);
+    public addCategory(category: Models.ICategory) {
+      let categoryAdded = new Promise((res, err) => {
+        if (this.gameCategories.length < 3 && this.gameCategories.findIndex(c => { return c.shortDescription == category.shortDescription }) == -1) {
+          var newGameCat = new this._Resource_game_categories;
+          newGameCat.gameId = this.gameId;
+          newGameCat.categoryId = category.id;
+          console.log(`newGameCat`, newGameCat);
+          newGameCat.$save((cat) => {
+            category.categoryId = cat.id;
+            this.gameCategories.push(category);
+            console.log(`Categories`, this.gameCategories);
+            res(this.gameCategories);
           })
-      }
-      return false;
+        }
+      })
+      return categoryAdded;
     }
 
     public removeCategory(categoryId: number) {
-      if (this.gameCategories.length > 0) {
-        console.log(`Deleting game category:`, categoryId);
-        this._Resource_game_categories.delete({ id: categoryId }).$promise
-          .then(() => {
-            this.gameCategories.splice(this.gameCategories.findIndex(c => { return c.categoryId == categoryId }), 1);
-          })
-      }
+      let categoryRemoved = new Promise((res, err) => {
+        if (this.gameCategories.length > 0) {
+          console.log(`Deleting game category:`, categoryId);
+          this._Resource_game_categories.delete({ id: categoryId }).$promise
+            .then(() => {
+              this.gameCategories.splice(this.gameCategories.findIndex(c => { return c.categoryId == categoryId }), 1);
+              res(this.gameCategories)
+            })
+        }
+      })
+      return categoryRemoved;
     }
 
     // select random items from arraySelect and add to arrayToAdd
     private addInRandomOrder(arrayToAdd, arraySelect, wanted: number): any {
-      let shuffling = new Promise((res, err) => {
+      let arrayShuffled = new Promise((res, err) => {
         // might be nice to support if fewer in list than amount
         // if arraySelect.length < amount then randomize arraySelect.length repeatedly until amount reached
+        if (arraySelect.length == 0) {
+          let error = `No items to shuffle`;
+          console.log(error);
+          err(error)
+        }
         let assigned = 0;
         do {
           let avail = Math.min(arraySelect.length, wanted - assigned);
@@ -311,19 +366,19 @@ namespace Quizdom.Services {
         } while (assigned < wanted);
         res(arrayToAdd);
       })
-      return shuffling;
+      return arrayShuffled;
     }
 
     // parse questions into GameBoardQuestions
-    private parseQuizToGameBoard(cat, questions, prizePoints): void {
+    private parseQuizToGameBoard(cat, questions, prizePoints) {
       let gameBoardPromise = new Promise((res, err) => {
         let randomizedQs = [];
         this.addInRandomOrder(randomizedQs, questions, this.numQuestions);
         let randomizedGameBoards = [];
         randomizedQs.forEach(q => {
-          let gameBoard = new Models.GameBoardModel;
-          gameBoard.gameId = this.newGameId;
-          gameBoard.categoryId = cat.id;
+          let gameBoard: any = new Models.GameBoardModel;
+          gameBoard.gameId = this.gameId;
+          gameBoard.categoryId = q.categoryId;
           gameBoard.difficulty = q.difficulty;
           gameBoard.boardRow = this.row;
           gameBoard.boardColumn = this.column;
@@ -350,17 +405,16 @@ namespace Quizdom.Services {
           if (this.row >= 3) {
             this.row = 0;
           }
-          this._Resource_gameBoard.save(gameBoard).$promise
+          return this._Resource_gameBoard.save(gameBoard).$promise
             .then((data) => {
               // console.log(`data`, data);
               gameBoard.id = data.id;
               this.gameBoards.push(gameBoard);
-              res(true);
             })
-
         });
-        return gameBoardPromise;
+        res(this.gameBoards);
       })
+      return gameBoardPromise;
     }
 
     private loadNewGameBoards(cat, diff) {
@@ -368,22 +422,45 @@ namespace Quizdom.Services {
         this.QuestionService.getQsByCatAndDiff(cat.longDescription, diff.value).$promise
           .then((questions) => {
             console.log(`${cat.shortDescription} ${diff.value} Qs: ${questions.length}`);
-            let prizePoints = [100, 200, 300][this.difficulty.findIndex(d => { return d.value == diff.value })];
-            this.parseQuizToGameBoard(cat, questions, prizePoints)
-            // console.log(`gameBoards:`, this.gameBoards);
-            res(true);
+            if (questions.length > 0) {
+              let prizePoints = [100, 200, 300][this.difficulty.findIndex(d => { return d.value == diff.value })];
+              this.parseQuizToGameBoard(cat, questions, prizePoints)
+                .then()
+              // console.log(`gameBoards:`, this.gameBoards);
+              res(true);
+            } else {
+              let error = `No questions in ${cat.longDescription} - ${diff.title}`;
+              console.log(`error`);
+              err();
+            }
           })
       })
       return promiseGameBoard;
     }
 
+    // ensure all old GameBoards are 
+    private removeAllGameBoards(gameId) {
+      let gameBoardsRemoved = new Promise((res, err) => {
+        let allGameBoards = this._Resource_gameBoard.query();
+        allGameBoards.$promise
+          .then(() => {
+            let gameBoards = allGameBoards.filter(g => { return g.gameId == gameId })
+            gameBoards.forEach((g) => {
+              this._Resource_gameBoard.remove({ id: g.id });
+            })
+            console.log(`Removed old Gameboards`);
+            res(true);
+          })
+      })
+      return gameBoardsRemoved;
+    }
+
     // Build the game board using the categories
-    public setupGameBoard() {
+    public setupGameBoards() {
       console.log(`Creating GameBoards`);
-      this.gameBoards.length = 0;
       if (this.gamePlayers.length < 2 || this.gameCategories.length < 1) {
         console.log(`Unable to setup game - invite players & select categories`);
-        return false
+        return false;
       }
       // set the proper width of the category labels using ng-class "col sX"
       this.gameCatClass = 'col s' + (12 / this.gameCategories.length).toString();
@@ -397,27 +474,77 @@ namespace Quizdom.Services {
       this.perRow = 6 / this.gameCategories.length;
 
       // line up all the promises to fill the gameBoard
-      let gamePromises = this.$q.when();
+      let gamePromises: any = this.$q.when();
+
+      gamePromises = gamePromises.then(() => {
+        return this.removeAllGameBoards(this.gameId);
+      })
       this.gameCategories.forEach(cat => {
         this.difficulty.forEach(diff => {
           if (this.gameDifficulty == 'all' || this.gameDifficulty == diff.value) {
             gamePromises = gamePromises.then(() => {
-              this.loadNewGameBoards(cat, diff);
+              console.log(`Loading new Gameboards...`);
+              return this.loadNewGameBoards(cat, diff);
             })
           }
         })
       })
-
-      // line up all the promises to save the gameBoard
-      // this.gameBoards.forEach(gameBoard => {
-      //   gamePromises = gamePromises.then(() => {
-
-      //     this._Resource_gameBoard.save(this.newGameId, gameBoard);
-      //   })
-
       this.$q.when(gamePromises)
         .then(() => {
           console.log(`this.gameBoards`, this.gameBoards);
+        })
+        .catch((error) => {
+          console.log(`Failed to load Gameboard`);
+        })
+      return gamePromises;
+    }
+
+    // SignalR methods update gameBoard to trigger server
+    public updateGameBoard(gameBoard) {
+      return this._Resource_gameBoard.update({id: gameBoard.id}, gameBoard);
+    }
+
+    // SignalR methods update gameBoard to trigger server
+    public updateGamePlayer(gamePlayer) {
+      return this._Resource_game_players.update({id: gamePlayer.id}, gamePlayer);
+    }
+
+
+    // research into how to use promise resolution to delay for loop action - SUCCESS!
+    public testLoopPromise(loops) {
+      let loopPromises: any = this.$q.when();
+      // setup the looping behavior
+      for (var i = 0; i < loops; i++) {
+        // values that are dependent on the loop
+        let loop = 'Loop ' + i;
+        // the stuff that will take time
+        loopPromises = loopPromises.then(() => {
+          return new Promise((res) => {
+            console.log(loop);
+
+            // just to visibly count the seconds
+            let tick = 0;
+            let timer = setInterval(() => {
+              tick++;
+              console.log(`...${tick}`);
+            }, 1000);
+
+            // mimics API delay
+            let delay = this.randomInt(1, 5);
+            setTimeout(() => {
+              clearInterval(timer);
+              console.log(`Complete after ` + delay + ` seconds`, );
+              res(`Success`)
+            }, delay * 1000);
+          });
+        })
+      }
+      // stasting the action
+      console.log(`Starting loop`);
+      this.$q.when(loopPromises)
+        .then(() => {
+          // when all are complete!
+          console.log(`All loops complete!`);
         })
     }
 

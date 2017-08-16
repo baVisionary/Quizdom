@@ -10,6 +10,7 @@ var Quizdom;
                 this.$q = $q;
                 this.questions = [];
                 this.categories = [];
+                this.allCategories = [];
                 this.difficulty = [
                     "easy",
                     "medium",
@@ -22,6 +23,7 @@ var Quizdom;
                     }
                 });
                 this._Resource_categories = this.$resource('/api/quiz/categories');
+                this._Resource_game_categories = this.$resource('/api/game/categories');
                 this._Resource_Qs_by_category = this.$resource('api/quiz/category/:category', null, {
                     'diff': {
                         method: 'GET',
@@ -33,26 +35,44 @@ var Quizdom;
                 // this.getAllCats();
             }
             QuestionService.prototype.getAllQs = function () {
+                var _this = this;
                 if (this.questions.length == 0) {
                     this.questions = this._Resource_question.query();
                     return this.questions.$promise;
                 }
                 else {
-                    var questions = this.$q.defer();
-                    questions.resolve(this.questions);
+                    var questions = new Promise(function (res) {
+                        res(_this.questions);
+                    });
                     return questions;
                 }
             };
             QuestionService.prototype.getAllCats = function () {
+                var _this = this;
                 if (this.categories.length == 0) {
                     this.categories = this._Resource_categories.query();
                     return this.categories.$promise;
                 }
                 else {
-                    var categories = this.$q.defer();
-                    categories.resolve(this.categories);
-                    console.log(categories);
+                    var categories = new Promise(function (res) {
+                        res(_this.categories);
+                        console.log("Categories", _this.categories);
+                    });
                     return categories;
+                }
+            };
+            QuestionService.prototype.getAllCatIds = function () {
+                var _this = this;
+                if (this.allCategories.length == 0) {
+                    this.allCategories = this._Resource_game_categories.query();
+                    return this.allCategories.$promise;
+                }
+                else {
+                    var categoryIds = new Promise(function (res) {
+                        res(_this.allCategories);
+                        console.log("Categories", _this.allCategories);
+                    });
+                    return categoryIds;
                 }
             };
             QuestionService.prototype.getQsByCategory = function (cat) {

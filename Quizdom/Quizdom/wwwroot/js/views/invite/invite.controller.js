@@ -6,6 +6,7 @@ var Quizdom;
         (function (Invite) {
             var InviteController = (function () {
                 function InviteController(AuthenticationService, PlayerService, FriendService, ActiveService, GameService, $state) {
+                    var _this = this;
                     this.AuthenticationService = AuthenticationService;
                     this.PlayerService = PlayerService;
                     this.FriendService = FriendService;
@@ -19,7 +20,10 @@ var Quizdom;
                     }
                     this.loadMyFriends();
                     this.loadActiveUsers();
-                    this.GameService.loadGame(this.AuthenticationService.User);
+                    this.GameService.loadMyGameData(this.AuthenticationService.User)
+                        .then(function () {
+                        _this.GameService.loadGamePlayers(_this.AuthenticationService.User);
+                    });
                 }
                 InviteController.prototype.loadActiveUsers = function () {
                     var _this = this;
@@ -55,8 +59,8 @@ var Quizdom;
                         // Need to confirm that 204 not returned or 200 returned
                         // console.log(found.hasOwnProperty('userName'));
                         if (found.hasOwnProperty('userName')) {
-                            _this.GameService.addPlayer(_this.GameService.newGameId, found, false);
                             _this.player = "";
+                            _this.GameService.addPlayer(_this.GameService.gameId, found, false);
                             return found;
                         }
                         else {
@@ -64,8 +68,8 @@ var Quizdom;
                                 .then(function (found) {
                                 console.log(found.hasOwnProperty('userName'));
                                 if (found.hasOwnProperty('userName')) {
-                                    _this.GameService.addPlayer(_this.GameService.newGameId, found, false);
                                     _this.player = "";
+                                    _this.GameService.addPlayer(_this.GameService.gameId, found, false);
                                     return found;
                                 }
                                 // Check if search is formatted as email
@@ -84,7 +88,7 @@ var Quizdom;
                 };
                 InviteController.prototype.addPlayer = function (user) {
                     console.log("Add player requested:", user.userName);
-                    this.GameService.addPlayer(this.GameService.newGameId, user, false);
+                    this.GameService.addPlayer(this.GameService.gameId, user, false);
                 };
                 InviteController.prototype.removePlayer = function (playerId) {
                     this.GameService.removePlayer(playerId);

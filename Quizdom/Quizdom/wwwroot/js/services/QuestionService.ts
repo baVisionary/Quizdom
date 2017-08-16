@@ -6,6 +6,7 @@ namespace Quizdom.Services {
 
     public questions = [];
     public categories = [];
+    public allCategories = [];
     public difficulty = [
       "easy",
       "medium",
@@ -33,6 +34,8 @@ namespace Quizdom.Services {
     });
     private _Resource_categories = <ng.resource.IResourceClass<ng.resource.IResource<string>>> this.$resource('/api/quiz/categories');
 
+    private _Resource_game_categories = <Models.IGameCategoryResource> this.$resource('/api/game/categories');
+
     private _Resource_Qs_by_category = <Models.IQuestionResource> this.$resource('api/quiz/category/:category', null, {
       'diff': {
         method: 'GET',
@@ -47,8 +50,9 @@ namespace Quizdom.Services {
         this.questions = this._Resource_question.query();
         return this.questions.$promise;
       } else {
-        let questions = this.$q.defer();
-        questions.resolve(this.questions);
+        let questions = new Promise((res) => {
+          res(this.questions);
+        });
         return questions;
       }
     }
@@ -58,11 +62,26 @@ namespace Quizdom.Services {
         this.categories = this._Resource_categories.query();
         return this.categories.$promise;
       } else {
-        let categories = this.$q.defer();
-        categories.resolve(this.categories);
-        console.log(categories);
+        let categories = new Promise((res) => {
+          res(this.categories);
+          console.log(`Categories`, this.categories);
+        });
         return categories;
       }
+    }
+
+    public getAllCatIds() {
+      if (this.allCategories.length == 0) {
+        this.allCategories = this._Resource_game_categories.query();
+        return this.allCategories.$promise;
+      } else {
+        let categoryIds = new Promise((res) => {
+          res(this.allCategories);
+          console.log(`Categories`, this.allCategories);
+        });
+        return categoryIds;
+      }
+
     }
 
     public getQsByCategory(cat: string) {

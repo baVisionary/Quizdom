@@ -15,7 +15,11 @@ namespace Quizdom.Views.Setup {
       if (!this.AuthenticationService.isLoggedIn) {
         this.$state.go('Login');
       }
-      this.GameService.loadGame(this.AuthenticationService.User);
+      this.GameService.loadMyGameData(this.AuthenticationService.User)
+        .then(() => {
+          this.GameService.loadGamePlayers(this.AuthenticationService.User);
+          this.GameService.loadGameCategories({ id: this.GameService.gameId });
+        })
     }
 
     public addCategory(cat) {
@@ -27,7 +31,12 @@ namespace Quizdom.Views.Setup {
       this.GameService.removeCategory(playerId);
     }
 
-
+    public playQuizdom() {
+      this.GameService.setupGameBoards()
+        .then(() => {
+          this.$state.go('Play');
+        })
+    }
 
   }
 }

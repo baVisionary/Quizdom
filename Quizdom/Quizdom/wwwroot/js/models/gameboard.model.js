@@ -13,13 +13,13 @@ var Quizdom;
                 this.boardRow = 0;
                 this.prizePoints = 0;
                 this.questionText = "";
-                this.answerA = "";
-                this.answerB = "";
-                this.answerC = "";
-                this.answerD = "";
+                this.answerA = "A";
+                this.answerB = "B";
+                this.answerC = "C";
+                this.answerD = "D";
                 //  values: A/B/C/D
                 this.correctAnswer = "";
-                // possible states: new/ask/answers/guess/correct/old
+                // possible states: new/ask/answers/guess/correct/retired
                 this.questionState = "new";
                 this.answeredCorrectlyUserId = "";
                 this.answerOrder = 0;

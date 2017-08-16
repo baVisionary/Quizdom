@@ -6,65 +6,46 @@
           <span class="card-title center-align">Play Quizdom</span>
           <div class="row">
             <div class="col s12">
-              <!-- <h6>Categories — {{ vm.GameService.gameDifficulty }}</h6> -->
+              <!-- Categories </h6> -->
               <div class="row">
                 <div class="col" ng-class="vm.GameService.gameCatClass" ng-repeat="cat in vm.GameService.gameCategories">
                   <div class="card-panel blue darken-4">
-                    <span class="card-title center-align">{{cat.id}}. {{cat.shortDescription}}</span>
+                    <span class="card-title center-align">{{cat.longDescription}}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+          <!-- hidden section that appears to display question & answers -->
           <div class="row">
             <div class="col s12">
               <div class="card grey-text text-darken-4" ng-show="vm.showQ">
                 <div class="card-content">
-                  <span class="card-title" ng-click="vm.showQ = !vm.showQ">{{ vm.question.questionId }}. {{vm.question.questionText}}</span>
-                  <div class="row">
+                  <span class="card-title" ng-click="vm.triggerStateChange(vm.question.id, 4)">{{ vm.question.questionId }}. {{vm.question.questionText}}</span>
+                  <div class="row" ng-repeat="answer in [vm.question.answerA, vm.question.answerB, vm.question.answerC, vm.question.answerD]">
                     <div class="col s12">
-                      <div class="card blue lighten-2 black-text">
-                        <div class="card-content" value="A">A. {{vm.question.answerA}}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col s12">
-                      <div class="card blue lighten-2 black-text">
-                        <div class="card-content" value="B">B. {{vm.question.answerB}}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col s12">
-                      <div class="card blue lighten-2 black-text">
-                        <div class="card-content" value="C">C. {{vm.question.answerC}}</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col s12">
-                      <div class="card blue lighten-2 black-text">
-                        <div class="card-content" value="D">D. {{vm.question.answerD}}</div>
+                      <div class="card blue" ng-class="(vm.showGuess && vm.guess == $index) ? 'darken-2 white-text' : (vm.guessCorrect && 'ABCD'[$index] == vm.question.correctAnswer) ? 'correct' : 'lighten-2 black-text'" ng-click="vm.triggerStateChange(vm.question.id, $index)">
+                        <div class="card-content" value={{$index}}>
+                          <h5 ng-show="vm.showA">{{ "ABCD"[$index] }}. {{answer}}</h5>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="row" ng-repeat="row in [0,1,2]">
-                <div class="game-question col s4 m2" ng-show="!vm.showQ" ng-repeat="q in vm.GameService.gameBoards | filter:{boardRow:row}">
-                  <div class="card" ng-click="vm.showThisQuestion(q.questionId)">
-                    <div class="waves-effect waves-block waves-light">
-                      <h5 class="">${{ q.prizePoints }}</h5>
+              <!-- 3 rows of 6 columns of gameBoards AKA questions showing prizePoints -->
+              <div class="row" ng-repeat="row in [0,1,2]" ng-show="!vm.showQ">
+                <div class="game-question col s4 m2" ng-repeat="gb in vm.GameService.gameBoards | filter:{boardRow:row}">
+                  <div class="card green darken-4" ng-click="vm.triggerStateChange(gb.id, 4)">
+                    <div class="center-align">
+                      <i class="large material-icons white-text">live_help</i>
                       <!-- <img src="/images/avatar_generic.png"> -->
                     </div>
                     <div class="card-content">
-                      <span class="grey-text text-darken-4 center-align">
-                        <!-- <span class="col s3 center-align"><i class="material-icons">star_rate</i></span>                      -->
-                      <!-- <span class="card-title">Q{{ q.questionId }}</span> -->
-                      <h5 class="">${{ q.prizePoints }}</h5>
-                      <p class="">R{{ q.boardRow }} C{{ q.boardColumn }}:</p>
-                      <p class="">{{ q.categoryId }}-{{ q.difficulty.substring(0,4) }}</p>
+                      <span class="grey-text text-lighten-2 center-align">
+                      <h5 class="">${{ gb.prizePoints }}</h5>
+                      <!-- <p class="">R{{ q.boardRow }} C{{ q.boardColumn }}:</p> -->
+                      <!-- <p class="">{{ q.categoryId }}-{{ q.difficulty.substring(0,4) }}</p> -->
                       <!-- <span class="">{{ q.difficulty }}</span> -->
                       </span>
                     </div>

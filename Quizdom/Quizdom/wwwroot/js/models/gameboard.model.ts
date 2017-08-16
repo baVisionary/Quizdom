@@ -2,7 +2,7 @@ namespace Quizdom.Models {
   
     export class GameBoardModel {
 
-      public id?: number = 0;
+      public id: number = 0;
       public gameId: number = 0;
       public categoryId: number = 0;
       public difficulty: string = "";
@@ -11,13 +11,13 @@ namespace Quizdom.Models {
       public boardRow?: number = 0;
       public prizePoints?: number = 0;
       public questionText: string = "";
-      public answerA?: string = "";
-      public answerB?: string = "";
-      public answerC?: string = "";
-      public answerD?: string = "";
+      public answerA?: string = "A";
+      public answerB?: string = "B";
+      public answerC?: string = "C";
+      public answerD?: string = "D";
       //  values: A/B/C/D
       public correctAnswer: string = "";
-      // possible states: new/ask/answers/guess/correct/old
+      // possible states: new/ask/answers/guess/correct/retired
       public questionState: string = "new";
       public answeredCorrectlyUserId?: string = "";
       public answerOrder?: number = 0;
@@ -49,7 +49,7 @@ namespace Quizdom.Models {
     }
   
     export interface IGameBoardResource extends ng.resource.IResourceClass<IGameBoard> {
-      update(id, IGameBoard): IGameBoard;
+      update(id: {id: number}, any: IGameBoard): IGameBoard;
     }
   
   }

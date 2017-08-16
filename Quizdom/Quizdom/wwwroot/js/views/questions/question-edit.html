@@ -36,20 +36,23 @@
   <div class="row">
     <div class="input-field col s5">
       <select name="questionCategory" id="questionCategory" required ng-model="vm.questionToEdit.category">
-      <option ng-repeat="cat in vm.QuestionService.categories" value={{cat}}>{{cat}}</option>
-    </select>
+        <option ng-repeat="cat in vm.QuestionService.allCategories" value={{cat.longDescription}}>{{cat.longDescription}}</option>
+      </select>
       <label>Category: {{ vm.categoryToEdit }}</label>
     </div>
     <div class="input-field col s5 offset-s1">
       <select name="questionDifficulty" id="questionDifficulty" required ng-model="vm.questionToEdit.difficulty">
-      <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
-    </select>
+        <option ng-repeat="level in vm.QuestionService.difficulty" value={{level}}>{{level}}</option>
+      </select>
       <label>Difficulty: {{ vm.difficultyToEdit }}</label>
     </div>
   </div>
   <div class="row">
-    <div class="col s6">Source {{ vm.questionToEdit.source }} </div>
-    <div class="col s6">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
+    <div class="input-field col s5">
+      <input type="text" id="source" class="validate" required ng-model="vm.questionToEdit.source">
+      <label>Source</label>
+    </div>
+    <div class="col s6 offset-s1">Modified on {{ vm.questionToEdit.dateModified | date : 'mediumDate' }} </div>
   </div>
   <div class="row">
     <a class="waves-effect waves-light btn orange" ng-show="vm.preDelete" ng-click="vm.doNotDelete()"><i class="material-icons left">cancel</i>Keep It</a>

@@ -25,7 +25,10 @@ namespace Quizdom.Views.Invite {
       }
       this.loadMyFriends();
       this.loadActiveUsers();
-      this.GameService.loadGame(this.AuthenticationService.User);
+      this.GameService.loadMyGameData(this.AuthenticationService.User)
+        .then(() => {
+          this.GameService.loadGamePlayers(this.AuthenticationService.User)
+        })
     }
 
     public loadActiveUsers() {
@@ -61,16 +64,16 @@ namespace Quizdom.Views.Invite {
           // Need to confirm that 204 not returned or 200 returned
           // console.log(found.hasOwnProperty('userName'));
           if (found.hasOwnProperty('userName')) {
-            this.GameService.addPlayer(this.GameService.newGameId, found, false);
             this.player = "";
+            this.GameService.addPlayer(this.GameService.gameId, found, false);
             return found;
           } else {
             this.PlayerService.findByEmail(search)
               .then((found) => {
                 console.log(found.hasOwnProperty('userName'));
                 if (found.hasOwnProperty('userName')) {
-                  this.GameService.addPlayer(this.GameService.newGameId, found, false);
                   this.player = "";
+                  this.GameService.addPlayer(this.GameService.gameId, found, false);
                   return found;
                 }
                 // Check if search is formatted as email
@@ -91,7 +94,7 @@ namespace Quizdom.Views.Invite {
 
     public addPlayer(user: Models.IUser) {
       console.log(`Add player requested:`, user.userName);
-      this.GameService.addPlayer(this.GameService.newGameId, user, false);
+      this.GameService.addPlayer(this.GameService.gameId, user, false);
     }
 
     public removePlayer(playerId: number) {
@@ -102,7 +105,7 @@ namespace Quizdom.Views.Invite {
     //   if (this.FriendService.isNewFriend(friendEmail)) {
     //     this.PlayerService.findByEmail(friendEmail)
     //       .then((friend) => {
-    //         this.GameService.addPlayers(this.GameService.newGameId, friend);
+    //         this.GameService.addPlayers(this.GameService.gameId, friend);
 
     //       })
     //   }

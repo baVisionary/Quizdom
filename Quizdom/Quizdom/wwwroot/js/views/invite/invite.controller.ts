@@ -23,13 +23,23 @@ namespace Quizdom.Views.Invite {
       if (!this.AuthenticationService.isLoggedIn) {
         this.$state.go('Login');
       }
+
       this.loadMyFriends();
       this.loadActiveUsers();
+
       this.GameService.loadMyGameData(this.AuthenticationService.User)
         .then(() => {
-          this.GameService.loadGamePlayers(this.AuthenticationService.User)
+          console.log(`Loading Game ${this.GameService.gameId} Players from DB...`);
+          this.GameService.loadGamePlayers(this.GameService.gameId)
+            .then(() => {
+              if (this.GameService.gamePlayers.length == 0) {
+                this.GameService.addPlayer(this.GameService.gameId, this.AuthenticationService.User, true)
+              }
+            })
+          // this.GameService.loadGameCategories(this.GameService.gameId)
         })
     }
+
 
     public loadActiveUsers() {
       this.ActiveService.getActiveUsers()

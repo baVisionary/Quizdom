@@ -12,31 +12,33 @@ namespace Quizdom.Views.Play {
       '$http',
       '$q',
       '$scope',
+      '$stateParams',
     ]
 
     constructor(
       private AuthenticationService: Services.AuthenticationService,
       private GameService: Services.GameService,
       private HubService: Services.HubService,
-      private $http: ng.IHttpService,  
+      private $http: ng.IHttpService,
       private $q: ng.IQProvider,
       private $scope: ng.IScope,
+      private $stateParams: ng.ui.IStateParamsService,
     ) {
-      this.GameService.loadMyGameData(this.AuthenticationService.User)
+      console.log(`this.$stateParams`, this.$stateParams);
+      this.GameService.loadGame(this.$stateParams.gameId)
         .then(() => {
-          this.GameService.loadGame(this.GameService.gameId);
-          this.group = 'game' + this.GameService.gameId;
+          this.group = 'game' + this.$stateParams.gameId;
           this.HubService.startHub();
 
           // A function we will call from the server
-          this.HubService.connection.broadcaster.client.addChatMessage = $scope.addPost;
+          this.HubService.connection.broadcaster.client.addGameMessage = $scope.addPost;
 
           // this.HubService.addConnect($scope.group);
           this.HubService.startGroup(this.group)
 
-          this.getPosts();
-
+          this.getGameMessages();
         })
+
 
       // confirming how to relocate onto $scope if necessary for SignalR async
       $scope.loadQandA = (gameBoard) => {
@@ -59,20 +61,27 @@ namespace Quizdom.Views.Play {
 
     }
 
-    public getPosts = () => {
-      this.$http<any[]>({ method: 'GET', url: '/Chatroom' })
-        .then((response) => {
-          this.addPostsList(response.data)
+    // public getPosts() {
+    //   this.$http<any[]>({ method: 'GET', url: '/api/game/gamechat' })
+    //     .then((response) => {
+    //       this.addPostsList(response.data)
+    //     });
+    // }
+
+    public getGameMessages() {
+      this.GameService.getAllGameMsgs().$promise
+        .then((messages) => {
+          // console.log(`messages`, messages);
+          this.addPostsList(messages)
         });
     }
 
-    public addPostsList = (posts: any[]) => {
+    public addPostsList(posts: Models.IMessage[] ) {
       this.posts.length = 0;
       posts.forEach(post => {
         this.posts.push(post);
       });
       this.posts.sort((a, b) => { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1 })
-      // console.log(`$scope`, $scope);
       console.log(this.posts);
 
     }
@@ -81,9 +90,27 @@ namespace Quizdom.Views.Play {
       var post = {
         content: $("#textInput").val(),
         userName: this.AuthenticationService.User.userName,
-        group: this.group
+        group: this.group,
+        gameId: this.GameService.gameId
       };
-      this.$http.post<any>('/chatroom/', JSON.stringify(post))
+      this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
+        .then(function () {
+          $("#textInput").val("");
+        })
+        .catch(function (e) {
+          console.log(e);
+        });
+
+    }
+
+    public sendGameMessage = () => {
+      var post = {
+        content: $("#textInput").val(),
+        userName: this.AuthenticationService.User.userName,
+        group: this.group,
+        gameId: this.GameService.gameId
+      };
+      this.GameService.postGameMsg(post).$promise
         .then(function () {
           $("#textInput").val("");
         })

@@ -16,11 +16,11 @@ namespace Quizdom.Views.Setup {
         this.$state.go('Login');
       }
       this.GameService.loadMyGameData(this.AuthenticationService.User)
-        .then(() => {
-          this.GameService.loadGamePlayers(this.AuthenticationService.User);
-          this.GameService.loadGameCategories({ id: this.GameService.gameId });
-        })
-    }
+      .then(() => {
+        this.GameService.loadGamePlayers(this.GameService.gameId)
+        this.GameService.loadGameCategories(this.GameService.gameId)
+      })
+  }
 
     public addCategory(cat) {
       console.log(`Add category requested:`, cat.longDescription);
@@ -34,7 +34,7 @@ namespace Quizdom.Views.Setup {
     public playQuizdom() {
       this.GameService.setupGameBoards()
         .then(() => {
-          this.$state.go('Play');
+          this.$state.go(`Play`, {gameId: this.GameService.gameId});
         })
     }
 

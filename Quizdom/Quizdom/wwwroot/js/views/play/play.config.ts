@@ -9,7 +9,7 @@ namespace Quizdom.Views.Play {
     ) {
         $stateProvider
             .state('Play', <ng.ui.IState>{
-                url: '/play',
+                url: '/play/{gameId}',
                 templateUrl: 'js/views/play/play.html',
                 controller: 'PlayController',
                 controllerAs: 'vm'

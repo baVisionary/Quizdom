@@ -6,7 +6,7 @@ var Quizdom;
             function MessageModel() {
                 this.content = "";
                 this.userName = "";
-                this.group = "MainChatroom";
+                this.group = "";
             }
             return MessageModel;
         }());

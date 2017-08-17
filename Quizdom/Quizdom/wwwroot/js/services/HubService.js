@@ -11,7 +11,7 @@ var Quizdom;
                     // Connect to the broadcaster on the server
                     _this.connection = _this.connection || $.connection;
                     // This console.logs a lot of helpful debugging info!
-                    _this.connection.hub.logging = true;
+                    _this.connection.hub.logging = false;
                 };
                 this.startGroup = function (group) {
                     var connection = _this.connection;

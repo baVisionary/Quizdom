@@ -15,8 +15,8 @@ var Quizdom;
                     }
                     this.GameService.loadMyGameData(this.AuthenticationService.User)
                         .then(function () {
-                        _this.GameService.loadGamePlayers(_this.AuthenticationService.User);
-                        _this.GameService.loadGameCategories({ id: _this.GameService.gameId });
+                        _this.GameService.loadGamePlayers(_this.GameService.gameId);
+                        _this.GameService.loadGameCategories(_this.GameService.gameId);
                     });
                 }
                 SetupController.prototype.addCategory = function (cat) {
@@ -30,7 +30,7 @@ var Quizdom;
                     var _this = this;
                     this.GameService.setupGameBoards()
                         .then(function () {
-                        _this.$state.go('Play');
+                        _this.$state.go("Play", { gameId: _this.GameService.gameId });
                     });
                 };
                 SetupController.$inject = [

@@ -6,7 +6,13 @@ namespace Quizdom.Models {
         public avatarId: number = 0;
         public avatarUrl?: string = "avatar_generic.png";
         public isAdmin?: boolean = false;
+        // to support friends
         public friendId?: number;
+        // to support gamePlayer
+        public gameId?: number;
+        public userId?: string;
+        public playerId?: number;
+        public initiator?: boolean;
         public prizePoints?: number = 0;
 
         public static getAnonymousUser(): any {
@@ -22,7 +28,13 @@ namespace Quizdom.Models {
         avatarId: number;
         avatarUrl?: string;
         isAdmin?: boolean;
+        // to support friends
         friendId?: number;
+        // to support gamePlayer
+        gameId?: number;
+        userId?: string;
+        playerId?: number;
+        initiator?: boolean;
         prizePoints?: number;
 
         getAnonymousUser(): any;

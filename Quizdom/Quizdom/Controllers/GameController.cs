@@ -3,12 +3,13 @@ using Microsoft.AspNetCore.SignalR.Infrastructure;
 using Quizdom.Controllers;
 using Quizdom.Data;
 using Quizdom.Hubs;
+using Quizdom.Models;
 using Quizdom.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Quizdom.Models
+namespace Quizdom.Controllers
 {
     [Route("api/game/")]
     public class GameController : HubController<Broadcaster>
@@ -47,10 +48,10 @@ namespace Quizdom.Models
 
         // SIGNAL R
         [HttpGet]
-        [Route("gamechat")]
-        public async Task<IActionResult> GetGameChat()
+        [Route("gamechat/{gameid}")]
+        public async Task<IActionResult> GetGameChat(int gameid)
         {
-            var messages = await _gameService.GetGameMessages();
+            var messages = await _gameService.GetGameMessages(gameid);
 
             if (messages == null)
             {
@@ -272,10 +273,10 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
 
             return Ok(record);
         }
@@ -449,10 +450,11 @@ namespace Quizdom.Models
 
             var record = _context.GameCategories.ToList();
 
-            if(record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if(record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
+
             return Ok(record);
         }
 
@@ -468,10 +470,10 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
 
             return Ok(record);
         }

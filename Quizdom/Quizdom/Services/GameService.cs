@@ -15,7 +15,7 @@ namespace Quizdom.Services
             dbContext = context;
         }
 
-        public async Task<IEnumerable<GameMessage>> GetGameMessages()
+        public async Task<IEnumerable<GameMessage>> GetGameMessages(int gameid)
         {
             //return await dbContext.Message.Include(m => m.User).ToArrayAsync();
 

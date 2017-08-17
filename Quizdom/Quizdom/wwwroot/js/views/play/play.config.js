@@ -10,7 +10,7 @@ var Quizdom;
             function Configuration($stateProvider) {
                 $stateProvider
                     .state('Play', {
-                    url: '/play',
+                    url: '/play/{gameId}',
                     templateUrl: 'js/views/play/play.html',
                     controller: 'PlayController',
                     controllerAs: 'vm'

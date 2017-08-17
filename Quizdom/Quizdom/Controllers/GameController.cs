@@ -1,26 +1,27 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Quizdom.Controllers;
 using Quizdom.Data;
-using System;
+using Quizdom.Hubs;
+using Quizdom.Models;
+using Quizdom.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net;
-using Microsoft.AspNetCore.Http;
-using Quizdom.Services;
 
-namespace Quizdom.Models
+namespace Quizdom.Controllers
 {
     [Route("api/game/")]
-    public class GameController : Controller
+    public class GameController : HubController<Broadcaster>
     {
         private ApplicationDbContext _context;
         private UserTracker userTracker;
+        private GameService _gameService;
 
-        public GameController(ApplicationDbContext context)
+        public GameController(ApplicationDbContext context, GameService gameService, IConnectionManager connectionManager) : base(connectionManager)
         {
             _context = context;
+            _gameService = gameService;
             userTracker = new UserTracker(context);
         }
 
@@ -44,6 +45,50 @@ namespace Quizdom.Models
 
             //return gameResponse;
         }
+
+        // SIGNAL R
+        [HttpGet]
+        [Route("gamechat/{gameid}")]
+        public async Task<IActionResult> GetGameChat(int gameid)
+        {
+            var messages = await _gameService.GetGameMessages(gameid);
+
+            //if (messages == null)
+            //{
+            //    return StatusCode(500, "Received a null respose from Game Service");
+            //}
+
+            return Ok(messages.Select(x => new GameViewModel(x)));
+        }
+
+        [HttpPost]
+        [Route("gamechat")]
+        public async Task<IActionResult> PostGameChat([FromBody]NewGameViewModel message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Create a new message to save to the database
+            var newGameMessage = new GameMessage()
+            {
+                Content = message.Content,
+                //UserId = user.Id,
+                //User = user
+                GameId = message.GameId,
+                UserName = message.UserName
+
+            };
+
+            var record = await _gameService.SaveMessage(newGameMessage);
+
+            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            this.Clients.Group(message.Group).AddGameMessage(new GameViewModel(record));
+
+            return new NoContentResult();
+        }
+
 
         // GET /api/game/1   - get's a specific game
         [HttpGet("{id}")]
@@ -228,10 +273,10 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
 
             return Ok(record);
         }
@@ -405,10 +450,11 @@ namespace Quizdom.Models
 
             var record = _context.GameCategories.ToList();
 
-            if(record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if(record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
+
             return Ok(record);
         }
 
@@ -424,10 +470,10 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record.Count == 0)
-            {
-                return NoContent();
-            }
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
 
             return Ok(record);
         }

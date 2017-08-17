@@ -71,7 +71,7 @@ namespace Quizdom
 
             // SIGNAL R
             services.AddTransient<ChatService>();
-
+            services.AddTransient<GameService>();
             services.AddTransient<IEmailSender, AuthMessageSender>();
             services.AddTransient<ISmsSender, AuthMessageSender>();
 

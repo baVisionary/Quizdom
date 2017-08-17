@@ -20,7 +20,7 @@ namespace Quizdom.Services {
       this.connection = this.connection || $.connection;
 
       // This console.logs a lot of helpful debugging info!
-      this.connection.hub.logging = true;
+      this.connection.hub.logging = false;
 
     }
 

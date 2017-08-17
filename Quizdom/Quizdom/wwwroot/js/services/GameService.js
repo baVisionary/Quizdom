@@ -63,6 +63,8 @@ var Quizdom;
                         method: 'PUT'
                     }
                 });
+                // manage 'GameMessage' using SignalR during game
+                this._Resource_gameMessage = this.$resource('/api/game/gamechat/:gameId');
                 // this.getAllGames();
                 this.getAllCats();
             }
@@ -98,6 +100,12 @@ var Quizdom;
                     return categories;
                 }
             };
+            GameService.prototype.getAllGameMsgs = function () {
+                return this._Resource_gameMessage.query({ gameId: this.gameId });
+            };
+            GameService.prototype.postGameMsg = function (post) {
+                return this._Resource_gameMessage.save(post);
+            };
             // Should we limit each user to initiating only one game (and replace any other games?)
             GameService.prototype.findLastGame = function (user) {
                 return this._Resource_game.search({ username: user.userName });
@@ -132,7 +140,7 @@ var Quizdom;
                                 // console.log(`newGame`, newGame);
                                 _this.newGameData.id = newGame.id;
                                 console.log("newGameData", _this.newGameData);
-                                res(true);
+                                res(_this.newGameData);
                             })
                                 .catch(function (error) {
                                 console.log(error);
@@ -147,20 +155,21 @@ var Quizdom;
                 var gameLoaded = this.$q.when();
                 gameLoaded = gameLoaded.then(function () {
                     _this.newGameData = _this._Resource_game.get({ gameId: gameId });
-                    _this.newGameData.$promise
-                        .then;
+                    return _this.newGameData.$promise;
                 });
                 var gamePromises = [];
                 gamePromises.push(this.gamePlayers.length = this.gameCategories.length = this.gameBoards.length = 0);
-                gamePromises.push(this.loadGamePlayers(Quizdom.Models.UserModel.getAnonymousUser()));
+                gamePromises.push(this.loadGamePlayers(gameId));
                 gamePromises.push(this.loadGameCategories(gameId));
                 gamePromises.push(this.loadGameBoards(gameId));
                 gameLoaded = gameLoaded.then(function () {
-                    gamePromises;
+                    return gamePromises;
                 });
                 this.$q.when(gameLoaded).then(function () {
+                    console.log("Game", _this.newGameData);
                     console.log("Game loaded");
                 });
+                return gameLoaded;
             };
             GameService.prototype.destroyGame = function () {
                 var _this = this;
@@ -177,35 +186,35 @@ var Quizdom;
                 });
             };
             // Show the players assigned to the current gameId
-            GameService.prototype.loadGamePlayers = function (user) {
+            GameService.prototype.loadGamePlayers = function (gameId) {
                 var _this = this;
                 var gamePlayersLoaded = new Promise(function (res, err) {
-                    _this.gamePlayers.length = 0;
-                    _this._Resource_game_players.query({ id: _this.gameId }).$promise
+                    _this._Resource_game_players.query({ id: gameId }).$promise
                         .then(function (players) {
-                        // console.log(`players`, players);
-                        if (players.length == 0) {
-                            _this.addPlayer(_this.gameId, user, true);
-                            console.log("Game Players", _this.gamePlayers);
-                        }
-                        else {
-                            players.forEach(function (p, i) {
-                                // console.log(`p.userId`, p.userId);
-                                _this.PlayerService.findByUserName(p.userId)
-                                    .then(function (player) {
-                                    player.playerId = p.id;
-                                    player.initiator = p.initiator;
-                                    player.prizePoints = p.prizePoints;
-                                    _this.gamePlayers.push(player);
+                        console.log("players", players);
+                        _this.gamePlayers.length = 0;
+                        var loopPromises = _this.$q.when();
+                        players.forEach(function (p, i) {
+                            // console.log(`p.userId`, p.userId);
+                            loopPromises = loopPromises.then(function () {
+                                return new Promise(function (res) {
+                                    _this.PlayerService.findByUserName(p.userId)
+                                        .then(function (player) {
+                                        player.playerId = p.id;
+                                        player.initiator = p.initiator;
+                                        player.prizePoints = p.prizePoints;
+                                        _this.gamePlayers.push(player);
+                                        res('Player added');
+                                    });
                                 });
                             });
+                        });
+                        _this.$q.when(loopPromises)
+                            .then(function () {
+                            // when all are complete!
                             console.log("Game Players", _this.gamePlayers);
-                            res(_this.gamePlayers);
-                        }
-                    })
-                        .catch(function (error) {
-                        console.log("error", error);
-                        err(error);
+                            res(true);
+                        });
                     });
                 });
                 return gamePlayersLoaded;
@@ -213,12 +222,12 @@ var Quizdom;
             // Show the gamecategories assigned to the current gameId
             GameService.prototype.loadGameCategories = function (gameId) {
                 var _this = this;
-                console.log("gameId", gameId);
                 var gameCategoriesLoaded = new Promise(function (res, err) {
-                    // this.gameCategories = [];
                     // console.log(`Set gameCategories to []`);
                     _this._Resource_game_categories.query({ id: gameId }).$promise
                         .then(function (gameCategories) {
+                        _this.gameCategories.length = 0;
+                        // if (gameCategories.length > 0) {
                         gameCategories.forEach(function (gameCategory, i) {
                             var category = _this.allCategories.find(function (c) { return c.id == gameCategory.categoryId; });
                             category.categoryId = gameCategory.id;
@@ -228,6 +237,7 @@ var Quizdom;
                         // set the proper width of the category labels using ng-class "col sX"
                         _this.gameCatClass = 'col s' + (12 / _this.gameCategories.length).toString();
                         res(_this.gameCategories);
+                        // }
                     });
                 });
                 return gameCategoriesLoaded;
@@ -447,42 +457,47 @@ var Quizdom;
             GameService.prototype.setupGameBoards = function () {
                 var _this = this;
                 console.log("Creating GameBoards");
-                if (this.gamePlayers.length < 2 || this.gameCategories.length < 1) {
-                    console.log("Unable to setup game - invite players & select categories");
-                    return false;
-                }
-                // set the proper width of the category labels using ng-class "col sX"
-                this.gameCatClass = 'col s' + (12 / this.gameCategories.length).toString();
-                // assign random question to each row & column based on
-                // categories picked (1 = 18 Qs, 2 = 9 Qs, 3 = 6 Qs)
-                // difficulty (all = 1/3 Qs each, easy/medium/hard = total Qs)
-                this.numQuestions = 18 / this.gameCategories.length / (this.gameDifficulty == 'all' ? 3 : 1);
-                this.row = 0;
-                this.column = 0;
-                this.perRow = 6 / this.gameCategories.length;
                 // line up all the promises to fill the gameBoard
                 var gamePromises = this.$q.when();
-                gamePromises = gamePromises.then(function () {
-                    return _this.removeAllGameBoards(_this.gameId);
-                });
-                this.gameCategories.forEach(function (cat) {
-                    _this.difficulty.forEach(function (diff) {
-                        if (_this.gameDifficulty == 'all' || _this.gameDifficulty == diff.value) {
-                            gamePromises = gamePromises.then(function () {
-                                console.log("Loading new Gameboards...");
-                                return _this.loadNewGameBoards(cat, diff);
-                            });
-                        }
+                var firstPromise = new Promise(function (res, err) {
+                    if (_this.gamePlayers.length < 2 || _this.gameCategories.length < 1) {
+                        console.log("Unable to setup game - invite players & select categories");
+                        err(false);
+                    }
+                    // set the proper width of the category labels using ng-class "col sX"
+                    _this.gameCatClass = 'col s' + (12 / _this.gameCategories.length).toString();
+                    // assign random question to each row & column based on
+                    // categories picked (1 = 18 Qs, 2 = 9 Qs, 3 = 6 Qs)
+                    // difficulty (all = 1/3 Qs each, easy/medium/hard = total Qs)
+                    _this.numQuestions = 18 / _this.gameCategories.length / (_this.gameDifficulty == 'all' ? 3 : 1);
+                    _this.row = 0;
+                    _this.column = 0;
+                    _this.perRow = 6 / _this.gameCategories.length;
+                    gamePromises = gamePromises.then(function () {
+                        return _this.removeAllGameBoards(_this.gameId);
+                    });
+                    _this.gameCategories.forEach(function (cat) {
+                        _this.difficulty.forEach(function (diff) {
+                            if (_this.gameDifficulty == 'all' || _this.gameDifficulty == diff.value) {
+                                gamePromises = gamePromises
+                                    .then(function () {
+                                    // console.log(`Loading new Gameboards...`);
+                                    return _this.loadNewGameBoards(cat, diff);
+                                });
+                            }
+                        });
+                    });
+                    gamePromises = gamePromises
+                        .then(function () {
+                        console.log("this.gameBoards", _this.gameBoards);
+                        res(_this.gameBoards);
+                    })
+                        .catch(function (error) {
+                        console.log("Failed to load Gameboard");
+                        err(error);
                     });
                 });
-                this.$q.when(gamePromises)
-                    .then(function () {
-                    console.log("this.gameBoards", _this.gameBoards);
-                })
-                    .catch(function (error) {
-                    console.log("Failed to load Gameboard");
-                });
-                return gamePromises;
+                return this.$q.when(gamePromises);
             };
             // SignalR methods update gameBoard to trigger server
             GameService.prototype.updateGameBoard = function (gameBoard) {
@@ -496,81 +511,6 @@ var Quizdom;
             };
             GameService.prototype.triggerLoadQandA = function (boardId) {
             };
-            // SignalR methods to update gameBoard state that can be triggered by the server
-            // public triggerStateChange(boardId, answer: number) {
-            //   let gameBoard = this.gameBoards.find(gb => { return gb.id == boardId });
-            //   if (gameBoard.questionState == "new") {
-            //     // console.log(`gameBoard`, gameBoard);
-            //     gameBoard.questionState = "ask";
-            //     this.updateGameBoard(gameBoard)
-            //       // TODO - remove .then once SignalR is triggering the method!
-            //       .$promise.then((ask) => {
-            //         this.loadQandA(ask);
-            //       })
-            //   } else {
-            //     this.question = this.gameBoards.find(q => { return q.id == boardId });
-            //     console.log(`this.question`, this.question);
-            //     switch (this.question.questionState) {
-            //       case "ask":
-            //         this.question.questionState = "answers";
-            //         this.updateGameBoard(this.question)
-            //           // TODO - remove .then once SignalR is triggering the method!
-            //           .$promise.then((gameBoard) => {
-            //             this.showAllAnswers(gameBoard);
-            //           })
-            //         break;
-            //       case "answers":
-            //         this.question.questionState = "guess";
-            //         this.question.answerOrder = answer;
-            //         this.updateGameBoard(this.question)
-            //           // TODO - remove .then once SignalR is triggering the method!
-            //           .$promise.then((gameBoard) => {
-            //             this.SelectAnswer(gameBoard);
-            //           })
-            //         break;
-            //       case "guess":
-            //         if (answer < 4) {
-            //           this.question.questionState = "correct";
-            //           this.updateGameBoard(this.question)
-            //             // TODO - remove .then once SignalR is triggering the method!
-            //             .$promise.then((gameBoard) => {
-            //               this.ShowCorrectAnswer(gameBoard);
-            //             })
-            //         }
-            //         break;
-            //       case "correct":
-            //         // get
-            //         let player = this.gamePlayers.find(p => { return p.userName == this.AuthenticationService.User.userName });
-            //         // console.log(`player from gamePlayers`, player);
-            //         let gamePlayer = new Models.UserModel;
-            //         gamePlayer.id = player.playerId;
-            //         gamePlayer.prizePoints = player.prizePoints;
-            //         gamePlayer.initiator = player.initiator;
-            //         gamePlayer.gameId = this.gameId;
-            //         gamePlayer.userId = this.AuthenticationService.User.userName;
-            //         // console.log(`Gameplayer`, gamePlayer);
-            //         // console.log(`this.question.prizePoints`, this.question.prizePoints);
-            //         if (this.guessCorrect) {
-            //           gamePlayer.prizePoints += this.question.prizePoints;
-            //           this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
-            //         }
-            //         console.log(`Gameplayer prizePoints`, gamePlayer.prizePoints);
-            //         // Do we want to penalize a player for guessing wrong by subtracting prizePoints?
-            //         this.updateGamePlayer(gamePlayer)
-            //           // TODO - remove .then once SignalR is triggering the method!
-            //           .$promise.then((gamePlayer) => {
-            //             this.AddPrizePoints(gamePlayer);
-            //           })
-            //         this.question.questionState = "retired";
-            //         this.updateGameBoard(this.question)
-            //           // TODO - remove .then once SignalR is triggering the method!
-            //           .$promise.then((gameBoard) => {
-            //             this.RetireGameBoard(gameBoard);
-            //           })
-            //         break;
-            //     }
-            //   }
-            // }
             // research into how to use promise resolution to delay for loop action - SUCCESS!
             GameService.prototype.testLoopPromise = function (loops) {
                 var _this = this;

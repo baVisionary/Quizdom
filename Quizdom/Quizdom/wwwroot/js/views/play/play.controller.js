@@ -5,7 +5,7 @@ var Quizdom;
         var Play;
         (function (Play) {
             var PlayController = (function () {
-                function PlayController(AuthenticationService, GameService, HubService, $http, $q, $scope) {
+                function PlayController(AuthenticationService, GameService, HubService, $http, $q, $scope, $stateParams) {
                     var _this = this;
                     this.AuthenticationService = AuthenticationService;
                     this.GameService = GameService;
@@ -13,32 +13,19 @@ var Quizdom;
                     this.$http = $http;
                     this.$q = $q;
                     this.$scope = $scope;
+                    this.$stateParams = $stateParams;
                     this.question = new Quizdom.Models.GameBoardModel;
                     this.guess = 4;
                     this.posts = [];
                     this.group = '';
-                    this.getPosts = function () {
-                        _this.$http({ method: 'GET', url: '/Chatroom' })
-                            .then(function (response) {
-                            _this.addPostsList(response.data);
-                        });
-                    };
-                    this.addPostsList = function (posts) {
-                        _this.posts.length = 0;
-                        posts.forEach(function (post) {
-                            _this.posts.push(post);
-                        });
-                        _this.posts.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
-                        // console.log(`$scope`, $scope);
-                        console.log(_this.posts);
-                    };
                     this.sendMessage = function () {
                         var post = {
                             content: $("#textInput").val(),
                             userName: _this.AuthenticationService.User.userName,
-                            group: _this.group
+                            group: _this.group,
+                            gameId: _this.GameService.gameId
                         };
-                        _this.$http.post('/chatroom/', JSON.stringify(post))
+                        _this.$http.post('/api/game/gamechat', JSON.stringify(post))
                             .then(function () {
                             $("#textInput").val("");
                         })
@@ -46,16 +33,31 @@ var Quizdom;
                             console.log(e);
                         });
                     };
-                    this.GameService.loadMyGameData(this.AuthenticationService.User)
+                    this.sendGameMessage = function () {
+                        var post = {
+                            content: $("#textInput").val(),
+                            userName: _this.AuthenticationService.User.userName,
+                            group: _this.group,
+                            gameId: _this.GameService.gameId
+                        };
+                        _this.GameService.postGameMsg(post).$promise
+                            .then(function () {
+                            $("#textInput").val("");
+                        })
+                            .catch(function (e) {
+                            console.log(e);
+                        });
+                    };
+                    console.log("this.$stateParams", this.$stateParams);
+                    this.GameService.loadGame(this.$stateParams.gameId)
                         .then(function () {
-                        _this.GameService.loadGame(_this.GameService.gameId);
-                        _this.group = 'game' + _this.GameService.gameId;
+                        _this.group = 'game' + _this.$stateParams.gameId;
                         _this.HubService.startHub();
                         // A function we will call from the server
-                        _this.HubService.connection.broadcaster.client.addChatMessage = $scope.addPost;
+                        _this.HubService.connection.broadcaster.client.addGameMessage = $scope.addPost;
                         // this.HubService.addConnect($scope.group);
                         _this.HubService.startGroup(_this.group);
-                        _this.getPosts();
+                        _this.getGameMessages();
                     });
                     // confirming how to relocate onto $scope if necessary for SignalR async
                     $scope.loadQandA = function (gameBoard) {
@@ -74,6 +76,29 @@ var Quizdom;
                         console.log("$scope.vm.posts", $scope.vm.posts);
                     };
                 }
+                // public getPosts() {
+                //   this.$http<any[]>({ method: 'GET', url: '/api/game/gamechat' })
+                //     .then((response) => {
+                //       this.addPostsList(response.data)
+                //     });
+                // }
+                PlayController.prototype.getGameMessages = function () {
+                    var _this = this;
+                    this.GameService.getAllGameMsgs().$promise
+                        .then(function (messages) {
+                        // console.log(`messages`, messages);
+                        _this.addPostsList(messages);
+                    });
+                };
+                PlayController.prototype.addPostsList = function (posts) {
+                    var _this = this;
+                    this.posts.length = 0;
+                    posts.forEach(function (post) {
+                        _this.posts.push(post);
+                    });
+                    this.posts.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
+                    console.log(this.posts);
+                };
                 PlayController.prototype.answerClass = function (index) {
                     var classes = "blue lighten-2 black-text";
                     if (index == this.guess) {
@@ -256,6 +281,7 @@ var Quizdom;
                     '$http',
                     '$q',
                     '$scope',
+                    '$stateParams',
                 ];
                 return PlayController;
             }());

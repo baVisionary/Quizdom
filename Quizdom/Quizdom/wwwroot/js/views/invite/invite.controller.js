@@ -22,7 +22,14 @@ var Quizdom;
                     this.loadActiveUsers();
                     this.GameService.loadMyGameData(this.AuthenticationService.User)
                         .then(function () {
-                        _this.GameService.loadGamePlayers(_this.AuthenticationService.User);
+                        console.log("Loading Game " + _this.GameService.gameId + " Players from DB...");
+                        _this.GameService.loadGamePlayers(_this.GameService.gameId)
+                            .then(function () {
+                            if (_this.GameService.gamePlayers.length == 0) {
+                                _this.GameService.addPlayer(_this.GameService.gameId, _this.AuthenticationService.User, true);
+                            }
+                        });
+                        // this.GameService.loadGameCategories(this.GameService.gameId)
                     });
                 }
                 InviteController.prototype.loadActiveUsers = function () {

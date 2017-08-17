@@ -21,6 +21,7 @@
             <div class="col s12">
               <div class="card grey-text text-darken-4" ng-show="vm.showQ">
                 <div class="card-content">
+                  <!-- questionId, questionText, answers -->
                   <span class="card-title" ng-click="vm.triggerStateChange(vm.question.id, 4)">{{ vm.question.questionId }}. {{vm.question.questionText}}</span>
                   <div class="row" ng-repeat="answer in [vm.question.answerA, vm.question.answerB, vm.question.answerC, vm.question.answerD]">
                     <div class="col s12">
@@ -55,42 +56,42 @@
               </div>
             </div>
           </div>
-          <!-- chat view embedded -->
-          <div class="row">
-            <div class="col s12 offset-m1 m10">
-              <div class="card grey lighten-2">
-                <div class="card-content black-text">
-                  <!-- <div class="row">
-                      <h4>
-                        <a ng-click="vm.showDate = !vm.showDate" class="btn-floating yellow darken-2"><i class="material-icons">access_time</i></a>
-                        <span>Let's chat it up!</span>
-                      </h4>
-                    </div> -->
-                  <ul id="postsList">
-                    <li ng-repeat="post in vm.posts | limitTo : -5">
-                      <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{post.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>{{post.userName}}:
-                      {{post.content}}
-                    </li>
-                  </ul>
-                  <form class="chat-form row">
-                    <div class="input-field">
-                      <div class="col s8 m9 l10">
-                        <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
-                      </div>
-                      <div class="col s4 m3 l2">
-                        <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendMessage()">Send</button>
-                      </div>
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
           <div class="row">
             <!-- <h6>Players</h6> -->
             <div ng-repeat="player in vm.GameService.gamePlayers">
               <qz-player player="player"></qz-player>
             </div>
+          </div>
+
+          <!-- chat view embedded -->
+          <div class="row">
+            <!-- <div class="card grey lighten-2 black-text"> -->
+            <div class="col s12 offset-m1 m10">
+              <!-- <div class="row">
+                      <h4>
+                        <a ng-click="vm.showDate = !vm.showDate" class="btn-floating yellow darken-2"><i class="material-icons">access_time</i></a>
+                        <span>Let's chat it up!</span>
+                      </h4>
+                    </div> -->
+              <ul id="postsList">
+                <li ng-repeat="post in vm.posts | limitTo : -5">
+                  <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{post.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>{{post.userName}}:
+                  {{post.content}}
+                </li>
+              </ul>
+              <form class="chat-form row">
+                <div class="input-field">
+                  <div class="col s8 m9 l10">
+                    <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
+                  </div>
+                  <div class="col s4 m3 l2">
+                    <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.sendGameMessage()">Send</button>
+                  </div>
+                </div>
+              </form>
+              <!-- </div> -->
+            </div>
+            <!-- </div> -->
           </div>
           <div class="card-action">
             <a class="btn" ui-sref="Invite">Invite</a>

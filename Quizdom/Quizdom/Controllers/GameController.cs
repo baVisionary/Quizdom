@@ -53,10 +53,10 @@ namespace Quizdom.Controllers
         {
             var messages = await _gameService.GetGameMessages(gameid);
 
-            if (messages == null)
-            {
-                return StatusCode(500, "Received a null respose from Game Service");
-            }
+            //if (messages == null)
+            //{
+            //    return StatusCode(500, "Received a null respose from Game Service");
+            //}
 
             return Ok(messages.Select(x => new GameViewModel(x)));
         }

@@ -494,6 +494,8 @@ var Quizdom;
             GameService.prototype.updateGamePlayer = function (gamePlayer) {
                 return this._Resource_game_players.update({ id: gamePlayer.id }, gamePlayer);
             };
+            GameService.prototype.triggerLoadQandA = function (boardId) {
+            };
             // SignalR methods to update gameBoard state that can be triggered by the server
             // public triggerStateChange(boardId, answer: number) {
             //   let gameBoard = this.gameBoards.find(gb => { return gb.id == boardId });

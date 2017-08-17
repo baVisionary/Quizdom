@@ -21,6 +21,7 @@ namespace Quizdom.Services {
     public gameDifficulty: string = 'all';
     public gameSource: string = "";
     public gameBoards: Models.IGameBoard[] = [];
+    public gameQuestion;
     private numQuestions: number = 0;
     private row: number = 0;
     private column: number = 0;
@@ -513,6 +514,10 @@ namespace Quizdom.Services {
 
     public updateGamePlayer(gamePlayer) {
       return this._Resource_game_players.update({ id: gamePlayer.id }, gamePlayer);
+    }
+
+    public triggerLoadQandA(boardId) {
+
     }
 
     // SignalR methods to update gameBoard state that can be triggered by the server

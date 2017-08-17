@@ -2,25 +2,40 @@ namespace Quizdom.Views.Play {
   export class PlayController {
     public question: Models.GameBoardModel = new Models.GameBoardModel;
     private guess: number = 4;
+    public posts = [];
+    private group = '';
 
     static $inject = [
       'AuthenticationService',
       'GameService',
       'HubService',
+      '$http',
       '$q',
-      '$scope'
+      '$scope',
     ]
 
     constructor(
       private AuthenticationService: Services.AuthenticationService,
       private GameService: Services.GameService,
       private HubService: Services.HubService,
+      private $http: ng.IHttpService,  
       private $q: ng.IQProvider,
-      private $scope: ng.IScope
+      private $scope: ng.IScope,
     ) {
       this.GameService.loadMyGameData(this.AuthenticationService.User)
         .then(() => {
           this.GameService.loadGame(this.GameService.gameId);
+          this.group = 'game' + this.GameService.gameId;
+          this.HubService.startHub();
+
+          // A function we will call from the server
+          this.HubService.connection.broadcaster.client.addChatMessage = $scope.addPost;
+
+          // this.HubService.addConnect($scope.group);
+          this.HubService.startGroup(this.group)
+
+          this.getPosts();
+
         })
 
       // confirming how to relocate onto $scope if necessary for SignalR async
@@ -33,6 +48,48 @@ namespace Quizdom.Views.Play {
         this.question.questionState = "ask";
         console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
       }
+
+      $scope.addPost = (post) => {
+        console.log('New post from server: ', post);
+        this.posts.push(post);
+        $scope.$applyAsync();
+
+        console.log(`$scope.vm.posts`, $scope.vm.posts);
+      }
+
+    }
+
+    public getPosts = () => {
+      this.$http<any[]>({ method: 'GET', url: '/Chatroom' })
+        .then((response) => {
+          this.addPostsList(response.data)
+        });
+    }
+
+    public addPostsList = (posts: any[]) => {
+      this.posts.length = 0;
+      posts.forEach(post => {
+        this.posts.push(post);
+      });
+      this.posts.sort((a, b) => { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1 })
+      // console.log(`$scope`, $scope);
+      console.log(this.posts);
+
+    }
+
+    public sendMessage = () => {
+      var post = {
+        content: $("#textInput").val(),
+        userName: this.AuthenticationService.User.userName,
+        group: this.group
+      };
+      this.$http.post<any>('/chatroom/', JSON.stringify(post))
+        .then(function () {
+          $("#textInput").val("");
+        })
+        .catch(function (e) {
+          console.log(e);
+        });
 
     }
 

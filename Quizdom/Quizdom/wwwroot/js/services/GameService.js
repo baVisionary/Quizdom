@@ -194,6 +194,8 @@ var Quizdom;
                                 _this.PlayerService.findByUserName(p.userId)
                                     .then(function (player) {
                                     player.playerId = p.id;
+                                    player.initiator = p.initiator;
+                                    player.prizePoints = p.prizePoints;
                                     _this.gamePlayers.push(player);
                                 });
                             });
@@ -258,6 +260,7 @@ var Quizdom;
                         player.gameId = gameId;
                         player.userId = user.userName;
                         player.initiator = initiator;
+                        // player.prizePoints = 0;
                         player.$save(function (player) {
                             user.id = player.id;
                             _this.gamePlayers.push(user);
@@ -485,10 +488,87 @@ var Quizdom;
             GameService.prototype.updateGameBoard = function (gameBoard) {
                 return this._Resource_gameBoard.update({ id: gameBoard.id }, gameBoard);
             };
-            // SignalR methods update gameBoard to trigger server
+            GameService.prototype.getGamePlayer = function (gameId) {
+                return this._Resource_game_players.query({ id: gameId });
+            };
             GameService.prototype.updateGamePlayer = function (gamePlayer) {
                 return this._Resource_game_players.update({ id: gamePlayer.id }, gamePlayer);
             };
+            // SignalR methods to update gameBoard state that can be triggered by the server
+            // public triggerStateChange(boardId, answer: number) {
+            //   let gameBoard = this.gameBoards.find(gb => { return gb.id == boardId });
+            //   if (gameBoard.questionState == "new") {
+            //     // console.log(`gameBoard`, gameBoard);
+            //     gameBoard.questionState = "ask";
+            //     this.updateGameBoard(gameBoard)
+            //       // TODO - remove .then once SignalR is triggering the method!
+            //       .$promise.then((ask) => {
+            //         this.loadQandA(ask);
+            //       })
+            //   } else {
+            //     this.question = this.gameBoards.find(q => { return q.id == boardId });
+            //     console.log(`this.question`, this.question);
+            //     switch (this.question.questionState) {
+            //       case "ask":
+            //         this.question.questionState = "answers";
+            //         this.updateGameBoard(this.question)
+            //           // TODO - remove .then once SignalR is triggering the method!
+            //           .$promise.then((gameBoard) => {
+            //             this.showAllAnswers(gameBoard);
+            //           })
+            //         break;
+            //       case "answers":
+            //         this.question.questionState = "guess";
+            //         this.question.answerOrder = answer;
+            //         this.updateGameBoard(this.question)
+            //           // TODO - remove .then once SignalR is triggering the method!
+            //           .$promise.then((gameBoard) => {
+            //             this.SelectAnswer(gameBoard);
+            //           })
+            //         break;
+            //       case "guess":
+            //         if (answer < 4) {
+            //           this.question.questionState = "correct";
+            //           this.updateGameBoard(this.question)
+            //             // TODO - remove .then once SignalR is triggering the method!
+            //             .$promise.then((gameBoard) => {
+            //               this.ShowCorrectAnswer(gameBoard);
+            //             })
+            //         }
+            //         break;
+            //       case "correct":
+            //         // get
+            //         let player = this.gamePlayers.find(p => { return p.userName == this.AuthenticationService.User.userName });
+            //         // console.log(`player from gamePlayers`, player);
+            //         let gamePlayer = new Models.UserModel;
+            //         gamePlayer.id = player.playerId;
+            //         gamePlayer.prizePoints = player.prizePoints;
+            //         gamePlayer.initiator = player.initiator;
+            //         gamePlayer.gameId = this.gameId;
+            //         gamePlayer.userId = this.AuthenticationService.User.userName;
+            //         // console.log(`Gameplayer`, gamePlayer);
+            //         // console.log(`this.question.prizePoints`, this.question.prizePoints);
+            //         if (this.guessCorrect) {
+            //           gamePlayer.prizePoints += this.question.prizePoints;
+            //           this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
+            //         }
+            //         console.log(`Gameplayer prizePoints`, gamePlayer.prizePoints);
+            //         // Do we want to penalize a player for guessing wrong by subtracting prizePoints?
+            //         this.updateGamePlayer(gamePlayer)
+            //           // TODO - remove .then once SignalR is triggering the method!
+            //           .$promise.then((gamePlayer) => {
+            //             this.AddPrizePoints(gamePlayer);
+            //           })
+            //         this.question.questionState = "retired";
+            //         this.updateGameBoard(this.question)
+            //           // TODO - remove .then once SignalR is triggering the method!
+            //           .$promise.then((gameBoard) => {
+            //             this.RetireGameBoard(gameBoard);
+            //           })
+            //         break;
+            //     }
+            //   }
+            // }
             // research into how to use promise resolution to delay for loop action - SUCCESS!
             GameService.prototype.testLoopPromise = function (loops) {
                 var _this = this;

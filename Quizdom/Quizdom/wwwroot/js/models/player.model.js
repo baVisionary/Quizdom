@@ -5,6 +5,7 @@ var Quizdom;
         var PlayerModel = (function () {
             function PlayerModel() {
                 this.initiator = false;
+                this.prizePoints = 0;
             }
             return PlayerModel;
         }());

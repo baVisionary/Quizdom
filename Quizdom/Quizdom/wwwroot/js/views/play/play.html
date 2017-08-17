@@ -6,7 +6,7 @@
           <span class="card-title center-align">Play Quizdom</span>
           <div class="row">
             <div class="col s12">
-              <!-- Categories </h6> -->
+              <!-- <h6>Categories</h6> -->
               <div class="row">
                 <div class="col" ng-class="vm.GameService.gameCatClass" ng-repeat="cat in vm.GameService.gameCategories">
                   <div class="card-panel blue darken-4">
@@ -24,9 +24,10 @@
                   <span class="card-title" ng-click="vm.triggerStateChange(vm.question.id, 4)">{{ vm.question.questionId }}. {{vm.question.questionText}}</span>
                   <div class="row" ng-repeat="answer in [vm.question.answerA, vm.question.answerB, vm.question.answerC, vm.question.answerD]">
                     <div class="col s12">
-                      <div class="card blue" ng-class="(vm.showGuess && vm.guess == $index) ? 'darken-2 white-text' : (vm.guessCorrect && 'ABCD'[$index] == vm.question.correctAnswer) ? 'correct' : 'lighten-2 black-text'" ng-click="vm.triggerStateChange(vm.question.id, $index)">
+                      <div class="card" ng-class="vm.answerClass($index)" ng-click="vm.triggerStateChange(vm.question.id, $index)">
                         <div class="card-content" value={{$index}}>
                           <h5 ng-show="vm.showA">{{ "ABCD"[$index] }}. {{answer}}</h5>
+                          <a class="btn green darken-4 white-text" ng-show="vm.showCorrect && 'ABCD'[$index] == vm.question.correctAnswer"><i class="material-icons">plus</i> ${{ vm.question.prizePoints }}</a>
                         </div>
                       </div>
                     </div>
@@ -36,13 +37,13 @@
               <!-- 3 rows of 6 columns of gameBoards AKA questions showing prizePoints -->
               <div class="row" ng-repeat="row in [0,1,2]" ng-show="!vm.showQ">
                 <div class="game-question col s4 m2" ng-repeat="gb in vm.GameService.gameBoards | filter:{boardRow:row}">
-                  <div class="card green darken-4" ng-click="vm.triggerStateChange(gb.id, 4)">
+                  <div class="card" ng-class="vm.gameBoardClass(gb)" ng-click="vm.triggerStateChange(gb.id, 4)">
                     <div class="center-align">
-                      <i class="large material-icons white-text">live_help</i>
+                      <i class="large material-icons">live_help</i>
                       <!-- <img src="/images/avatar_generic.png"> -->
                     </div>
                     <div class="card-content">
-                      <span class="grey-text text-lighten-2 center-align">
+                      <span class="center-align">
                       <h5 class="">${{ gb.prizePoints }}</h5>
                       <!-- <p class="">R{{ q.boardRow }} C{{ q.boardColumn }}:</p> -->
                       <!-- <p class="">{{ q.categoryId }}-{{ q.difficulty.substring(0,4) }}</p> -->
@@ -55,10 +56,9 @@
             </div>
           </div>
           <div class="row">
-            <h6>Players</h6>
-            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" tag={{user.userName}} id={{user.playerId}}>
-              <img src="/images/{{user.avatarUrl}}" alt="User">
-              <div class="valign-wrapper">{{user.userName}}</div>
+            <!-- <h6>Players</h6> -->
+            <div ng-repeat="player in vm.GameService.gamePlayers">
+              <qz-player player="player" ></qz-player>
             </div>
           </div>
           <div class="card-action">

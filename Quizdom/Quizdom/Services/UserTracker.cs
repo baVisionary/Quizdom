@@ -61,5 +61,31 @@ namespace Quizdom.Services
 
 
         }
+
+        public void UpdateGameId(HttpRequest request, string username,int gameid)
+        {
+            UserActivity userActivity = new UserActivity();
+
+            string userName = ExtractUsernameHeader(request);
+            if (username == "")
+            {
+                username = userName;
+            }
+
+            var validatedUserNameRecord = (from c in _context.UserActivity
+                                           where c.Username == username
+                                           select c).FirstOrDefault();
+
+
+
+                validatedUserNameRecord.GameId = gameid;
+                //validatedUserNameRecord.Username = userName;
+
+                _context.UserActivity.Update(validatedUserNameRecord);
+                _context.SaveChanges();
+
+
+
+        }
     }
 }

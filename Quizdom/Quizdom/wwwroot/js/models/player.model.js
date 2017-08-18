@@ -6,6 +6,8 @@ var Quizdom;
             function PlayerModel() {
                 this.initiator = false;
                 this.prizePoints = 0;
+                this.answer = 0;
+                this.delay = 0;
             }
             return PlayerModel;
         }());

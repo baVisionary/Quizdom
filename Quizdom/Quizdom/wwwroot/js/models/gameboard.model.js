@@ -17,8 +17,8 @@ var Quizdom;
                 this.answerB = "B";
                 this.answerC = "C";
                 this.answerD = "D";
-                //  values: A/B/C/D
-                this.correctAnswer = "";
+                //  values: 0-3
+                this.correctAnswer = 0;
                 // possible states: new/ask/answers/guess/correct/retired
                 this.questionState = "new";
                 this.answeredCorrectlyUserId = "";

@@ -10,6 +10,7 @@ var Quizdom;
                 this.avatarUrl = "avatar_generic.png";
                 this.isAdmin = false;
                 this.prizePoints = 0;
+                this.answer = 0;
             }
             UserModel.getAnonymousUser = function () {
                 var user = new Models.UserModel;

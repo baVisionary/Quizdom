@@ -82,26 +82,24 @@ namespace Quizdom.Views.Play {
         this.posts.push(post);
       });
       this.posts.sort((a, b) => { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1 })
-      console.log(this.posts);
-
+      // console.log(this.posts);
     }
 
-    public sendMessage = () => {
-      var post = {
-        content: $("#textInput").val(),
-        userName: this.AuthenticationService.User.userName,
-        group: this.group,
-        gameId: this.GameService.gameId
-      };
-      this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
-        .then(function () {
-          $("#textInput").val("");
-        })
-        .catch(function (e) {
-          console.log(e);
-        });
-
-    }
+    // public sendMessage = () => {
+    //   var post = {
+    //     content: $("#textInput").val(),
+    //     userName: this.AuthenticationService.User.userName,
+    //     group: this.group,
+    //     gameId: this.GameService.gameId
+    //   };
+    //   this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
+    //     .then(function () {
+    //       $("#textInput").val("");
+    //     })
+    //     .catch(function (e) {
+    //       console.log(e);
+    //     });
+    // }
 
     public sendGameMessage = () => {
       var post = {
@@ -129,7 +127,7 @@ namespace Quizdom.Views.Play {
         if (index == this.guess) {
           classes = 'red lighten-2 grey-text text-darken-1';
         }
-        if ('ABCD'[index] == this.question.correctAnswer) {
+        if (index == this.question.correctAnswer) {
           classes = 'green darken-3 green-text text-lighten-3';
         }
       }
@@ -201,7 +199,7 @@ namespace Quizdom.Views.Play {
             console.log(`Gameplayer`, gamePlayer);
             console.log(`Question prizePoints`, this.question.prizePoints);
             console.log(`answer`, answer, `answer`, this.question.correctAnswer);
-            if ('ABCD'[answer] == this.question.correctAnswer) {
+            if (answer == this.question.correctAnswer) {
               gamePlayer.prizePoints += this.question.prizePoints;
               this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
             }
@@ -271,7 +269,7 @@ namespace Quizdom.Views.Play {
       this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
       // update to the proper state
       this.question.questionState = "correct";
-      if ("ABCD"[this.guess] == this.question.correctAnswer) {
+      if (this.guess == this.question.correctAnswer) {
         this.question.answeredCorrectlyUserId = gameBoard.answeredCorrectlyUserId;
       };
       console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.correctAnswer} is ${this.question.questionState}`);

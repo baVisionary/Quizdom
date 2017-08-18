@@ -5,7 +5,7 @@ namespace Quizdom.Services {
     public friends = [];
     private newFriend;
 
-    private _Resource_find_player = this.$resource('/api/Account/:verb');
+    private _Resource_find_player = <Models.IPlayerResource> this.$resource('/api/Account/:verb');
 
     static $inject = [
       '$resource'

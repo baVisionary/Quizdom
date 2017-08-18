@@ -14,6 +14,7 @@ namespace Quizdom.Models {
         public playerId?: number;
         public initiator?: boolean;
         public prizePoints?: number = 0;
+        public answer?: number = 0;
 
         public static getAnonymousUser(): any {
             let user = new Models.UserModel;
@@ -36,6 +37,8 @@ namespace Quizdom.Models {
         playerId?: number;
         initiator?: boolean;
         prizePoints?: number;
+        answer?: number;
+        delay?: number;
 
         getAnonymousUser(): any;
      }

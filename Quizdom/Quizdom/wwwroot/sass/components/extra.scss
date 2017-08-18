@@ -31,14 +31,14 @@ select {
     min-width: 100px;
     height: auto;
     padding: 5%;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #avatars li {
     display: inline-block;
     cursor: pointer;
     width: calc(100%/4);
-    max-width: 180px;
-    min-width: 80px;
     .selected {
         padding: 5%;
         border: 6px solid #ee6e73;
@@ -48,7 +48,27 @@ select {
     // }
     img {
         width: 100%;
+        max-width: 180px;
+        min-width: 60px;    
         height: auto;
         padding: 15%;
+        margin-left: auto;
+        margin-right: auto;
     }
+}
+
+.chips-add:hover {
+    img {
+        display: none;
+         ::before {
+            content: "<i class='material-icons'>add</i>"
+        }
+    }
+}
+
+.qzPlayer {
+    border-radius: 50%, 50%, 0, 0;
+}
+.correct {
+    border: 4px solid darkblue;
 }

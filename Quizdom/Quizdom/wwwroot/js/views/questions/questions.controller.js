@@ -5,13 +5,15 @@ var Quizdom;
         var Questions;
         (function (Questions) {
             var QuestionsController = (function () {
-                function QuestionsController(QuestionService, $state, $q) {
+                function QuestionsController(QuestionService, AuthenticationService, $state, $q) {
                     this.QuestionService = QuestionService;
+                    this.AuthenticationService = AuthenticationService;
                     this.$state = $state;
                     this.$q = $q;
                     this.title = "Quiz Questions";
                     this.QuestionService.getAllQs();
                     this.QuestionService.getAllCats();
+                    this.QuestionService.getAllCatIds();
                     this.preDelete = false;
                     this.deleteText = "Delete";
                 }
@@ -24,7 +26,7 @@ var Quizdom;
                     var i = Math.max.apply(Math, this.QuestionService.questions.map(function (o) { return o.id; })) + 1;
                     this.questionToEdit = this.QuestionService.newQuestion();
                     this.questionToEdit.id = i;
-                    this.questionToEdit.UserId = "Quizdom User";
+                    this.questionToEdit.UserId = this.AuthenticationService.User.userName;
                     console.log(this.questionToEdit);
                     this.$state.go('Questions.new');
                 };
@@ -36,9 +38,11 @@ var Quizdom;
                 };
                 QuestionsController.prototype.saveQuestion = function () {
                     var _this = this;
-                    console.log(this.questionToEdit);
+                    console.log("QuestionToEdit", this.questionToEdit);
                     this.questionToEdit.dateModified = new Date();
-                    this.QuestionService.updateOne(this.questionToEdit).then(function () {
+                    this.questionToEdit.categoryId = this.QuestionService.allCategories.find(function (cat) { return _this.questionToEdit.category == cat.longDescription; }).id;
+                    this.QuestionService.updateOne(this.questionToEdit)
+                        .then(function () {
                         var i = _this.QuestionService.questions.findIndex(function (q) { return q.id == _this.questionToEdit.id; });
                         _this.QuestionService.questions[i] = angular.copy(_this.questionToEdit);
                         _this.$state.go('Questions');
@@ -66,14 +70,18 @@ var Quizdom;
                 };
                 QuestionsController.prototype.saveNewQuestion = function () {
                     var _this = this;
-                    this.QuestionService.createOne(this.questionToEdit).$promise.then(function () {
+                    this.questionToEdit.dateModified = new Date();
+                    this.questionToEdit.categoryId = this.QuestionService.allCategories.find(function (cat) { return _this.questionToEdit.category == cat.longDescription; }).id;
+                    this.QuestionService.createOne(this.questionToEdit).$promise
+                        .then(function (newQuestion) {
                         _this.QuestionService.questions.push(_this.QuestionService.getOneQuestionId(_this.questionToEdit.id));
-                        _this.search = _this.questionToEdit.id;
+                        _this.category = _this.questionToEdit.category;
                         _this.$state.go('Questions');
                     });
                 };
                 QuestionsController.$inject = [
                     'QuestionService',
+                    'AuthenticationService',
                     '$state',
                     '$q'
                 ];

@@ -9,12 +9,14 @@ namespace Quizdom.Views.User {
 
         static $inject = [
             'FriendService',
+            'PlayerService',
             'AuthenticationService',
             '$state'
         ];
 
         constructor(
             private FriendService: Services.FriendService,
+            private PlayerService: Services.PlayerService,
             private AuthenticationService: Services.AuthenticationService,
             private $state: ng.ui.IStateService
         ) {
@@ -45,18 +47,20 @@ namespace Quizdom.Views.User {
                 this.feedback = `${search} is your info, ya bonehead!`
                 return;
             } else if (this.FriendService.isNewFriend(search)) {
-                this.FriendService.findByUserName(search)
+                this.PlayerService.findByUserName(search)
                     .then((found) => {
                         // Need to confirm that 204 not returned or 200 returned
-                        console.log(found.hasOwnProperty('userName'));
+                        console.log('Found', found.hasOwnProperty('userName'));
                         if (found.hasOwnProperty('userName')) {
+                            console.log(`found`, found);
                             this.updateFriends(found);
                             return found;
                         } else {
-                            this.FriendService.findByEmail(search)
+                            this.PlayerService.findByEmail(search)
                                 .then((found) => {
-                                    console.log(found.hasOwnProperty('userName'));
+                                    console.log('Found:', found.hasOwnProperty('userName'));
                                     if (found.hasOwnProperty('userName')) {
+                                        console.log(`found`, found);
                                         this.updateFriends(found);
                                         return found;
                                     }
@@ -81,16 +85,19 @@ namespace Quizdom.Views.User {
         public updateFriends(newFriend) {
             this.searchTerm = "";
             this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend)
-                .then((response) => {
-                    console.log(response);
-                    newFriend.friendId = response.id;
-                    console.log(newFriend);
-                    this.FriendService.friends.push(newFriend);
-                    console.log(this.FriendService.friends);
+                .then(() => {
+                    this.FriendService.newFriendId(this.AuthenticationService.User.userName, newFriend).$promise
+                        .then((addFriendId: any) => {
+                            console.log(addFriendId[0]);
+                            newFriend.friendId = addFriendId[0].id;
+                            console.log(newFriend);
+                            this.FriendService.friends.push(newFriend);
+                            console.log(this.FriendService.friends);
 
-                })
-                .catch(() => {
+                        })
+                        .catch(() => {
 
+                        });
                 });
         }
 

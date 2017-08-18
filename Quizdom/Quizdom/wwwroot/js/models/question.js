@@ -14,7 +14,7 @@ var Quizdom;
                 this.incorrect_Answer2 = '';
                 this.incorrect_Answer3 = '';
                 this.incorrect_Answer4 = '';
-                this.source = 'UserId';
+                this.source = '';
                 this.dateModified = new Date();
                 this.userId = '';
                 this.avatarId = 0;

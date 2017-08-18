@@ -5,9 +5,10 @@ var Quizdom;
         var User;
         (function (User) {
             var UserController = (function () {
-                function UserController(FriendService, AuthenticationService, $state) {
+                function UserController(FriendService, PlayerService, AuthenticationService, $state) {
                     var _this = this;
                     this.FriendService = FriendService;
+                    this.PlayerService = PlayerService;
                     this.AuthenticationService = AuthenticationService;
                     this.$state = $state;
                     this.friendEdit = false;
@@ -41,19 +42,21 @@ var Quizdom;
                         return;
                     }
                     else if (this.FriendService.isNewFriend(search)) {
-                        this.FriendService.findByUserName(search)
+                        this.PlayerService.findByUserName(search)
                             .then(function (found) {
                             // Need to confirm that 204 not returned or 200 returned
-                            console.log(found.hasOwnProperty('userName'));
+                            console.log('Found', found.hasOwnProperty('userName'));
                             if (found.hasOwnProperty('userName')) {
+                                console.log("found", found);
                                 _this.updateFriends(found);
                                 return found;
                             }
                             else {
-                                _this.FriendService.findByEmail(search)
+                                _this.PlayerService.findByEmail(search)
                                     .then(function (found) {
-                                    console.log(found.hasOwnProperty('userName'));
+                                    console.log('Found:', found.hasOwnProperty('userName'));
                                     if (found.hasOwnProperty('userName')) {
+                                        console.log("found", found);
                                         _this.updateFriends(found);
                                         return found;
                                     }
@@ -78,14 +81,17 @@ var Quizdom;
                     var _this = this;
                     this.searchTerm = "";
                     this.FriendService.addFriend(this.AuthenticationService.User.userName, newFriend)
-                        .then(function (response) {
-                        console.log(response);
-                        newFriend.friendId = response.id;
-                        console.log(newFriend);
-                        _this.FriendService.friends.push(newFriend);
-                        console.log(_this.FriendService.friends);
-                    })
-                        .catch(function () {
+                        .then(function () {
+                        _this.FriendService.newFriendId(_this.AuthenticationService.User.userName, newFriend).$promise
+                            .then(function (addFriendId) {
+                            console.log(addFriendId[0]);
+                            newFriend.friendId = addFriendId[0].id;
+                            console.log(newFriend);
+                            _this.FriendService.friends.push(newFriend);
+                            console.log(_this.FriendService.friends);
+                        })
+                            .catch(function () {
+                        });
                     });
                 };
                 UserController.prototype.deleteFriend = function (friendId) {
@@ -106,6 +112,7 @@ var Quizdom;
                 };
                 UserController.$inject = [
                     'FriendService',
+                    'PlayerService',
                     'AuthenticationService',
                     '$state'
                 ];

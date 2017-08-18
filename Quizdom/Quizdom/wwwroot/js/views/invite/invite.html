@@ -1,20 +1,63 @@
-<h1>Invite friends to play</h1>
-<h4>Friends</h4>
-<div class="chip" ng-repeat="friend in vm.FriendService.friends" id="{{friend.userName}}">
-  <img src="/images/{{friend.avatarUrl}}" alt="Friend">
-  <div class="valign-wrapper">
-    &nbsp;{{friend.userName}}&nbsp;
-    <i class="material-icons">add</i>
+<div id="player-card">
+  <div class="row">
+    <div class="col s12">
+      <div class="card orange lighten-3">
+        <div class="card-content black-text">
+          <span class="card-title">Invite friends to play</span>
+          <div class="row">
+            <div class="chip" ng-repeat="friend in vm.FriendService.friends" tag={{friend.userName}} id={{friend.friendId}} ng-click="vm.addPlayer(friend)">
+              <img src="/images/{{friend.avatarUrl}}" alt="Friend">
+              <div class="valign-wrapper">{{friend.userName}}</div>
+            </div>
+          </div>
+          <div class="row">
+            <h6>Active</h6>
+            <div class="chip" ng-repeat="user in vm.ActiveService.ActiveUsers" tag={{user.userName}} id={{user.friendId}} ng-click="vm.addPlayer(user)">
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">
+                &nbsp;{{user.userName}}&nbsp;
+              </div>
+            </div>
+          </div>
+          <form id="friends" name="friendForm" class="col s12">
+            <div class="row valign-wrapper">
+              <div class="input-field col s9">
+                <input type="text" id="addPlayerBySearch" ng-model="player" ng-required>
+                <label for="addPlayerBySearch">Username or Email</label>
+                <span class="feedback">{{vm.feedback}}</span>
+              </div>
+              <div class="col s3 ">
+                <button class="btn" ng-click="vm.findPlayer(player)">Invite</button>
+              </div>
+            </div>
+          </form>
+          <div class="row">
+            <h6>Quizdom</h6>
+            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">
+                &nbsp;{{user.userName}}
+              </div>
+            </div>
+            <span class="h5">VS.</span>
+            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+              <img src="/images/{{user.avatarUrl}}" alt="User">
+              <div class="valign-wrapper">
+                &nbsp;{{user.userName}}
+                <i class="close material-icons" ng-click="vm.removePlayer(user.playerId)">close</i>
+              </div>
+            </div>
+          </div>
+          <div class="card-action">
+            <a class="btn" ui-sref="User">Friends</a>
+            <a class="btn" ui-sref="Setup">Setup</a>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
-<h4>Active Players</h4>
-<div class="chip" ng-repeat="user in vm.ActiveService.ActiveUsers" id="{{user.userName}}">
-  <img src="/images/{{user.avatarUrl}}" alt="User">
-  <div class="valign-wrapper">
-    &nbsp;{{user.userName}}&nbsp;
-    <i class="material-icons">add</i>
-  </div>
-</div>
-<h4>Game Players</h4>
-<a class="btn" ui-sref="User">Friends</a>
-<a class="btn" ui-sref="Setup">Setup</a>
+
+<script>
+  $('.chips').material_chip();
+</script>

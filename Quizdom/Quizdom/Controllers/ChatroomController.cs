@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
-using Microsoft.AspNetCore.SignalR.Server;
-using Quizdom.Data;
-using Quizdom.Models;
 using Quizdom.Hubs;
+using Quizdom.Models;
 using Quizdom.Services;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Quizdom.Controllers
 {
@@ -60,20 +52,22 @@ namespace Quizdom.Controllers
             }
 
             // Get the current user
-            var user = await GetCurrentUserAsync();
+           // var user = await GetCurrentUserAsync();
 
             // Create a new message to save to the database
             var newMessage = new Message()
             {
                 Content = message.Content,
-                UserId = user.Id,
-                User = user
+                //UserId = user.Id,
+                //User = user
+                UserName = message.UserName
+
             };
 
             var record = await _chatService.SaveMessage(newMessage);
 
             // Call the client method 'addChatMessage' on all clients in the "MainChatroom" group.
-            this.Clients.Group("MainChatroom").AddChatMessage(new MessageViewModel(record));
+            this.Clients.Group(message.Group).AddChatMessage(new MessageViewModel(record));
 
             return new NoContentResult();
         }

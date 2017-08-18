@@ -1,7 +1,9 @@
 var Quizdom;
 (function (Quizdom) {
     var AppController = (function () {
-        function AppController(LoginService, AuthenticationService, FriendService, $state) {
+        function AppController(
+            // private HubService: Services.HubService,
+            LoginService, AuthenticationService, FriendService, $state) {
             this.LoginService = LoginService;
             this.AuthenticationService = AuthenticationService;
             this.FriendService = FriendService;
@@ -10,6 +12,7 @@ var Quizdom;
             if (this.isUserLoggedIn) {
                 this.FriendService.getMyFriends(this.user.userName);
             }
+            // this.HubService.firstConnect();
         }
         Object.defineProperty(AppController.prototype, "isUserLoggedIn", {
             get: function () {
@@ -33,6 +36,7 @@ var Quizdom;
             return this.$state.current.name == current;
         };
         AppController.$inject = [
+            // 'HubService',
             'LoginService',
             'AuthenticationService',
             'FriendService',

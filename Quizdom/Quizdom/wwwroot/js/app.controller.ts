@@ -2,6 +2,7 @@ namespace Quizdom {
     export class AppController {
 
         static $inject = [
+            // 'HubService',
             'LoginService',
             'AuthenticationService',
             'FriendService',
@@ -9,6 +10,7 @@ namespace Quizdom {
         ];
 
         constructor(
+            // private HubService: Services.HubService,
             private LoginService: Services.LoginService,
             private AuthenticationService: Services.AuthenticationService,
             private FriendService: Services.FriendService,
@@ -18,6 +20,8 @@ namespace Quizdom {
             if (this.isUserLoggedIn) {
                 this.FriendService.getMyFriends(this.user.userName);
             }
+
+            // this.HubService.firstConnect();
         }
 
         public get isUserLoggedIn(): boolean {

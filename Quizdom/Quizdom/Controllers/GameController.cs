@@ -1,26 +1,27 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR.Infrastructure;
+using Quizdom.Controllers;
 using Quizdom.Data;
-using System;
+using Quizdom.Hubs;
+using Quizdom.Models;
+using Quizdom.Services;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Net;
-using Microsoft.AspNetCore.Http;
-using Quizdom.Services;
 
-namespace Quizdom.Models
+namespace Quizdom.Controllers
 {
     [Route("api/game/")]
-    public class GameController : Controller
+    public class GameController : HubController<Broadcaster>
     {
         private ApplicationDbContext _context;
         private UserTracker userTracker;
+        private GameService _gameService;
 
-        public GameController(ApplicationDbContext context)
+        public GameController(ApplicationDbContext context, GameService gameService, IConnectionManager connectionManager) : base(connectionManager)
         {
             _context = context;
+            _gameService = gameService;
             userTracker = new UserTracker(context);
         }
 
@@ -45,6 +46,50 @@ namespace Quizdom.Models
             //return gameResponse;
         }
 
+        // SIGNAL R
+        [HttpGet]
+        [Route("gamechat/{gameid}")]
+        public async Task<IActionResult> GetGameChat(int gameid)
+        {
+            var messages = await _gameService.GetGameMessages(gameid);
+
+            //if (messages == null)
+            //{
+            //    return StatusCode(500, "Received a null respose from Game Service");
+            //}
+
+            return Ok(messages.Select(x => new GameViewModel(x)));
+        }
+
+        [HttpPost]
+        [Route("gamechat")]
+        public async Task<IActionResult> PostGameChat([FromBody]NewGameViewModel message)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Create a new message to save to the database
+            var newGameMessage = new GameMessage()
+            {
+                Content = message.Content,
+                //UserId = user.Id,
+                //User = user
+                GameId = message.GameId,
+                UserName = message.UserName
+
+            };
+
+            var record = await _gameService.SaveMessage(newGameMessage);
+
+            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            this.Clients.Group(message.Group).AddGameMessage(new GameViewModel(record));
+
+            return new NoContentResult();
+        }
+
+
         // GET /api/game/1   - get's a specific game
         [HttpGet("{id}")]
         public IActionResult Get(int id)
@@ -54,6 +99,25 @@ namespace Quizdom.Models
 
             var record = (from c in _context.Games
                           where c.Id == id
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
+        // GET /api/game/rickco   - get's a specific game by initiatoruserid
+        [HttpGet("gameinitiator/{initiatoruserid}")]
+        public IActionResult GetGamebyInitiator(string initiatoruserid)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Games
+                          where c.initiatorUserId == initiatoruserid
                           select c).FirstOrDefault();
 
             if (record == null)
@@ -135,6 +199,26 @@ namespace Quizdom.Models
             return _context.GamePlayersEmail.ToList();
         }
 
+        // GET: /api/game/email  * get's all game players Email by GameId
+        [HttpGet("email/{gameid}")]
+        public IActionResult GameEmailByGameid(int gameid)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+
+            var record = (from c in _context.GamePlayersEmail
+                          where c.gameId == gameid
+                          select c).ToList();
+
+            if (record.Count == 0)
+            {
+                return NoContent();
+            }
+            return Ok(record);
+        }
+
+
         // PUT /api/game/email   ** updates gamePlayersEmail record by id
         [HttpPut("email/{id}")]
         public IActionResult PutEmail(int id, [FromBody]GamePlayersEmail email)
@@ -189,10 +273,10 @@ namespace Quizdom.Models
                           where c.gameId == gameId
                           select c).ToList();
 
-            if (record == null)
-            {
-                return NoContent();
-            }
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
 
             return Ok(record);
         }
@@ -359,13 +443,42 @@ namespace Quizdom.Models
 
         // GET: /api/game/gameCategories * get's all gamecategories
         [HttpGet("gamecategories")]
-        public IEnumerable<GameCategories> GameCategories()
+        public IActionResult GameCategories()
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
-            return _context.GameCategories.ToList();
+            var record = _context.GameCategories.ToList();
+
+            //if(record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
+
+            return Ok(record);
         }
+
+
+        // GET /api/game/gamecategories/1   - get's all gamecategories for a specific game Id
+        [HttpGet("gamecategories/{gameId}")]
+        public IActionResult GetGameCategoriesByGameId(int gameId)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.GameCategories
+                          where c.gameId == gameId
+                          select c).ToList();
+
+            //if (record.Count == 0)
+            //{
+            //    return NoContent();
+            //}
+
+            return Ok(record);
+        }
+
+
 
         // POST /api/game/gamecategories  ** Add new GameCategories record
         [HttpPost("gamecategories")]
@@ -500,6 +613,27 @@ namespace Quizdom.Models
             return _context.Categories.ToList();
         }
 
+
+        // GET /api/game/categories/1   - get's categories for a specific Id
+        [HttpGet("categories/{id}")]
+        public IActionResult GetCategoriesById(int id)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.Categories
+                          where c.Id == id
+                          select c).FirstOrDefault();
+
+            if (record == null)
+            {
+                return NoContent();
+            }
+
+            return Ok(record);
+        }
+
+
         // POST /api/game/categories  ** Add new category record
         [HttpPost("categories")]
         public IActionResult PostCategory([FromBody]Category Category)
@@ -618,8 +752,6 @@ namespace Quizdom.Models
 
             return Ok(record);
         }
-
-        // TODO ADD PRIMARY AND FRIENDUSERNAME LOOKUP *****
 
         // GET /api/game/friends/rickco   - get's all Friends associated with a primary username
         [HttpGet("friends/primaryusername/{username}")]

@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Quizdom.Models;
 
@@ -10,7 +6,6 @@ namespace Quizdom.Data
 {
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public DbSet<Message> Message { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -25,6 +20,8 @@ namespace Quizdom.Data
             // Add your customizations after calling base.OnModelCreating(builder);
         }
 
+        public DbSet<Message> Message { get; set; }
+        public DbSet<GameMessage> GameMessage { get; set; }
         public DbSet<Quiz> Quiz { get; set; }
         public DbSet<Avatar> Avatars { get; set; }
         public DbSet<Category> Categories { get; set; }

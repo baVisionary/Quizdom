@@ -3,20 +3,22 @@
 namespace Quizdom.Services {
     export class LoginService {
         private isUserLoggedIn: boolean = false;
-        private authUser: Models.UserModel = new Models.UserModel();
+        private authUser: Models.IUser;
 
         static $inject = [
             '$http',
             '$window',
             'AvatarService',
-            'AuthenticationService'
+            'AuthenticationService',
+            'GameService'
         ];
 
         constructor(
             private $http: ng.IHttpService,
             private $window: ng.IWindowService,
             private AvatarService: Services.AvatarService,
-            private AuthenticationService: Services.AuthenticationService
+            private AuthenticationService: Services.AuthenticationService,
+            private GameService: Services.GameService
         ) {
 
         }
@@ -33,7 +35,7 @@ namespace Quizdom.Services {
             let user = this.$window.sessionStorage.getItem('user');
 
             if (user) {
-                this.AuthenticationService.setUser(<Models.UserModel>JSON.parse(user));
+                this.AuthenticationService.setUser(<Models.IUser>JSON.parse(user));
                 return;
             }
 
@@ -41,7 +43,7 @@ namespace Quizdom.Services {
             return;
         }
 
-        private updateSession(user: Models.UserModel | null): boolean {
+        private updateSession(user: Models.IUser | null): boolean {
             var encodedUser = JSON.stringify(user);
             console.log(user);
 
@@ -58,7 +60,9 @@ namespace Quizdom.Services {
 
         private clearSession(): void {
             this.$window.sessionStorage.clear();
+            this.$window.localStorage.clear();
             this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
+            this.GameService.destroyGame();
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {

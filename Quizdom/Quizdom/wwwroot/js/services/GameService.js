@@ -68,16 +68,23 @@ var Quizdom;
                 // this.getAllGames();
                 this.getAllCats();
             }
+            // SignalR game chat support
+            GameService.prototype.getAllGameMsgs = function () {
+                return this._Resource_gameMessage.query({ gameId: this.gameId });
+            };
+            GameService.prototype.postGameMsg = function (post) {
+                return this._Resource_gameMessage.save(post);
+            };
             // // 
             // private getAllGames(): boolean {
-            //   this._Resource_game.query().$promise
+            //   this._Resource_game.query().$promise  
             //     .then((games) => {
-            //       this.allGames = games;
+            //       this.allGames = games;  
             //       console.log(`Games:`, this.allGames);
             //       return true;
             //     })
             //     .catch((error) => {
-            //       console.log(error);
+            //       console.log(error);  
             //       return false;
             //     })
             //   return false;
@@ -86,7 +93,7 @@ var Quizdom;
             GameService.prototype.randomInt = function (min, max) {
                 return Math.floor(Math.random() * (max - min + 1)) + min;
             };
-            // load all categories
+            // load all categories from DB if empty or local if available
             GameService.prototype.getAllCats = function () {
                 var _this = this;
                 if (this.allCategories.length == 0) {
@@ -99,12 +106,6 @@ var Quizdom;
                     });
                     return categories;
                 }
-            };
-            GameService.prototype.getAllGameMsgs = function () {
-                return this._Resource_gameMessage.query({ gameId: this.gameId });
-            };
-            GameService.prototype.postGameMsg = function (post) {
-                return this._Resource_gameMessage.save(post);
             };
             // Should we limit each user to initiating only one game (and replace any other games?)
             GameService.prototype.findLastGame = function (user) {
@@ -150,6 +151,7 @@ var Quizdom;
                 });
                 return myGameLoaded;
             };
+            // Load all game data from DB based on given gameId (allows other players to load new game)
             GameService.prototype.loadGame = function (gameId) {
                 var _this = this;
                 var gameLoaded = this.$q.when();
@@ -203,6 +205,8 @@ var Quizdom;
                                         player.playerId = p.id;
                                         player.initiator = p.initiator;
                                         player.prizePoints = p.prizePoints;
+                                        player.answer = p.answer;
+                                        player.delay = p.delay;
                                         _this.gamePlayers.push(player);
                                         res('Player added');
                                     });
@@ -248,6 +252,7 @@ var Quizdom;
                 var gameBoardsLoaded = new Promise(function (res, err) {
                     _this._Resource_gameBoard.query({ id: gameId }).$promise
                         .then(function (gameBoards) {
+                        _this.gameBoards.length = 0;
                         gameBoards.forEach(function (gameBoard) {
                             _this.gameBoards.push(gameBoard);
                         });
@@ -391,7 +396,7 @@ var Quizdom;
                             var parameter = 'answer' + 'ABCD'[i];
                             gameBoard[parameter] = a.answer;
                             if (a.correct) {
-                                gameBoard.correctAnswer = 'ABCD'[i];
+                                gameBoard.correctAnswer = i;
                             }
                             ;
                         });

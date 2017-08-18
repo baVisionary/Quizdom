@@ -15,8 +15,8 @@ namespace Quizdom.Models {
       public answerB?: string = "B";
       public answerC?: string = "C";
       public answerD?: string = "D";
-      //  values: A/B/C/D
-      public correctAnswer: string = "";
+      //  values: 0-3
+      public correctAnswer: number = 0;
       // possible states: new/ask/answers/guess/correct/retired
       public questionState: string = "new";
       public answeredCorrectlyUserId?: string = "";
@@ -40,7 +40,7 @@ namespace Quizdom.Models {
       answerC?: string;
       answerD?: string;
       //  values: A/B/C/D
-      correctAnswer: string;
+      correctAnswer: number;
       // possible states: new/ask/answers/guess/correct/old
       questionState: string;
       answeredCorrectlyUserId?: string;

@@ -18,21 +18,21 @@ var Quizdom;
                     this.guess = 4;
                     this.posts = [];
                     this.group = '';
-                    this.sendMessage = function () {
-                        var post = {
-                            content: $("#textInput").val(),
-                            userName: _this.AuthenticationService.User.userName,
-                            group: _this.group,
-                            gameId: _this.GameService.gameId
-                        };
-                        _this.$http.post('/api/game/gamechat', JSON.stringify(post))
-                            .then(function () {
-                            $("#textInput").val("");
-                        })
-                            .catch(function (e) {
-                            console.log(e);
-                        });
-                    };
+                    // public sendMessage = () => {
+                    //   var post = {
+                    //     content: $("#textInput").val(),
+                    //     userName: this.AuthenticationService.User.userName,
+                    //     group: this.group,
+                    //     gameId: this.GameService.gameId
+                    //   };
+                    //   this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
+                    //     .then(function () {
+                    //       $("#textInput").val("");
+                    //     })
+                    //     .catch(function (e) {
+                    //       console.log(e);
+                    //     });
+                    // }
                     this.sendGameMessage = function () {
                         var post = {
                             content: $("#textInput").val(),
@@ -97,7 +97,7 @@ var Quizdom;
                         _this.posts.push(post);
                     });
                     this.posts.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
-                    console.log(this.posts);
+                    // console.log(this.posts);
                 };
                 PlayController.prototype.answerClass = function (index) {
                     var classes = "blue lighten-2 black-text";
@@ -108,7 +108,7 @@ var Quizdom;
                         if (index == this.guess) {
                             classes = 'red lighten-2 grey-text text-darken-1';
                         }
-                        if ('ABCD'[index] == this.question.correctAnswer) {
+                        if (index == this.question.correctAnswer) {
                             classes = 'green darken-3 green-text text-lighten-3';
                         }
                     }
@@ -176,7 +176,7 @@ var Quizdom;
                                 console.log("Gameplayer", gamePlayer);
                                 console.log("Question prizePoints", this.question.prizePoints);
                                 console.log("answer", answer, "answer", this.question.correctAnswer);
-                                if ('ABCD'[answer] == this.question.correctAnswer) {
+                                if (answer == this.question.correctAnswer) {
                                     gamePlayer.prizePoints += this.question.prizePoints;
                                     this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
                                 }
@@ -253,7 +253,7 @@ var Quizdom;
                     this.question = this.GameService.gameBoards.find(function (q) { return q.id == gameBoard.id; });
                     // update to the proper state
                     this.question.questionState = "correct";
-                    if ("ABCD"[this.guess] == this.question.correctAnswer) {
+                    if (this.guess == this.question.correctAnswer) {
                         this.question.answeredCorrectlyUserId = gameBoard.answeredCorrectlyUserId;
                     }
                     ;

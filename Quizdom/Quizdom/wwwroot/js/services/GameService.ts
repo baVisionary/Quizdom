@@ -86,16 +86,25 @@ namespace Quizdom.Services {
     // manage 'GameMessage' using SignalR during game
     private _Resource_gameMessage = <any>this.$resource('/api/game/gamechat/:gameId');
 
+    // SignalR game chat support
+    public getAllGameMsgs() {
+      return this._Resource_gameMessage.query({gameId: this.gameId});
+    }
+
+    public postGameMsg(post) {
+      return this._Resource_gameMessage.save(post);
+    }
+
     // // 
     // private getAllGames(): boolean {
-    //   this._Resource_game.query().$promise
+    //   this._Resource_game.query().$promise  
     //     .then((games) => {
-    //       this.allGames = games;
+    //       this.allGames = games;  
     //       console.log(`Games:`, this.allGames);
     //       return true;
     //     })
     //     .catch((error) => {
-    //       console.log(error);
+    //       console.log(error);  
     //       return false;
     //     })
     //   return false;
@@ -104,9 +113,9 @@ namespace Quizdom.Services {
     // simple random function
     private randomInt(min: number, max: number): number {
       return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+    }  
 
-    // load all categories
+    // load all categories from DB if empty or local if available
     public getAllCats() {
       if (this.allCategories.length == 0) {
         this.allCategories = this._Resource_categories.query();
@@ -114,18 +123,10 @@ namespace Quizdom.Services {
       } else {
         let categories = new Promise((res) => {
           res(this.allCategories);
-        });
+        });  
         return categories;
-      }
-    }
-
-    public getAllGameMsgs() {
-      return this._Resource_gameMessage.query({gameId: this.gameId});
-    }
-
-    public postGameMsg(post) {
-      return this._Resource_gameMessage.save(post);
-    }
+      }  
+    }  
 
     // Should we limit each user to initiating only one game (and replace any other games?)
     private findLastGame(user: Models.IUser) {
@@ -168,6 +169,7 @@ namespace Quizdom.Services {
       return myGameLoaded;
     }
 
+    // Load all game data from DB based on given gameId (allows other players to load new game)
     public loadGame(gameId) {
 
       let gameLoaded: any = this.$q.when();
@@ -223,6 +225,8 @@ namespace Quizdom.Services {
                       player.playerId = p.id;
                       player.initiator = p.initiator;
                       player.prizePoints = p.prizePoints;
+                      player.answer = p.answer;
+                      player.delay = p.delay;
                       this.gamePlayers.push(player);
                       res('Player added')
                     })
@@ -269,6 +273,7 @@ namespace Quizdom.Services {
 
         this._Resource_gameBoard.query({ id: gameId }).$promise
           .then((gameBoards) => {
+            this.gameBoards.length = 0;
             gameBoards.forEach(gameBoard => {
               this.gameBoards.push(gameBoard);
             })
@@ -413,7 +418,7 @@ namespace Quizdom.Services {
           answers.forEach((a, i) => {
             let parameter = 'answer' + 'ABCD'[i];
             gameBoard[parameter] = a.answer;
-            if (a.correct) { gameBoard.correctAnswer = 'ABCD'[i] };
+            if (a.correct) { gameBoard.correctAnswer = i };
           });
           this.column++;
           if (this.column == this.perRow) {

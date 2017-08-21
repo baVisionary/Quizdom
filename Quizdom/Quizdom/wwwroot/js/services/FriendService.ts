@@ -23,17 +23,8 @@ namespace Quizdom.Services {
 
     }
 
-    public getMyFriends(userName: string): Array<Models.UserModel> {
+    public loadMyFriends(userName: string): Array<Models.AuthUserModel> {
       this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName });
-      // this.friendsById = this._Resource_friendsById.query({ userName: userName });
-      // console.log(this.friends);
-      // .$promise.then((friends) => {
-      //   this.friends = friends;
-      //   this.friends.forEach(friend => {
-      //     friend.avatarUrl = this.AvatarService.getAvatarUrl(friend.avatarId);
-      //     console.log(friend);
-      //   });
-      // });
       return this.friends;
     }
 
@@ -47,12 +38,12 @@ namespace Quizdom.Services {
     //   return this.newFriend.$promise;
     // }
 
-    public addFriend(primaryUserName: string, friend: Models.IUser) {
+    public addFriend(primaryUserName: string, friend: Models.IAuthUser) {
       this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });
       return this.newFriend.$promise;
     }
 
-    public newFriendId(primaryUserName: string, friend: Models.IUser) {
+    public newFriendId(primaryUserName: string, friend: Models.IAuthUser) {
       return this._Resource_friendId.query({ primaryUserName: primaryUserName, friendUserName: friend.userName });
     }
 

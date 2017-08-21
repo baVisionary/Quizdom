@@ -12,6 +12,9 @@ var Quizdom;
                 this.GameService = GameService;
                 this.isUserLoggedIn = false;
             }
+            // private _Resource_login = this.$resource('api/Account/Logout', <ng.IRequestShortcutConfig>{
+            //     cache: false
+            // })
             // public get isLoggedIn(): boolean {
             //     return this.isUserLoggedIn;
             // }
@@ -20,11 +23,12 @@ var Quizdom;
             // }
             LoginService.prototype.getSessionData = function () {
                 var user = this.$window.sessionStorage.getItem('user');
+                // let user = this.$window.localStorage.getItem('user') || this.$window.sessionStorage.getItem('user');
                 if (user) {
                     this.AuthenticationService.setUser(JSON.parse(user));
                     return;
                 }
-                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
+                this.AuthenticationService.setUser(Quizdom.Models.AuthUserModel.getAnonymousUser());
                 return;
             };
             LoginService.prototype.updateSession = function (user) {
@@ -41,9 +45,8 @@ var Quizdom;
             };
             LoginService.prototype.clearSession = function () {
                 this.$window.sessionStorage.clear();
-                this.$window.localStorage.clear();
-                this.AuthenticationService.setUser(Quizdom.Models.UserModel.getAnonymousUser());
-                this.GameService.destroyGame();
+                this.AuthenticationService.setUser(Quizdom.Models.AuthUserModel.getAnonymousUser());
+                // this.GameService.destroyGame();
             };
             LoginService.prototype.loginUser = function (user) {
                 var _this = this;

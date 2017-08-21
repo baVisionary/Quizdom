@@ -5,6 +5,7 @@ var Quizdom;
         var AuthenticationService = (function () {
             function AuthenticationService() {
                 this.isUserLoggedIn = false;
+                this.rememberMe = false;
             }
             AuthenticationService.prototype.getUser = function () {
                 return this.authUser;
@@ -12,6 +13,13 @@ var Quizdom;
             Object.defineProperty(AuthenticationService.prototype, "User", {
                 get: function () {
                     return this.authUser;
+                },
+                enumerable: true,
+                configurable: true
+            });
+            Object.defineProperty(AuthenticationService.prototype, "Username", {
+                get: function () {
+                    return this.authUser.userName;
                 },
                 enumerable: true,
                 configurable: true

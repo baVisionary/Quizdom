@@ -5,8 +5,8 @@ var Quizdom;
         function AuthenticationData() {
             var User;
             return {
-                setUser: function (authUser) {
-                    User = authUser;
+                setUser: function (userData) {
+                    User = userData;
                     console.log(User);
                 },
                 getUser: function () {

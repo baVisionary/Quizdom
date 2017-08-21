@@ -12,17 +12,8 @@ var Quizdom;
                 this._Resource_friend = this.$resource('/api/game/friends/:friendId');
                 this._Resource_friendId = this.$resource('/api/game/friends/primaryusername/:primaryUserName/friendusername/:friendUserName');
             }
-            FriendService.prototype.getMyFriends = function (userName) {
+            FriendService.prototype.loadMyFriends = function (userName) {
                 this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName });
-                // this.friendsById = this._Resource_friendsById.query({ userName: userName });
-                // console.log(this.friends);
-                // .$promise.then((friends) => {
-                //   this.friends = friends;
-                //   this.friends.forEach(friend => {
-                //     friend.avatarUrl = this.AvatarService.getAvatarUrl(friend.avatarId);
-                //     console.log(friend);
-                //   });
-                // });
                 return this.friends;
             };
             // public findByEmail(email: string) {

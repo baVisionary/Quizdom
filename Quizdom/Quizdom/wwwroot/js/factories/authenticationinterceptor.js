@@ -8,12 +8,13 @@ var Quizdom;
             'AuthenticationService'
         ];
         function AuthenticationInterceptor($q, $location, AuthenticationService) {
+            var _this = this;
             return {
                 request: function (config) {
                     config.headers = config.headers || {};
-                    var authUser = AuthenticationService.getUser() || new Quizdom.Models.UserModel;
-                    config.headers['Username'] = authUser.userName;
-                    config.headers['Role'] = (authUser.isAdmin) ? 'Admin' : (authUser.userName == 'Guest') ? 'Guest' : 'Normal';
+                    var newUser = _this.AuthenticationService.User || new Quizdom.Models.AuthUserModel;
+                    config.headers['Username'] = newUser.userName;
+                    config.headers['Role'] = (newUser.isAdmin) ? 'Admin' : (newUser.userName == 'Guest') ? 'Guest' : 'Normal';
                     return config;
                 },
                 responseError: function (rejection) {

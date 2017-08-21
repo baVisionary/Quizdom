@@ -2,8 +2,8 @@ var Quizdom;
 (function (Quizdom) {
     var Models;
     (function (Models) {
-        var QuestionModel = (function () {
-            function QuestionModel() {
+        var QuizModel = (function () {
+            function QuizModel() {
                 this.id = 0;
                 this.category = 'User Added';
                 this.type = 'multiple';
@@ -20,8 +20,8 @@ var Quizdom;
                 this.avatarId = 0;
                 this.categoryId = 0;
             }
-            return QuestionModel;
+            return QuizModel;
         }());
-        Models.QuestionModel = QuestionModel;
+        Models.QuizModel = QuizModel;
     })(Models = Quizdom.Models || (Quizdom.Models = {}));
 })(Quizdom || (Quizdom = {}));

@@ -10,7 +10,7 @@ var Quizdom;
             this.$state = $state;
             this.LoginService.getSessionData();
             if (this.isUserLoggedIn) {
-                this.FriendService.getMyFriends(this.user.userName);
+                this.FriendService.loadMyFriends(this.user.userName);
             }
             // this.HubService.firstConnect();
         }
@@ -23,7 +23,7 @@ var Quizdom;
         });
         Object.defineProperty(AppController.prototype, "user", {
             get: function () {
-                return this.AuthenticationService.getUser();
+                return this.AuthenticationService.User;
             },
             enumerable: true,
             configurable: true

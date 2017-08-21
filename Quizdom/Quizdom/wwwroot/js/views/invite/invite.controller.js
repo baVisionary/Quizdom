@@ -23,9 +23,9 @@ var Quizdom;
                     this.GameService.loadMyGameData(this.AuthenticationService.User)
                         .then(function () {
                         console.log("Loading Game " + _this.GameService.gameId + " Players from DB...");
-                        _this.GameService.loadGamePlayers(_this.GameService.gameId)
+                        _this.GameService.loadPlayers(_this.GameService.gameId)
                             .then(function () {
-                            if (_this.GameService.gamePlayers.length == 0) {
+                            if (_this.GameService.players.length == 0) {
                                 _this.GameService.addPlayer(_this.GameService.gameId, _this.AuthenticationService.User, true);
                             }
                         });
@@ -44,7 +44,7 @@ var Quizdom;
                 };
                 InviteController.prototype.loadMyFriends = function () {
                     var _this = this;
-                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+                    this.FriendService.loadMyFriends(this.AuthenticationService.User.userName).$promise
                         .then(function () {
                         console.log("Friends:", _this.FriendService.friends);
                     })
@@ -54,7 +54,7 @@ var Quizdom;
                 };
                 InviteController.prototype.findPlayer = function (search) {
                     var _this = this;
-                    var found = new Quizdom.Models.UserModel;
+                    var found = new Quizdom.Models.AuthUserModel;
                     this.feedback = "";
                     if (this.FriendService.isMe(search)) {
                         this.player = "";

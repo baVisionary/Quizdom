@@ -3,7 +3,7 @@
 namespace Quizdom.Services {
     export class LoginService {
         private isUserLoggedIn: boolean = false;
-        private authUser: Models.IUser;
+        private authUser: Models.IAuthUser;
 
         static $inject = [
             '$http',
@@ -23,6 +23,10 @@ namespace Quizdom.Services {
 
         }
 
+        // private _Resource_login = this.$resource('api/Account/Logout', <ng.IRequestShortcutConfig>{
+        //     cache: false
+        // })
+
         // public get isLoggedIn(): boolean {
         //     return this.isUserLoggedIn;
         // }
@@ -33,17 +37,19 @@ namespace Quizdom.Services {
 
         public getSessionData(): void {
             let user = this.$window.sessionStorage.getItem('user');
+            // let user = this.$window.localStorage.getItem('user') || this.$window.sessionStorage.getItem('user');
+
 
             if (user) {
-                this.AuthenticationService.setUser(<Models.IUser>JSON.parse(user));
+                this.AuthenticationService.setUser(<Models.IAuthUser>JSON.parse(user));
                 return;
             }
 
-            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
+            this.AuthenticationService.setUser(Models.AuthUserModel.getAnonymousUser());
             return;
         }
 
-        private updateSession(user: Models.IUser | null): boolean {
+        private updateSession(user: Models.IAuthUser | null): boolean {
             var encodedUser = JSON.stringify(user);
             console.log(user);
 
@@ -60,13 +66,12 @@ namespace Quizdom.Services {
 
         private clearSession(): void {
             this.$window.sessionStorage.clear();
-            this.$window.localStorage.clear();
-            this.AuthenticationService.setUser(Models.UserModel.getAnonymousUser());
-            this.GameService.destroyGame();
+            this.AuthenticationService.setUser(Models.AuthUserModel.getAnonymousUser());
+            // this.GameService.destroyGame();
         }
 
         public loginUser(user: Models.LoginModel): ng.IPromise<boolean> {
-            return this.$http.post<Models.UserModel>('api/Account/Login', user, <ng.IRequestShortcutConfig>{
+            return this.$http.post<Models.AuthUserModel>('api/Account/Login', user, <ng.IRequestShortcutConfig>{
                 cache: false
             })
                 .then((response: ng.IRequestShortcutConfig) => {
@@ -85,7 +90,7 @@ namespace Quizdom.Services {
         }
 
         public logOut(): void {
-            this.$http.post<Models.UserModel>('api/Account/Logout', <ng.IRequestShortcutConfig>{
+            this.$http.post<Models.AuthUserModel>('api/Account/Logout', <ng.IRequestShortcutConfig>{
                 cache: false
             })
                 .then(() => {

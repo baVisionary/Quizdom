@@ -1,17 +1,12 @@
 namespace Quizdom.Factories {
 
-  export interface IAuthenticationData {
-    setUser: (authUser) => void,
-    getUser: () => Models.UserModel;
-  }
-
   export function AuthenticationData() {
 
-    var User: Models.UserModel;
+    var User: Models.IAuthUser;
 
     return {
-      setUser: (authUser: Models.UserModel) => {
-        User = authUser;
+      setUser: (userData: Models.IAuthUser) => {
+        User = userData;
         console.log(User);
       },
       getUser: () => {
@@ -20,4 +15,10 @@ namespace Quizdom.Factories {
       }
     }
   }
+
+  export interface IAuthenticationData {
+    setUser: (authUser) => void,
+    getUser: () => Models.AuthUserModel;
+  }
+
 }

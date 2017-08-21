@@ -34,7 +34,7 @@
                 <ul class="align-center hide-on-small-only">
                     <li ng-class="{active: vm.myState('Welcome')}"><a ui-sref="Welcome"><i class="large material-icons left">question_answer</i>Quizdom</a></li>
                     <li ng-class="{active: vm.myState('Questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
-                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
+                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User">{{vm.AuthenticationService.Username}}</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}" git c><a ui-sref="Login">Log in</a></li>
                     <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
@@ -44,7 +44,7 @@
                     <li ng-class="{active: vm.myState('Questions')}"><a ui-sref="Questions">Quiz Questions</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Register')}"><a ui-sref="Register">Register</a></li>
                     <li ng-if="!vm.isUserLoggedIn" ng-class="{active: vm.myState('Login')}"><a ui-sref="Login">Log in</a></li>
-                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User({userName: vm.user.userName})">{{vm.user.userName}}</a></li>
+                    <li ng-if="vm.isUserLoggedIn" ng-class="{active: vm.myState('User')}"><a ui-sref="User">{{vm.AuthenticationService.Username}}</a></li>
                     <li ng-if="vm.isUserLoggedIn"><a ng-click="vm.logOut()">Sign Out</a></li>
                 </ul>
             </div>
@@ -64,7 +64,7 @@
     <!--ajax & SignalR libraries  -->
     <script src="~/lib/signalr/jquery.signalR.min.js"></script>
     <!-- <script src="http://ajax.aspnetcdn.com/ajax/signalr/jquery.signalr-2.2.2.min.js"></script> -->
-     <!-- <script src="js/signalr-hub.js"></script>  -->
+    <!-- <script src="js/signalr-hub.js"></script>  -->
     <script src="/signalr/hubs"></script>
 
     <!-- Directives  -->
@@ -79,6 +79,7 @@
     <script src="~/js/factories/Factories.js"></script>
 
     <!-- Models -->
+    <script src="~/js/models/authuser.model.js"></script>
     <script src="~/js/models/avatar.model.js"></script>
     <script src="~/js/models/category.model.js"></script>
     <script src="~/js/models/forgotpassword.model.js"></script>
@@ -86,13 +87,13 @@
     <script src="~/js/models/game.model.js"></script>
     <script src="~/js/models/gameboard.model.js"></script>
     <script src="~/js/models/gamecategory.model.js"></script>
+    <script src="~/js/models/gameplayer.model.js"></script>
     <script src="~/js/models/login.model.js"></script>
     <script src="~/js/models/message.model.js"></script>
     <script src="~/js/models/messageview.model.js"></script>
     <script src="~/js/models/player.model.js"></script>
-    <script src="~/js/models/question.js"></script>
+    <script src="~/js/models/quiz.model.js"></script>
     <script src="~/js/models/register.model.js"></script>
-    <script src="~/js/models/user.model.js"></script>
 
     <!-- Services  -->
     <script src="~/js/services/ActiveService.js"></script>

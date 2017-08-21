@@ -1,6 +1,6 @@
 namespace Quizdom.Directives {
   export class qzPlayerCardController {
-    public player: Models.UserModel;
+    public player: Models.AuthUserModel;
 
     static $inject = [
       '$scope'

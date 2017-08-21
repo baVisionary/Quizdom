@@ -16,11 +16,10 @@ var Quizdom;
                     this.feedback = "";
                     this.friendError = "";
                     this.friendSuccess = "";
-                    this.tempFriend = new Quizdom.Models.UserModel;
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+                    this.FriendService.loadMyFriends(this.AuthenticationService.User.userName).$promise
                         .then(function () {
                         console.log(_this.FriendService.friends);
                     })
@@ -34,7 +33,7 @@ var Quizdom;
                 };
                 UserController.prototype.findFriend = function (search) {
                     var _this = this;
-                    var found = new Quizdom.Models.UserModel;
+                    var found = new Quizdom.Models.AuthUserModel;
                     this.feedback = "";
                     if (this.FriendService.isMe(search)) {
                         this.searchTerm = "";
@@ -110,6 +109,7 @@ var Quizdom;
                         });
                     }
                 };
+                // private tempFriend: any = new Models.AuthUserModel;
                 UserController.$inject = [
                     'FriendService',
                     'PlayerService',

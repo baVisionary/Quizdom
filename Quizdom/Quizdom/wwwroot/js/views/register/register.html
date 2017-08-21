@@ -58,14 +58,18 @@
     </div>
   </div>
   <div class="row">
-    <div class="col s12">
+    <div class="col s6">
+      <input type="checkbox" id="remember" ng-model="vm.formData.rememberMe" />
+      <label for="remember">Remember Me</label>
+    </div>
+    <div class="col s6">
       <button type="submit" class="btn right">Register</button>
     </div>
   </div>
 </form>
 
 <script>
-  $(document).on('click','#avatars li',function () {
+  $(document).on('click', '#avatars li', function () {
     $(this).siblings().find('input').removeAttr('checked');
     $(this).siblings().find('img').removeClass('selected');
     $(this).find('input').attr('checked', true)

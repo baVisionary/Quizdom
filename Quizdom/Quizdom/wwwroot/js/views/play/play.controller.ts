@@ -5,6 +5,17 @@ namespace Quizdom.Views.Play {
     public posts = [];
     private group = '';
 
+    // the order in which questions are selected
+    private answerOrder: number = 0;
+
+    // timestamps to calculate milliseconds to answer
+    private startTime: number;
+    private endTime: number;
+
+    // countdown duration (6 sec) and timer for answering question
+    public duration: number = 6 * 1000;
+    private countdown: number;
+
     static $inject = [
       'AuthenticationService',
       'GameService',
@@ -24,9 +35,15 @@ namespace Quizdom.Views.Play {
       private $scope: ng.IScope,
       private $stateParams: ng.ui.IStateParamsService,
     ) {
-      console.log(`this.$stateParams`, this.$stateParams);
+      // console.log(`User`, this.AuthenticationService.User);
+      // console.log(`this.$stateParams`, this.$stateParams);
       this.GameService.loadGame(this.$stateParams.gameId)
         .then(() => {
+          let player = this.GameService.players.find(p => { return p.userName == this.AuthenticationService.User.userName });
+          this.GameService.myGamePlayerId = player.id;
+          this.answerOrder = Math.max.apply(Math, this.GameService.gameBoards.map(gb => { return gb.answerOrder }));
+
+          console.log(`My playerId`, this.GameService.myGamePlayerId);
           this.group = 'game' + this.$stateParams.gameId;
           this.HubService.startHub();
 
@@ -59,6 +76,8 @@ namespace Quizdom.Views.Play {
         console.log(`$scope.vm.posts`, $scope.vm.posts);
       }
 
+      // this.GameService.testLoopPromise(5);      
+
     }
 
     // public getPosts() {
@@ -76,7 +95,7 @@ namespace Quizdom.Views.Play {
         });
     }
 
-    public addPostsList(posts: Models.IMessage[] ) {
+    public addPostsList(posts: Models.IMessage[]) {
       this.posts.length = 0;
       posts.forEach(post => {
         this.posts.push(post);
@@ -118,6 +137,7 @@ namespace Quizdom.Views.Play {
 
     }
 
+    // Sets the style of answers when called by ng-class
     public answerClass(index: number): string {
       let classes = "blue lighten-2 black-text";
       if (index == this.guess) {
@@ -134,6 +154,7 @@ namespace Quizdom.Views.Play {
       return classes;
     }
 
+    // Sets the style of gameBoards when called by ng-class
     public gameBoardClass(gameBoard): string {
       let classes = "green darken-4 grey-text text-lighten-2";
       if (gameBoard.questionState == 'retired') {
@@ -142,90 +163,154 @@ namespace Quizdom.Views.Play {
       return classes;
     }
 
-    // SignalR methods to update gameBoard state that can be triggered by the server
-    public triggerStateChange(boardId, answer: number) {
+    public catLong(categoryId) {
+      console.log(`categoryId`, categoryId);
+      console.log(`allCategories`, this.GameService.allCategories);
+      let cat = this.GameService.allCategories.find(cat => { return cat.id == categoryId })
+      console.log(`cat`, cat);
+      return cat.longDescription;
+    }
+
+    // "trigger" methods respond to user action on elements to update the DB via APIs
+    //  click on "new" gameBoard element to answer question
+    public triggerLoadQandA(boardId) {
       let gameBoard = this.GameService.gameBoards.find(gb => { return gb.id == boardId });
       if (gameBoard.questionState == "new") {
         // console.log(`gameBoard`, gameBoard);
         gameBoard.questionState = "ask";
+        gameBoard.answerOrder = this.answerOrder;
+        this.answerOrder++;
         this.GameService.updateGameBoard(gameBoard)
           // TODO - remove .then once SignalR is triggering the method!
           .$promise.then((ask) => {
             this.loadQandA(ask);
           })
-      } else {
-        this.question = this.GameService.gameBoards.find(q => { return q.id == boardId });
-        // console.log(`this.question`, this.question);
-        switch (this.question.questionState) {
-          case "ask":
-            this.question.questionState = "answers";
-            this.GameService.updateGameBoard(this.question)
-              // TODO - remove .then once SignalR is triggering the method!
-              .$promise.then((gameBoard) => {
-                this.showAllAnswers(gameBoard);
-              })
-            break;
-          case "answers":
-            if (answer >= 0 && answer < 4) {
-              this.question.questionState = "guess";
-              this.question.answerOrder = answer;
-              this.GameService.updateGameBoard(this.question)
-                // TODO - remove .then once SignalR is triggering the method!
-                .$promise.then((gameBoard) => {
-                  this.SelectAnswer(gameBoard);
-                })
-            }
-            break;
-          case "guess":
-            if (answer < 4) {
-              this.question.questionState = "correct";
-              this.GameService.updateGameBoard(this.question)
-                // TODO - remove .then once SignalR is triggering the method!
-                .$promise.then((gameBoard) => {
-                  this.ShowCorrectAnswer(gameBoard);
-                })
-            }
-            break;
-          case "correct":
-            // get
-            let player = this.GameService.gamePlayers.find(p => { return p.userName == this.AuthenticationService.User.userName });
-            // console.log(`player from gamePlayers`, player);
-            let gamePlayer = new Models.UserModel;
-            gamePlayer.id = player.playerId;
-            gamePlayer.prizePoints = player.prizePoints;
-            gamePlayer.initiator = player.initiator;
-            gamePlayer.gameId = this.GameService.gameId;
-            gamePlayer.userId = this.AuthenticationService.User.userName;
-            console.log(`Gameplayer`, gamePlayer);
-            console.log(`Question prizePoints`, this.question.prizePoints);
-            console.log(`answer`, answer, `answer`, this.question.correctAnswer);
-            if (answer == this.question.correctAnswer) {
-              gamePlayer.prizePoints += this.question.prizePoints;
-              this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
-            }
-            console.log(`Gameplayer prizePoints`, gamePlayer.prizePoints);
-            // Do we want to penalize a player for guessing wrong by subtracting prizePoints?
-            this.GameService.updateGamePlayer(gamePlayer)
-              // TODO - remove .then once SignalR is triggering the method!
-              .$promise.then((gamePlayer) => {
-                this.AddPrizePoints(gamePlayer);
-              })
-            this.question.questionState = "retired";
-            this.GameService.updateGameBoard(this.question)
-              // TODO - remove .then once SignalR is triggering the method!
-              .$promise.then((gameBoard) => {
-                this.RetireGameBoard(gameBoard);
-              })
-            break;
-        }
       }
     }
+
+    //  click on "ask" big question element to show answer Q&A
+    public triggerShowAllAnswers() {
+      // console.log(`this.question`, this.question);
+      if (this.question.questionState == "ask") {
+        this.question.questionState = "answers";
+        this.GameService.updateGameBoard(this.question)
+          // TODO - remove .then once SignalR is triggering the method!
+          .$promise.then((gameBoard) => {
+            this.showAllAnswers(gameBoard);
+          })
+      }
+    }
+
+    //  click on specific "answers" to enter your selection
+    public triggerSelectAnswer(answer) {
+      if (this.question.questionState == 'answers') {
+        this.endTime = Date.now();
+        this.question.questionState = "guess";
+        this.GameService.updateGameBoard(this.question)
+          // TODO - remove .then once SignalR is triggering the method!
+          .$promise.then((gameBoard) => {
+            this.selectAnswerGB(gameBoard);
+          })
+
+        this.GameService.getGamePlayers(this.GameService.gameId)
+          .$promise.then((gamePlayers) => {
+            // find the local gameBoard by id
+            let playerIndex = gamePlayers.findIndex(g => { return g.id == this.GameService.myGamePlayerId });
+
+            gamePlayers[playerIndex].answer = answer;
+            gamePlayers[playerIndex].delay = this.endTime - this.startTime;
+
+            this.GameService.updateGamePlayer(gamePlayers[playerIndex])
+              // TODO - remove .then once SignalR is triggering the method!
+              .$promise.then
+            this.selectAnswerGP(gamePlayers[playerIndex]);
+          })
+
+
+      }
+    }
+
+    // public triggerStateChange(boardId, answer: number) {
+    //   let gameBoard = this.GameService.gameBoards.find(gb => { return gb.id == boardId });
+    //   if (gameBoard.questionState == "new") {
+    //     // console.log(`gameBoard`, gameBoard);
+    //     gameBoard.questionState = "ask";
+    //     this.GameService.updateGameBoard(gameBoard)
+    //       // TODO - remove .then once SignalR is triggering the method!
+    //       .$promise.then((ask) => {
+    //         this.loadQandA(ask);
+    //       })
+    //   } else {
+    //     this.question = this.GameService.gameBoards.find(q => { return q.id == boardId });
+    //     // console.log(`this.question`, this.question);
+    //     switch (this.question.questionState) {
+    //       case "ask":
+    //         this.question.questionState = "answers";
+    //         this.GameService.updateGameBoard(this.question)
+    //           // TODO - remove .then once SignalR is triggering the method!
+    //           .$promise.then((gameBoard) => {
+    //             this.showAllAnswers(gameBoard);
+    //           })
+    //         break;
+    //       case "answers":
+    //         if (answer >= 0 && answer < 4) {
+    //           this.question.questionState = "guess";
+    //           this.question.answerOrder = answer;
+    //           this.GameService.updateGameBoard(this.question)
+    //             // TODO - remove .then once SignalR is triggering the method!
+    //             .$promise.then((gameBoard) => {
+    //               this.selectAnswerGB(gameBoard);
+    //             })
+    //         }
+    //         break;
+    //       case "guess":
+    //         this.question.questionState = "correct";
+    //         this.GameService.updateGameBoard(this.question)
+    //           // TODO - remove .then once SignalR is triggering the method!
+    //           .$promise.then((gameBoard) => {
+    //             this.showCorrectAnswer(gameBoard);
+    //           })
+    //         break;
+    //       case "correct":
+    //         // get
+    //         let player = this.GameService.players.find(p => { return p.userName == this.AuthenticationService.User.userName });
+    //         // console.log(`player from gamePlayers`, player);
+    //         let gamePlayer = new Models.GamePlayerModel;
+    //         gamePlayer.id = player.gamePlayerId;
+    //         gamePlayer.prizePoints = player.prizePoints;
+    //         gamePlayer.initiator = player.initiator;
+    //         gamePlayer.gameId = this.GameService.gameId;
+    //         gamePlayer.userName = this.AuthenticationService.User.userName;
+    //         console.log(`Gameplayer`, gamePlayer);
+    //         console.log(`Question prizePoints`, this.question.prizePoints);
+    //         console.log(`answer`, answer, `answer`, this.question.correctAnswer);
+    //         if (answer == this.question.correctAnswer) {
+    //           gamePlayer.prizePoints += this.question.prizePoints;
+    //           this.question.answeredCorrectlyUserId = this.AuthenticationService.User.userName;
+    //         }
+    //         console.log(`Gameplayer prizePoints`, gamePlayer.prizePoints);
+    //         // Do we want to penalize a player for guessing wrong by subtracting prizePoints?
+    //         this.GameService.updateGamePlayer(gamePlayer)
+    //           // TODO - remove .then once SignalR is triggering the method!
+    //           .$promise.then((gamePlayer) => {
+    //             this.addPrizePoints(gamePlayer);
+    //           })
+    //         this.question.questionState = "retired";
+    //         this.GameService.updateGameBoard(this.question)
+    //           // TODO - remove .then once SignalR is triggering the method!
+    //           .$promise.then((gameBoard) => {
+    //             this.retireGameBoard(gameBoard);
+    //           })
+    //         break;
+    //     }
+    //   }
+    // }
 
     public get showQ() {
       return (this.question.questionState != 'new' && this.question.questionState != 'retired')
     }
 
-    public get showA() {
+    public get showAnswers() {
       return (this.question.questionState != 'ask')
     }
     public get showGuess() {
@@ -236,25 +321,49 @@ namespace Quizdom.Views.Play {
       return (this.question.questionState == 'correct')
     }
 
+    // SignalR methods to update gameBoard state that can be triggered by the server
+    // when player selects a gameBoard to answer the question
     public loadQandA(gameBoard) {
-      console.log(`loadQandA given gameBoard`, gameBoard);
       // find the local gameBoard by id
-      this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
-      console.log(`this.question`, this.question);
+      let gbIndex = this.GameService.gameBoards.findIndex(gb => { return gb.id == gameBoard.id });
       // update to the proper state
-      this.question.questionState = "ask";
+      this.GameService.gameBoards[gbIndex] = gameBoard;
+      this.question.questionState = gameBoard.questionState;
       console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
+
+      // countdown 3 secs then show answers
+      // this.countdown = 3
+      // let delay = this.countdown * 1000;
+      // let timer = setInterval(() => {
+      //   this.countdown--;
+      // }, 1000);
+      // setTimeout(() => {
+      //   clearInterval(timer);
+      this.triggerShowAllAnswers()
+      // }, delay * 1000);
     }
 
     public showAllAnswers(gameBoard) {
       // find the local gameBoard by id
-      this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
+      let boardIndex = this.GameService.gameBoards.findIndex(g => { return g.id == gameBoard.id });
       // update to the proper state
-      this.question.questionState = "answers";
+      this.GameService.gameBoards[boardIndex] = gameBoard;
+      this.question.questionState = gameBoard.questionState;
+      this.startTime = Date.now();
       console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
     }
 
-    public SelectAnswer(gameBoard) {
+    public selectAnswerGP(gamePlayer) {
+      // find the local gameBoard by id
+      let playerIndex = this.GameService.players.findIndex(g => { return g.id == gamePlayer.playerId });
+      // update to the proper state
+      this.GameService.players[playerIndex].answer = gamePlayer.answer;
+      this.GameService.players[playerIndex].delay = gamePlayer.delay;
+
+      console.log(`GamePlayer: ${gamePlayer.id} answer: ${gamePlayer.answer} delay: ${gamePlayer.delay}`);
+    }
+
+    public selectAnswerGB(gameBoard) {
       // find the local gameBoard by id
       this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
       // update to the proper state
@@ -264,7 +373,7 @@ namespace Quizdom.Views.Play {
       console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`, "ABCD"[this.question.answerOrder]);
     }
 
-    public ShowCorrectAnswer(gameBoard) {
+    public showCorrectAnswer(gameBoard) {
       // find the local gameBoard by id
       this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
       // update to the proper state
@@ -275,15 +384,15 @@ namespace Quizdom.Views.Play {
       console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.correctAnswer} is ${this.question.questionState}`);
     }
 
-    public AddPrizePoints(gamePlayer) {
+    public addPrizePoints(gamePlayer) {
       // find the local gamePlayer by id
-      let player = this.GameService.gamePlayers.find(p => { return p.playerId == gamePlayer.id });
+      let player = this.GameService.players.find(p => { return p.gamePlayerId == gamePlayer.id });
       // update to the proper state
       player.prizePoints = gamePlayer.prizePoints;
       console.log(`GamePlayer: ${gamePlayer.id} new score is ${player.prizePoints}`);
     }
 
-    public RetireGameBoard(gameBoard) {
+    public retireGameBoard(gameBoard) {
       // find the local gameBoard by id
       this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
       // update to the proper state

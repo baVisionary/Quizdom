@@ -30,9 +30,9 @@ namespace Quizdom.Views.Invite {
       this.GameService.loadMyGameData(this.AuthenticationService.User)
         .then(() => {
           console.log(`Loading Game ${this.GameService.gameId} Players from DB...`);
-          this.GameService.loadGamePlayers(this.GameService.gameId)
+          this.GameService.loadPlayers(this.GameService.gameId)
             .then(() => {
-              if (this.GameService.gamePlayers.length == 0) {
+              if (this.GameService.players.length == 0) {
                 this.GameService.addPlayer(this.GameService.gameId, this.AuthenticationService.User, true)
               }
             })
@@ -52,7 +52,7 @@ namespace Quizdom.Views.Invite {
     }
 
     private loadMyFriends() {
-      this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+      this.FriendService.loadMyFriends(this.AuthenticationService.User.userName).$promise
         .then(() => {
           console.log(`Friends:`, this.FriendService.friends);
         })
@@ -62,7 +62,7 @@ namespace Quizdom.Views.Invite {
     }
 
     public findPlayer(search: string): any {
-      let found: Models.UserModel = new Models.UserModel;
+      let found: Models.AuthUserModel = new Models.AuthUserModel;
       this.feedback = "";
       if (this.FriendService.isMe(search)) {
         this.player = "";
@@ -102,7 +102,7 @@ namespace Quizdom.Views.Invite {
         });
     }
 
-    public addPlayer(user: Models.IUser) {
+    public addPlayer(user: Models.IAuthUser) {
       console.log(`Add player requested:`, user.userName);
       this.GameService.addPlayer(this.GameService.gameId, user, false);
     }

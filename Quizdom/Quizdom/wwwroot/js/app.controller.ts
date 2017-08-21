@@ -18,7 +18,7 @@ namespace Quizdom {
         ) {
             this.LoginService.getSessionData();
             if (this.isUserLoggedIn) {
-                this.FriendService.getMyFriends(this.user.userName);
+                this.FriendService.loadMyFriends(this.user.userName);
             }
 
             // this.HubService.firstConnect();
@@ -28,8 +28,8 @@ namespace Quizdom {
             return this.AuthenticationService.isLoggedIn;
         }
 
-        public get user(): Models.UserModel {
-            return this.AuthenticationService.getUser();
+        public get user(): Models.AuthUserModel {
+            return this.AuthenticationService.User;
         }
 
         public logOut(): void {

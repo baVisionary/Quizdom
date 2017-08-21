@@ -5,7 +5,7 @@ namespace Quizdom.Views.User {
         public feedback: string = "";
         public friendError: string = "";
         public friendSuccess: string = "";
-        private tempFriend: any = new Models.UserModel;
+        // private tempFriend: any = new Models.AuthUserModel;
 
         static $inject = [
             'FriendService',
@@ -23,7 +23,7 @@ namespace Quizdom.Views.User {
             if (!this.AuthenticationService.isLoggedIn) {
                 this.$state.go('Login');
             }
-            this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+            this.FriendService.loadMyFriends(this.AuthenticationService.User.userName).$promise
                 .then(() => {
                     console.log(this.FriendService.friends);
                 })
@@ -40,7 +40,7 @@ namespace Quizdom.Views.User {
         }
 
         public findFriend(search: string): any {
-            let found: Models.UserModel = new Models.UserModel;
+            let found: Models.AuthUserModel = new Models.AuthUserModel;
             this.feedback = "";
             if (this.FriendService.isMe(search)) {
                 this.searchTerm = "";

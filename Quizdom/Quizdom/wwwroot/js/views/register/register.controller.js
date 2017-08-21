@@ -12,7 +12,7 @@ var Quizdom;
                     this.AvatarService = AvatarService;
                     this.AuthenticationService = AuthenticationService;
                     this.formData = new Quizdom.Models.RegisterModel();
-                    this.authUser = new Quizdom.Models.LoginModel();
+                    this.newUser = new Quizdom.Models.LoginModel();
                     this.pattern = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
                     this.AvatarService.getAllAvatars();
                 }
@@ -45,11 +45,10 @@ var Quizdom;
                         .registerUser(this.formData)
                         .then(function (user) {
                         console.log(user);
-                        _this.authUser.email = user.email;
-                        _this.authUser.password = _this.formData.password;
-                        _this.authUser.rememberMe = true;
-                        console.log(_this.authUser);
-                        _this.LoginService.loginUser(_this.authUser)
+                        _this.newUser.email = user.email;
+                        _this.newUser.password = _this.formData.password;
+                        console.log(_this.newUser);
+                        _this.LoginService.loginUser(_this.newUser)
                             .then(function (result) {
                             console.log("Login process result: " + result);
                             if (result) {

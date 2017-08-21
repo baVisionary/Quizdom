@@ -1,7 +1,7 @@
 namespace Quizdom.Views.Register {
     export class RegisterController {
         public formData: Models.RegisterModel = new Models.RegisterModel();
-        private authUser: Models.LoginModel = new Models.LoginModel();
+        private newUser: Models.LoginModel = new Models.LoginModel();
         public pattern: string = '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,}).*';
 
         static $inject = [
@@ -51,13 +51,13 @@ namespace Quizdom.Views.Register {
 
             this.RegistrationService
                 .registerUser(this.formData)
-                .then((user: Models.UserModel) => {
+                .then((user: Models.AuthUserModel) => {
                     console.log(user);
-                    this.authUser.email = user.email;
-                    this.authUser.password = this.formData.password;
-                    this.authUser.rememberMe = true;
-                    console.log(this.authUser);
-                    this.LoginService.loginUser(this.authUser)
+                    this.newUser.email = user.email;
+                    this.newUser.password = this.formData.password;
+                    
+                    console.log(this.newUser);
+                    this.LoginService.loginUser(this.newUser)
                         .then((result: boolean) => {
                             console.log(`Login process result: ${result}`);
                             if (result) {

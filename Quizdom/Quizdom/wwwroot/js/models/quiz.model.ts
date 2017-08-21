@@ -1,6 +1,6 @@
 namespace Quizdom.Models {
 
-  export class QuestionModel {
+  export class QuizModel {
 
     public id: number = 0;
     public category: string = 'User Added';
@@ -20,7 +20,7 @@ namespace Quizdom.Models {
 
   }
 
-  export interface IQuestion extends ng.resource.IResource<IQuestion> {
+  export interface IQuiz extends ng.resource.IResource<IQuiz> {
 
     id: number;
     category: string;
@@ -39,9 +39,9 @@ namespace Quizdom.Models {
     categoryId: number;
   }
 
-  export interface IQuestionResource extends ng.resource.IResourceClass<IQuestion> {
-    update(questionId, IQuestion): IQuestion;
-    diff({category, difficulty}): IQuestion[]; 
+  export interface IQuestionResource extends ng.resource.IResourceClass<IQuiz> {
+    update(questionId, IQuestion): IQuiz;
+    diff({category, difficulty}): IQuiz[]; 
   }
 
 }

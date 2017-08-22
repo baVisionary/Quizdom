@@ -4,14 +4,20 @@ var Quizdom;
     (function (Models) {
         var UserModel = (function () {
             function UserModel() {
+                // public id: number;
                 this.userName = 'Guest';
                 this.email = ',';
                 this.avatarId = 0;
                 this.avatarUrl = "avatar_generic.png";
                 this.isAdmin = false;
-                this.prizePoints = 0;
-                this.answer = 0;
             }
+            // to support gamePlayer
+            // public gameId?: number;
+            // public userId?: string;
+            // public playerId?: number;
+            // public initiator?: boolean;
+            // public prizePoints?: number = 0;
+            // public answer?: number = 0;
             UserModel.getAnonymousUser = function () {
                 var user = new Models.UserModel;
                 return user;

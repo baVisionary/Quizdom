@@ -12,7 +12,7 @@ namespace Quizdom.Services {
       "medium",
       "hard"
     ];
-    private _Question: Models.QuestionModel = new Models.QuestionModel();
+    private _Question = new Models.QuizModel();
 
     static $inject = [
       '$resource',
@@ -102,7 +102,7 @@ namespace Quizdom.Services {
       });
     }
 
-    public updateOne(question: Models.IQuestion) {
+    public updateOne(question: Models.IQuiz) {
       return this._Resource_question.update({
         questionId: question.id
       }, question).$promise;
@@ -118,7 +118,7 @@ namespace Quizdom.Services {
       return this._Question;
     }
 
-    public createOne(q: Models.QuestionModel) {
+    public createOne(q: Models.IQuizResource) {
       return this._Resource_question.save(q);
     }
   }

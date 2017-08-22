@@ -15,7 +15,7 @@ var Quizdom;
                     }
                     this.GameService.loadMyGameData(this.AuthenticationService.User)
                         .then(function () {
-                        _this.GameService.loadGamePlayers(_this.GameService.gameId);
+                        _this.GameService.loadPlayers(_this.GameService.gameId);
                         _this.GameService.loadGameCategories(_this.GameService.gameId);
                     });
                 }

@@ -1,6 +1,6 @@
 namespace Quizdom.Models {
     export class UserModel {
-        public id: number;
+        // public id: number;
         public userName: string = 'Guest';
         public email: string = ',';
         public avatarId: number = 0;
@@ -9,12 +9,12 @@ namespace Quizdom.Models {
         // to support friends
         public friendId?: number;
         // to support gamePlayer
-        public gameId?: number;
-        public userId?: string;
-        public playerId?: number;
-        public initiator?: boolean;
-        public prizePoints?: number = 0;
-        public answer?: number = 0;
+        // public gameId?: number;
+        // public userId?: string;
+        // public playerId?: number;
+        // public initiator?: boolean;
+        // public prizePoints?: number = 0;
+        // public answer?: number = 0;
 
         public static getAnonymousUser(): any {
             let user = new Models.UserModel;
@@ -23,7 +23,7 @@ namespace Quizdom.Models {
     }
 
     export interface IUser extends ng.resource.IResource<IUser> {
-        id: number;
+        // id: number;
         userName: string;
         email: string
         avatarId: number;
@@ -32,13 +32,13 @@ namespace Quizdom.Models {
         // to support friends
         friendId?: number;
         // to support gamePlayer
-        gameId?: number;
-        userId?: string;
-        playerId?: number;
-        initiator?: boolean;
-        prizePoints?: number;
-        answer?: number;
-        delay?: number;
+        // gameId?: number;
+        // userId?: string;
+        // playerId?: number;
+        // initiator?: boolean;
+        // prizePoints?: number;
+        // answer?: number;
+        // delay?: number;
 
         getAnonymousUser(): any;
      }

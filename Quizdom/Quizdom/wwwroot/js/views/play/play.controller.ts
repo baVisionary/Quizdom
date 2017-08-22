@@ -5,6 +5,17 @@ namespace Quizdom.Views.Play {
     public posts = [];
     private group = '';
 
+    // the order in which questrions are selected
+    private answerOrder: number = 0;
+
+    // timestamps to calculate milliseconds to answer
+    private startTime: number;
+    private endTime: number;
+
+    // answer questions countdown duration (6 sec)
+    private duration: number = 6 * 1000;
+    private timer: number;
+
     static $inject = [
       'AuthenticationService',
       'GameService',
@@ -84,22 +95,6 @@ namespace Quizdom.Views.Play {
       this.posts.sort((a, b) => { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1 })
       // console.log(this.posts);
     }
-
-    // public sendMessage = () => {
-    //   var post = {
-    //     content: $("#textInput").val(),
-    //     userName: this.AuthenticationService.User.userName,
-    //     group: this.group,
-    //     gameId: this.GameService.gameId
-    //   };
-    //   this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
-    //     .then(function () {
-    //       $("#textInput").val("");
-    //     })
-    //     .catch(function (e) {
-    //       console.log(e);
-    //     });
-    // }
 
     public sendGameMessage = () => {
       var post = {
@@ -188,9 +183,9 @@ namespace Quizdom.Views.Play {
             break;
           case "correct":
             // get
-            let player = this.GameService.gamePlayers.find(p => { return p.userName == this.AuthenticationService.User.userName });
+            let player = this.GameService.players.find(p => { return p.userId == this.AuthenticationService.User.userName });
             // console.log(`player from gamePlayers`, player);
-            let gamePlayer = new Models.UserModel;
+            let gamePlayer = new Models.GamePlayerModel;
             gamePlayer.id = player.playerId;
             gamePlayer.prizePoints = player.prizePoints;
             gamePlayer.initiator = player.initiator;
@@ -277,7 +272,7 @@ namespace Quizdom.Views.Play {
 
     public AddPrizePoints(gamePlayer) {
       // find the local gamePlayer by id
-      let player = this.GameService.gamePlayers.find(p => { return p.playerId == gamePlayer.id });
+      let player = this.GameService.players.find(p => { return p.playerId == gamePlayer.id });
       // update to the proper state
       player.prizePoints = gamePlayer.prizePoints;
       console.log(`GamePlayer: ${gamePlayer.id} new score is ${player.prizePoints}`);

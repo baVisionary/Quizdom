@@ -18,21 +18,10 @@ var Quizdom;
                     this.guess = 4;
                     this.posts = [];
                     this.group = '';
-                    // public sendMessage = () => {
-                    //   var post = {
-                    //     content: $("#textInput").val(),
-                    //     userName: this.AuthenticationService.User.userName,
-                    //     group: this.group,
-                    //     gameId: this.GameService.gameId
-                    //   };
-                    //   this.$http.post<any>('/api/game/gamechat', JSON.stringify(post))
-                    //     .then(function () {
-                    //       $("#textInput").val("");
-                    //     })
-                    //     .catch(function (e) {
-                    //       console.log(e);
-                    //     });
-                    // }
+                    // the order in which questrions are selected
+                    this.answerOrder = 0;
+                    // answer questions countdown duration (6 sec)
+                    this.duration = 6 * 1000;
                     this.sendGameMessage = function () {
                         var post = {
                             content: $("#textInput").val(),
@@ -165,9 +154,9 @@ var Quizdom;
                                 break;
                             case "correct":
                                 // get
-                                var player = this.GameService.gamePlayers.find(function (p) { return p.userName == _this.AuthenticationService.User.userName; });
+                                var player = this.GameService.players.find(function (p) { return p.userId == _this.AuthenticationService.User.userName; });
                                 // console.log(`player from gamePlayers`, player);
-                                var gamePlayer = new Quizdom.Models.UserModel;
+                                var gamePlayer = new Quizdom.Models.GamePlayerModel;
                                 gamePlayer.id = player.playerId;
                                 gamePlayer.prizePoints = player.prizePoints;
                                 gamePlayer.initiator = player.initiator;
@@ -261,7 +250,7 @@ var Quizdom;
                 };
                 PlayController.prototype.AddPrizePoints = function (gamePlayer) {
                     // find the local gamePlayer by id
-                    var player = this.GameService.gamePlayers.find(function (p) { return p.playerId == gamePlayer.id; });
+                    var player = this.GameService.players.find(function (p) { return p.playerId == gamePlayer.id; });
                     // update to the proper state
                     player.prizePoints = gamePlayer.prizePoints;
                     console.log("GamePlayer: " + gamePlayer.id + " new score is " + player.prizePoints);

@@ -30,9 +30,9 @@ namespace Quizdom.Views.Invite {
       this.GameService.loadMyGameData(this.AuthenticationService.User)
         .then(() => {
           console.log(`Loading Game ${this.GameService.gameId} Players from DB...`);
-          this.GameService.loadGamePlayers(this.GameService.gameId)
+          this.GameService.loadPlayers(this.GameService.gameId)
             .then(() => {
-              if (this.GameService.gamePlayers.length == 0) {
+              if (this.GameService.players.length == 0) {
                 this.GameService.addPlayer(this.GameService.gameId, this.AuthenticationService.User, true)
               }
             })

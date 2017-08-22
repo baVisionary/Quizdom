@@ -14,6 +14,8 @@ namespace Quizdom.Models
         public int gameLength { get; set; }
         public string lastActiveUserId { get; set; }
         public string activeUserId { get; set; }
+        public string gameState { get; set; }
+        public int gameBoardId { get; set; }
 
         //public Game()
         //{ }

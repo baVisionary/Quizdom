@@ -17,7 +17,7 @@ namespace Quizdom.Views.Setup {
       }
       this.GameService.loadMyGameData(this.AuthenticationService.User)
       .then(() => {
-        this.GameService.loadGamePlayers(this.GameService.gameId)
+        this.GameService.loadPlayers(this.GameService.gameId)
         this.GameService.loadGameCategories(this.GameService.gameId)
       })
   }

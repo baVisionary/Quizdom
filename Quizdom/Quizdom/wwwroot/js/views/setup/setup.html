@@ -34,14 +34,14 @@
           </div>
           <div class="row">
             <h6>Quizdom</h6>
-            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index == 0" tag={{user.userName}} id={{user.playerId}}>
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">
                 &nbsp;{{user.userName}}
               </div>
             </div>
             <span class="h5">VS.</span>
-            <div class="chip" ng-repeat="user in vm.GameService.gamePlayers" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
+            <div class="chip" ng-repeat="user in vm.GameService.players" ng-show="$index > 0" tag={{user.userName}} id={{user.playerId}}>
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">
                 &nbsp;{{user.userName}}

@@ -16,7 +16,7 @@ var Quizdom;
                     "medium",
                     "hard"
                 ];
-                this._Question = new Quizdom.Models.QuestionModel();
+                this._Question = new Quizdom.Models.QuizModel();
                 this._Resource_question = this.$resource('/api/quiz/:questionId', null, {
                     'update': {
                         method: 'PUT'

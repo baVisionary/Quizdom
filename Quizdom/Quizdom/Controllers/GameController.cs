@@ -343,7 +343,7 @@ namespace Quizdom.Controllers
 
             // Call the client method 'addGameMessage' on all clients in the submitted group.
             var groupName = "game" + player.gameId;
-            this.Clients.Group(groupName).ChangeGameData(player);
+            this.Clients.Group(groupName).ChangeGamePlayerData(player);
 
             return Ok(player);
         }
@@ -435,7 +435,6 @@ namespace Quizdom.Controllers
 
             var record2 = _context.GameBoards.Where(c => c.Id == id).Count();
 
-
             if (record2 == 0)
             {
                 return NoContent();
@@ -447,7 +446,7 @@ namespace Quizdom.Controllers
 
             // Call the client method 'addGameMessage' on all clients in the submitted group.
             var groupName = "game" + gameBoard.gameId;
-            this.Clients.Group(groupName).ChangeGameData(gameBoard);
+            this.Clients.Group(groupName).ChangeGameBoard(gameBoard);
 
 
             return Ok(gameBoard);

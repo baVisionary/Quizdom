@@ -324,7 +324,7 @@ namespace Quizdom.Controllers
 
         // PUT /api/game/players1   ** updates gamePlayers record by id
         [HttpPut("players/{id}")]
-        public IActionResult Put(int id, [FromBody]GamePlayers player)
+        public async Task<IActionResult> Put(int id, [FromBody]GamePlayers player)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
@@ -340,7 +340,12 @@ namespace Quizdom.Controllers
             player.Id = id;
             _context.GamePlayers.Update(player);
             _context.SaveChanges();
-            return Ok();
+
+            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            var groupName = "game" + player.gameId;
+            this.Clients.Group(groupName).ChangeGameData(player);
+
+            return Ok(player);
         }
 
         // DELETE /api/game/players/1  ** Delete GamePlayers record by id
@@ -423,7 +428,7 @@ namespace Quizdom.Controllers
 
         // PUT /api/game/board/1   ** updates gameBpard record by id
         [HttpPut("board/{id}")]
-        public IActionResult PutBoard(int id, [FromBody]GameBoard gameBoard)
+        public async Task<IActionResult> PutBoard(int id, [FromBody]GameBoard gameBoard)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
@@ -439,6 +444,12 @@ namespace Quizdom.Controllers
             gameBoard.Id = id;
             _context.GameBoards.Update(gameBoard);
             _context.SaveChanges();
+
+            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            var groupName = "game" + gameBoard.gameId;
+            this.Clients.Group(groupName).ChangeGameData(gameBoard);
+
+
             return Ok(gameBoard);
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR.Infrastructure;
 using Quizdom.Controllers;
 using Quizdom.Data;
@@ -139,7 +140,7 @@ namespace Quizdom.Controllers
             _context.Games.Add(game);
             _context.SaveChanges();
 
-            return Created("api/game/" + game.Id ,game.Id);
+            return Created("api/game/" + game.Id, game.Id);
         }
 
         // PUT /api/game/1   ** updates game record by game id
@@ -307,6 +308,9 @@ namespace Quizdom.Controllers
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
+            // UPDATE GAME ID
+            userTracker.UpdateGameId(Request, gamePlayers.userId, gamePlayers.gameId);
+
             _context.GamePlayers.Add(gamePlayers);
             _context.SaveChanges();
 
@@ -340,6 +344,10 @@ namespace Quizdom.Controllers
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
+
+            // UPDATE GAME ID - delete game id (set to 0)
+            userTracker.UpdateGameId(Request,"", 0);
+            
 
             _context.Remove(_context.GamePlayers.SingleOrDefault<GamePlayers>(c => c.Id == id));
             _context.SaveChanges();

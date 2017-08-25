@@ -145,7 +145,7 @@ namespace Quizdom.Controllers
 
         // PUT /api/game/1   ** updates game record by game id
         [HttpPut("{id}")]
-        public IActionResult Put(int id, [FromBody]Game games)
+        public async Task<IActionResult> Put(int id, [FromBody]Game games)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
@@ -161,6 +161,11 @@ namespace Quizdom.Controllers
             games.Id = id;
             _context.Games.Update(games);
             _context.SaveChanges();
+
+            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            var groupName = "game" + games.Id;
+            this.Clients.Group(groupName).ChangeGameData(games);
+
             return Ok(games);
         }
 

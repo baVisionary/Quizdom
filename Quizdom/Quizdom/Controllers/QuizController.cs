@@ -9,6 +9,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Net;
 using Quizdom.Services;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Quizdom.Controllers
 {
@@ -154,6 +155,7 @@ namespace Quizdom.Controllers
         }
 
         // POST api/values
+        [Authorize]
         [HttpPost]
         public IActionResult Post([FromBody]Quiz quiz)
         {
@@ -204,34 +206,54 @@ namespace Quizdom.Controllers
             _context.SaveChanges();
             
         }
-
+        [Authorize]
         [HttpPut("{id}")]
         public IActionResult Put(int id, [FromBody]Quiz quiz)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
+            string username = UserTracker.ExtractUsernameHeader(Request);
+
             var record2 = _context.Quiz.Where(c => c.Id == id).Count();
 
+            var validate = userTracker.ValidateUserAccess(Request, quiz.UserId);
+
+            if (!validate)
+            {
+                return Forbid();
+            }
 
             if (record2 == 0)
             {
                 return NoContent();
             }
 
-            quiz.Id = id;
+            quiz.Id = id;            
             _context.Quiz.Update(quiz);
             _context.SaveChanges();
             return Ok(quiz);
         }
 
+        [Authorize]
         [HttpDelete("{id}")]
         public IActionResult Delete(int id)
         {
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
-            _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));
+            var validateUserAccess = (from c in _context.Quiz
+                                      where c.Id == id
+                                      select c).FirstOrDefault();
+
+            var validate = userTracker.ValidateUserAccess(Request, validateUserAccess.UserId);
+
+            if (!validate)
+            {
+                return Forbid();
+            }
+
+            _context.Remove(_context.Quiz.SingleOrDefault<Quiz>(c => c.Id == id));         
             _context.SaveChanges();
             return NoContent();
         }

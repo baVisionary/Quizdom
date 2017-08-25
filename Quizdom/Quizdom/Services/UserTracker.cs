@@ -23,10 +23,16 @@ namespace Quizdom.Services
             _context = context;
         }
 
-        private static string ExtractUsernameHeader(HttpRequest request)
+        public static string ExtractUsernameHeader(HttpRequest request)
         {
             string username =  request.Headers["Username"];
             return username;
+        }
+
+        private static string ExtractRoleHeader(HttpRequest request)
+        {
+            string role = request.Headers["Role"];
+            return role;
         }
 
         //update USERACTIVITY table
@@ -83,8 +89,20 @@ namespace Quizdom.Services
 
                 _context.UserActivity.Update(validatedUserNameRecord);
                 _context.SaveChanges();
+        }
 
+        public bool ValidateUserAccess(HttpRequest request, string questionUsername)
+        {
+            string username = ExtractUsernameHeader(request);
+            string role = ExtractRoleHeader(request);
 
+            //var validateQuestionUsername = ().FirstOrDefault();
+            if (questionUsername != username && role != "Admin")
+            {
+                return false;
+            }
+
+            return true;
 
         }
     }

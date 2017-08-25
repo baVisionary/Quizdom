@@ -36,7 +36,6 @@ namespace Quizdom.Views.Invite {
                 this.GameService.addPlayer(this.GameService.gameId, this.AuthenticationService.User, true)
               }
             })
-          // this.GameService.loadGameCategories(this.GameService.gameId)
         })
     }
 
@@ -109,6 +108,15 @@ namespace Quizdom.Views.Invite {
 
     public removePlayer(playerId: number) {
       this.GameService.removePlayer(playerId);
+    }
+
+    public goToSetup() {
+      let firstPlayerIndex = this.GameService.randomInt(0, 2)
+      this.GameService.gameData.gameState = "setup"
+      this.GameService.gameData.activeUserId = this.GameService.gameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
+      this.GameService.updateGame(this.GameService.gameData).then(() => {
+        this.$state.go(`Setup`);
+      })
     }
 
     // public sendFriendEmail(friendEmail) {

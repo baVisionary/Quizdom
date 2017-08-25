@@ -21,6 +21,7 @@ namespace Quizdom.Models {
       public questionState: string = "new";
       public answeredCorrectlyUserId?: string = "";
       public answerOrder?: number = 0;
+      public catLong?: string;
   
     }
   
@@ -41,11 +42,11 @@ namespace Quizdom.Models {
       answerD?: string;
       //  values: A/B/C/D
       correctAnswer: number;
-      // possible states: new/ask/answers/guess/correct/old
+      // possible states: new/ask/retired (previous states: answer/guess now stored in gamePlayers)
       questionState: string;
       answeredCorrectlyUserId?: string;
       answerOrder?: number;
-
+      catLong?: string;
     }
   
     export interface IGameBoardResource extends ng.resource.IResourceClass<IGameBoard> {

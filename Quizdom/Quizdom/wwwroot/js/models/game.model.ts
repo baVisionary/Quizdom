@@ -6,6 +6,8 @@ namespace Quizdom.Models {
       public activeUserId?: string = '';
       public lastActiveUserId?: string = '';
       public startDateTime?: Date = new Date();
+      public gameState?: string = "setup";
+      public gameBoardId?: number = 0;
     }
 
     export interface IGame extends ng.resource.IResource<IGame> {
@@ -15,10 +17,13 @@ namespace Quizdom.Models {
       activeUserId?: string;
       lastActiveUserId?: string;
       startDateTime?: Date;
+      // cycles through setup/welcome/pick/prepare/answer/results/summary
+      gameState?: string;
+      gameBoardId?: number;
     }
 
     export interface IGameResource extends ng.resource.IResourceClass<IGame> {
-      update(IGame): IGame; 
+      update({gameId: number}, any: IGame): IGame; 
       search(string): IGame;
     }
 }

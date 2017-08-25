@@ -20,7 +20,7 @@
             <div class="chip" ng-repeat="cat in vm.GameService.gameCategories" tag={{cat.longDescription}} id={{cat.categoryId}}>
               <div class="valign-wrapper">
                 {{cat.id}}. {{cat.longDescription}}
-                <i class="close material-icons" ng-click="vm.removeCategory(cat.categoryId)">close</i>
+                <i class="close material-icons" ng-click="vm.removeCategory(cat.gameCategoryId)">close</i>
               </div>
             </div>
           </div>

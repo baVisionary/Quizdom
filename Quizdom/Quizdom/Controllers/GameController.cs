@@ -329,7 +329,7 @@ namespace Quizdom.Controllers
             // UPDATE USER TRACKING INFORMATION
             userTracker.UpdateUserActivity(Request);
 
-            var record2 = _context.GamePlayers.Where(c => c.Id == id).Count();
+            var record2 =  _context.GamePlayers.Where(c => c.Id == id).Count();
 
 
             if (record2 == 0)
@@ -446,7 +446,7 @@ namespace Quizdom.Controllers
 
             // Call the client method 'addGameMessage' on all clients in the submitted group.
             var groupName = "game" + gameBoard.gameId;
-            this.Clients.Group(groupName).ChangeGameBoard(gameBoard);
+            this.Clients.Group(groupName).ChangeGameBoardData(gameBoard);
 
 
             return Ok(gameBoard);

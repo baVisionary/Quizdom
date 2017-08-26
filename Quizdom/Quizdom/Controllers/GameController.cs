@@ -160,9 +160,9 @@ namespace Quizdom.Controllers
 
             games.Id = id;
             _context.Games.Update(games);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            // Call the client method 'ChangeGameData' on all clients in the submitted group.
             var groupName = "game" + games.Id;
             this.Clients.Group(groupName).ChangeGameData(games);
 
@@ -339,9 +339,9 @@ namespace Quizdom.Controllers
 
             player.Id = id;
             _context.GamePlayers.Update(player);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            // Call the client method 'ChangeGamePlayerData' on all clients in the submitted group.
             var groupName = "game" + player.gameId;
             this.Clients.Group(groupName).ChangeGamePlayerData(player);
 
@@ -442,9 +442,9 @@ namespace Quizdom.Controllers
 
             gameBoard.Id = id;
             _context.GameBoards.Update(gameBoard);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
-            // Call the client method 'addGameMessage' on all clients in the submitted group.
+            // Call the client method 'ChangeGameBoardData' on all clients in the submitted group.
             var groupName = "game" + gameBoard.gameId;
             this.Clients.Group(groupName).ChangeGameBoardData(gameBoard);
 

@@ -10,7 +10,10 @@ namespace Quizdom.Models {
 
   export interface IClient {
     addChatMessage(message: any);
-    addGameMessage(message: any);
+    addGameMessage(message: Models.IMessage);
+    changeGameData(game: Models.IGame);
+    changeGameBoardData(gameBoard: Models.IGameBoard);
+    changeGamePlayerData(gamePlayer: Models.IGamePlayer);
   }
 
   export class MessageModel {

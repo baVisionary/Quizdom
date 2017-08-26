@@ -13,10 +13,11 @@ var Quizdom;
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.GameService.loadMyGameData(this.AuthenticationService.User)
-                        .then(function () {
-                        _this.GameService.loadPlayers(_this.GameService.gameId);
-                        _this.GameService.loadGameCategories(_this.GameService.gameId);
+                    this.GameService.loadMyGameData(this.AuthenticationService.User).then(function () {
+                        _this.GameService.getAllCats().then(function () {
+                            _this.GameService.loadPlayers(_this.GameService.gameId);
+                            _this.GameService.loadGameCategories(_this.GameService.gameId);
+                        });
                     });
                 }
                 SetupController.prototype.addCategory = function (cat) {

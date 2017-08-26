@@ -29,7 +29,6 @@ var Quizdom;
                                 _this.GameService.addPlayer(_this.GameService.gameId, _this.AuthenticationService.User, true);
                             }
                         });
-                        // this.GameService.loadGameCategories(this.GameService.gameId)
                     });
                 }
                 InviteController.prototype.loadActiveUsers = function () {
@@ -99,6 +98,15 @@ var Quizdom;
                 };
                 InviteController.prototype.removePlayer = function (playerId) {
                     this.GameService.removePlayer(playerId);
+                };
+                InviteController.prototype.goToSetup = function () {
+                    var _this = this;
+                    var firstPlayerIndex = this.GameService.randomInt(0, 2);
+                    this.GameService.gameData.gameState = "setup";
+                    this.GameService.gameData.activeUserId = this.GameService.gameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
+                    this.GameService.updateGame(this.GameService.gameData).then(function () {
+                        _this.$state.go("Setup");
+                    });
                 };
                 InviteController.$inject = [
                     'AuthenticationService',

@@ -14,6 +14,26 @@ var Quizdom;
                     templateUrl: 'js/views/play/play.html',
                     controller: 'PlayController',
                     controllerAs: 'vm'
+                })
+                    .state('play.welcome', {
+                    url: '@',
+                    templateUrl: 'js/views/play/play.welcome.html'
+                })
+                    .state('play.pick', {
+                    url: '@',
+                    templateUrl: 'js/views/play/play.pick.html'
+                })
+                    .state('play.prepare', {
+                    url: '@',
+                    templateUrl: 'js/views/play/play.prepare.html'
+                })
+                    .state('play.answer', {
+                    url: '@',
+                    templateUrl: 'js/views/play/play.answer.html'
+                })
+                    .state('play.results', {
+                    url: '@',
+                    templateUrl: 'js/views/play/play.results.html'
                 });
             }
             Play.Configuration = Configuration;

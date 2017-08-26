@@ -690,7 +690,7 @@ namespace Quizdom.Services {
         this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then((gameData) => {
 
           // TODO - remove once SignalR is triggering the method!
-          this.changeGameData(gameData);
+          // this.changeGameData(gameData);
 
           res(`Game update sent to DB`)
         })

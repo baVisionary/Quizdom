@@ -655,7 +655,7 @@ var Quizdom;
                     console.log("Updating Game...", newGameData);
                     _this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then(function (gameData) {
                         // TODO - remove once SignalR is triggering the method!
-                        _this.changeGameData(gameData);
+                        // this.changeGameData(gameData);
                         res("Game update sent to DB");
                     });
                 });

@@ -35,7 +35,7 @@
                 <div class="card-content center-align">
                   <span class="card-title">{{ vm.GameService.question.catLong }}</span>
                   <span>Get ready to answer</span>
-                  <h1>{{ vm.timer }}</h1>
+                  <h1>{{ timer }}</h1>
                 </div>
               </div>
               <!-- hidden section that appears to display question & answers -->
@@ -48,7 +48,7 @@
                       <div class="card" ng-class="vm.answerClass($index)" ng-click="vm.triggerGuess($index)">
                         <div class="card-content" value={{$index}}>
                           <span>{{ "ABCD"[$index] }}. {{answer}}</span>
-                          <a class="btn green darken-4 white-text right" ng-show="vm.showCorrect && $index == vm.question.correctAnswer"><i class="material-icons">plus</i> ${{ vm.question.prizePoints }}</a>
+                          <a class="btn green darken-4 white-text right" ng-show="vm.showCorrect && $index == vm.GameService.question.correctAnswer"><i class="material-icons">plus</i> ${{ vm.question.prizePoints }}</a>
                         </div>
                       </div>
                     </div>

@@ -15,13 +15,11 @@ namespace Quizdom.Views.Setup {
       if (!this.AuthenticationService.isLoggedIn) {
         this.$state.go('Login');
       }
-      this.GameService.getAllCats().then(() => {
-        this.GameService.loadMyGameData(this.AuthenticationService.User)
-          .then(() => {
-            this.GameService.loadPlayers(this.GameService.gameId)
-            this.GameService.loadGameCategories(this.GameService.gameId)
-          })
-
+      this.GameService.loadMyGameData(this.AuthenticationService.User).then(() => {
+        this.GameService.getAllCats().then(() => {
+          this.GameService.loadPlayers(this.GameService.gameId)
+          this.GameService.loadGameCategories(this.GameService.gameId)
+        })
       })
     }
 

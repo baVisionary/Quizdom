@@ -35,6 +35,9 @@ namespace Quizdom.Views.Play {
 
           // A function we will call from the server
           this.HubService.connection.broadcaster.client.addGameMessage = $scope.addGameMsg;
+          this.HubService.connection.broadcaster.client.changeGameData = $scope.changeGameData;
+          this.HubService.connection.broadcaster.client.changeGameBoardData = $scope.changeGameBoardData;
+          this.HubService.connection.broadcaster.client.changeGamePlayerData = $scope.changeGamePlayerData;
 
           // this.HubService.addConnect($scope.group);
           this.HubService.startGroup(this.GameService.groupName)
@@ -62,7 +65,7 @@ namespace Quizdom.Views.Play {
         // TODO Add other local variables that should be updated
         switch (this.GameService.gameData.gameState) {
           case "prepare":
-            $scope.countdownTimer(3).then(() => {
+            $scope.countdownTimer(3).catch(() => {
               this.triggerAnswer();
             })
             break;
@@ -70,56 +73,64 @@ namespace Quizdom.Views.Play {
           default:
             break;
         }
+        $scope.$applyAsync();
+
       }
 
-    // newGameBoardState is triggered by a change to the GameBoard table
-    $scope.changeGameBoardData = (gameBoardData) => {
+      // newGameBoardState is triggered by a change to the GameBoard table
+      $scope.changeGameBoardData = (gameBoardData) => {
 
-      // find the local gameBoard data in the array
-      let gbIndex = this.GameService.gameBoards.findIndex(gb => { return gb.id == gameBoardData.id });
+        // find the local gameBoard data in the array
+        let gbIndex = this.GameService.gameBoards.findIndex(gb => { return gb.id == gameBoardData.id });
 
-      // update the values that can change over time
-      this.GameService.gameBoards[gbIndex].questionState = gameBoardData.questionState;
-      this.GameService.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
-      this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
-      console.log(`Game Board updated from DB`, this.GameService.gameBoards[gbIndex]);
+        // update the values that can change over time
+        this.GameService.gameBoards[gbIndex].questionState = gameBoardData.questionState;
+        this.GameService.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
+        this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
+        console.log(`Game Board updated from DB`, this.GameService.gameBoards[gbIndex]);
 
-      // TODO Add other local variables that should be updated
-      // assign gameBoard question to local this.question when questionState = "ask"
-      this.GameService.question = this.GameService.gameBoards[gbIndex];
+        // TODO Add other local variables that should be updated
+        // assign gameBoard question to local this.question when questionState = "ask"
+        this.GameService.question = this.GameService.gameBoards[gbIndex];
 
+        $scope.$applyAsync();
 
-    }
-
-    // newGamePlayerState is triggered by a change to the GamePlayer table
-    $scope.changeGamePlayerData = (gamePlayerData) => {
-
-      // find the local gamePlayer data in the array
-      let pIndex = this.GameService.players.findIndex(p => { return p.playerId == gamePlayerData.id });
-
-      // update the values that can change over time
-      this.GameService.players[pIndex].prizePoints = gamePlayerData.prizePoints;
-      this.GameService.players[pIndex].answer = gamePlayerData.answer;
-      this.GameService.players[pIndex].delay = gamePlayerData.delay;
-      console.log(`Game Player updated from DB`, this.GameService.players[pIndex]);
-
-      // TODO Add other local variables that should be updated
-      // Should we track when all players guess so we can cancel the countdown?
-    }
-
-    $scope.countdownTimer = (duration: number) => {
-      let decreaseTimer = () => {
-        this.GameService.timer = duration
-        console.log(`duration`, duration, `this.timer`, this.GameService.timer);
-        duration--;
-        if (duration <= 0) { this.$interval.cancel(countdown) };
       }
 
-      let countdown = this.$interval(decreaseTimer, 1000);
-      return countdown;
-    }
+      // newGamePlayerState is triggered by a change to the GamePlayer table
+      $scope.changeGamePlayerData = (gamePlayerData) => {
 
-  }
+        // find the local gamePlayer data in the array
+        let pIndex = this.GameService.players.findIndex(p => { return p.playerId == gamePlayerData.id });
+
+        // update the values that can change over time
+        this.GameService.players[pIndex].prizePoints = gamePlayerData.prizePoints;
+        this.GameService.players[pIndex].answer = gamePlayerData.answer;
+        this.GameService.players[pIndex].delay = gamePlayerData.delay;
+        console.log(`Game Player updated from DB`, this.GameService.players[pIndex]);
+
+        // TODO Add other local variables that should be updated
+        // Should we track when all players guess so we can cancel the countdown?
+        $scope.$applyAsync();
+
+      }
+
+      $scope.timer = 0;
+
+      $scope.countdownTimer = (duration: number) => {
+        let decreaseTimer = () => {
+          $scope.timer = duration
+          console.log(`duration`, duration, `timer`, $scope.timer);
+          duration--;
+          if (duration <= 0) { $interval.cancel(countdown) };
+        }
+
+        let countdown = $interval(decreaseTimer, 1000);
+        return countdown;
+      }
+
+      console.log(`$scope`, $scope);
+    }
 
     // public getGameMessages() {
     //   this.GameService.getAllGameMsgs().$promise
@@ -141,168 +152,168 @@ namespace Quizdom.Views.Play {
     // method to identify which sections to display based on gameState
     // result is boolean used as the value for ng-show
     public showMe(section): boolean {
-    let show = false
-    show = (this.GameService.gameState == section) ? true : false;
-    return show;
-  }
+      let show = false
+      show = (this.GameService.gameState == section) ? true : false;
+      return show;
+    }
 
     // old method to color answers based on player selection
     public answerClass(index: number): string {
-    let classes = "blue lighten-2 black-text";
-    if (index == this.guess) {
-      classes = 'blue darken-2 white-text';
+      let classes = "blue lighten-2 black-text";
+      if (index == this.guess) {
+        classes = 'blue darken-2 white-text';
+      }
+      // if (this.showCorrect) {
+      //   if (index == this.guess) {
+      //     classes = 'red lighten-2 grey-text text-darken-1';
+      //   }
+      //   if (index == this.question.correctAnswer) {
+      //     classes = 'green darken-3 green-text text-lighten-3';
+      //   }
+      // }
+      return classes;
     }
-    // if (this.showCorrect) {
-    //   if (index == this.guess) {
-    //     classes = 'red lighten-2 grey-text text-darken-1';
-    //   }
-    //   if (index == this.question.correctAnswer) {
-    //     classes = 'green darken-3 green-text text-lighten-3';
-    //   }
-    // }
-    return classes;
-  }
 
     // sets the style of gameBoards when used in ng-class
     public gameBoardClass(gameBoard): string {
-    return (gameBoard.questionState == 'new')
-      ? "green darken-4 grey-text text-lighten-2"
-      : "blue darken-1 blue-text";
-  }
+      return (gameBoard.questionState == 'new')
+        ? "green darken-4 grey-text text-lighten-2"
+        : "blue darken-1 blue-text";
+    }
 
     // 
     public get activeIsMe() {
-    return this.GameService.gameData.activeUserId == this.AuthenticationService.User.userName;
-  }
+      return this.GameService.gameData.activeUserId == this.AuthenticationService.User.userName;
+    }
 
     /* "trigger" methods respond to user action on elements to update the DB via APIs */
 
     // send new gameMsg to GameMessage table
     // clean up UI
     public triggerGameMessage = () => {
-    var gameMsg = {
-      content: $("#textInput").val(),
-      userName: this.AuthenticationService.User.userName,
-      group: this.GameService.groupName,
-      gameId: this.GameService.gameId
-    };
-    this.GameService.postGameMsg(gameMsg).$promise
-      .then(function () {
-        $("#textInput").val("");
-      })
-      .catch(function (e) {
-        console.log(e);
-      });
-  }
+      var gameMsg = {
+        content: $("#textInput").val(),
+        userName: this.AuthenticationService.User.userName,
+        group: this.GameService.groupName,
+        gameId: this.GameService.gameId
+      };
+      this.GameService.postGameMsg(gameMsg).$promise
+        .then(function () {
+          $("#textInput").val("");
+        })
+        .catch(function (e) {
+          console.log(e);
+        });
+    }
 
     // initial state of game shows How to play
     // randomly select the first active player
     public triggerWelcome() {
-    // Games - update gameState to "welcome"
-    let newGameData = this.GameService.gameData;
-    newGameData.gameState = "welcome";
-    this.GameService.updateGame(newGameData);
-    // GameBoard - no change
-    // GamePlayers - no change
-  }
+      // Games - update gameState to "welcome"
+      let newGameData = this.GameService.gameData;
+      newGameData.gameState = "welcome";
+      this.GameService.updateGame(newGameData);
+      // GameBoard - no change
+      // GamePlayers - no change
+    }
 
     // only the active player can click the rules (or a button) to start the game    
     public triggerPlay() {
-    // Games - update gameState to "pick"
-    let newGameData = this.GameService.gameData;
-    newGameData.gameState = "pick";
-    this.GameService.updateGame(newGameData)
+      // Games - update gameState to "pick"
+      let newGameData = this.GameService.gameData;
+      newGameData.gameState = "pick";
+      this.GameService.updateGame(newGameData)
 
-    // GameBoard - no change
-    // GamePlayers - no change
-  }
+      // GameBoard - no change
+      // GamePlayers - no change
+    }
 
     //  active player can click on "new" gameBoard element to pick question
     public triggerPrepare(boardId) {
-    if (this.activeIsMe) {
+      if (this.activeIsMe) {
 
-      // GameBoard - if gameBoard is "new", questionState to "ask", add answerOrder
-      let newGameBoardData = this.GameService.gameBoards.find(gb => { return gb.id == boardId });
+        // GameBoard - if gameBoard is "new", questionState to "ask", add answerOrder
+        let newGameBoardData = this.GameService.gameBoards.find(gb => { return gb.id == boardId });
 
-      // this has to be checked before changing the other tables
-      if (newGameBoardData.questionState == "new") {
-        newGameBoardData.questionState = "ask";
-        newGameBoardData.answerOrder = this.GameService.answerOrder;
-        this.GameService.updateGameBoard(newGameBoardData)
-        // TODO move this to GameService.newGameBoardData method
-        // this.GameService.answerOrder++;
+        // this has to be checked before changing the other tables
+        if (newGameBoardData.questionState == "new") {
+          newGameBoardData.questionState = "ask";
+          newGameBoardData.answerOrder = this.GameService.answerOrder;
+          this.GameService.updateGameBoard(newGameBoardData)
+          // TODO move this to GameService.newGameBoardData method
+          // this.GameService.answerOrder++;
 
-        // Games - update gameState to "prepare"
-        let newGameData = this.GameService.gameData;
-        newGameData.gameState = "prepare";
-        this.GameService.updateGame(newGameData)
+          // Games - update gameState to "prepare"
+          let newGameData = this.GameService.gameData;
+          newGameData.gameState = "prepare";
+          this.GameService.updateGame(newGameData)
 
-        // GamePlayers - update all answer to null and delay to null (always wrong)
-        this.GameService.players.forEach(newPlayerData => {
-          newPlayerData.answer = 0;
-          newPlayerData.delay = 0;
-          this.GameService.updateGamePlayer(newPlayerData)
-        })
+          // GamePlayers - update all answer to null and delay to null (always wrong)
+          this.GameService.players.forEach(newPlayerData => {
+            newPlayerData.answer = 0;
+            newPlayerData.delay = 0;
+            this.GameService.updateGamePlayer(newPlayerData)
+          })
+        } else {
+          console.log(`Game Board retired`);
+        }
+
       } else {
-        console.log(`Game Board retired`);
+        console.log(`Only active player ${this.GameService.gameData.activeUserId} can pick`);
       }
-
-    } else {
-      console.log(`Only active player ${this.GameService.gameData.activeUserId} can pick`);
     }
-  }
 
     // show Q&A to all players
     public triggerAnswer() {
-    // Games - update gameState to "answer"
-    let newGameData = this.GameService.gameData;
-    newGameData.gameState = "answer";
-    this.GameService.updateGame(newGameData);
+      // Games - update gameState to "answer"
+      let newGameData = this.GameService.gameData;
+      newGameData.gameState = "answer";
+      this.GameService.updateGame(newGameData);
 
-    // GameBoard - update selected gameBoard to questionState "asked", add answerOrder
+      // GameBoard - update selected gameBoard to questionState "asked", add answerOrder
 
-    // GamePlayers - update answer & delay value
+      // GamePlayers - update answer & delay value
 
-  }
+    }
 
     // every player can click on "answer" element to guess - stored in this.guess
     // store timeStamp in endTime to calculate delay
     public triggerGuess(guess) {
-    // Games - no change
-    // GameBoard - no change
-    // GamePlayers - update all answer to 4 (always wrong) and delay to max
+      // Games - no change
+      // GameBoard - no change
+      // GamePlayers - update all answer to 4 (always wrong) and delay to max
+
+    }
+
+
+    // public ShowCorrectAnswer(gameBoard) {
+    //   // find the local gameBoard by id
+    //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
+    //   // update to the proper state
+    //   this.question.questionState = "correct";
+    //   if (this.guess == this.question.correctAnswer) {
+    //     this.question.answeredCorrectlyUserId = gameBoard.answeredCorrectlyUserId;
+    //   };
+    //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.correctAnswer} is ${this.question.questionState}`);
+    // }
+
+    // public AddPrizePoints(gamePlayer) {
+    //   // find the local gamePlayer by id
+    //   let player = this.GameService.players.find(p => { return p.playerId == gamePlayer.id });
+    //   // update to the proper state
+    //   player.prizePoints = gamePlayer.prizePoints;
+    //   console.log(`GamePlayer: ${gamePlayer.id} new score is ${player.prizePoints}`);
+    // }
+
+    // public RetireGameBoard(gameBoard) {
+    //   // find the local gameBoard by id
+    //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
+    //   // update to the proper state
+    //   this.question.questionState = "retired";
+    //   this.guess = 4;
+    //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
+    // }
+
 
   }
-
-
-  // public ShowCorrectAnswer(gameBoard) {
-  //   // find the local gameBoard by id
-  //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
-  //   // update to the proper state
-  //   this.question.questionState = "correct";
-  //   if (this.guess == this.question.correctAnswer) {
-  //     this.question.answeredCorrectlyUserId = gameBoard.answeredCorrectlyUserId;
-  //   };
-  //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.correctAnswer} is ${this.question.questionState}`);
-  // }
-
-  // public AddPrizePoints(gamePlayer) {
-  //   // find the local gamePlayer by id
-  //   let player = this.GameService.players.find(p => { return p.playerId == gamePlayer.id });
-  //   // update to the proper state
-  //   player.prizePoints = gamePlayer.prizePoints;
-  //   console.log(`GamePlayer: ${gamePlayer.id} new score is ${player.prizePoints}`);
-  // }
-
-  // public RetireGameBoard(gameBoard) {
-  //   // find the local gameBoard by id
-  //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
-  //   // update to the proper state
-  //   this.question.questionState = "retired";
-  //   this.guess = 4;
-  //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
-  // }
-
-
-}
 }

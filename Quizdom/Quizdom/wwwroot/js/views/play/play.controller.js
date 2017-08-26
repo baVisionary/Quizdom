@@ -41,6 +41,9 @@ var Quizdom;
                         _this.HubService.startHub();
                         // A function we will call from the server
                         _this.HubService.connection.broadcaster.client.addGameMessage = $scope.addGameMsg;
+                        _this.HubService.connection.broadcaster.client.changeGameData = $scope.changeGameData;
+                        _this.HubService.connection.broadcaster.client.changeGameBoardData = $scope.changeGameBoardData;
+                        _this.HubService.connection.broadcaster.client.changeGamePlayerData = $scope.changeGamePlayerData;
                         // this.HubService.addConnect($scope.group);
                         _this.HubService.startGroup(_this.GameService.groupName);
                         _this.GameService.getGameMessages();
@@ -60,13 +63,14 @@ var Quizdom;
                         // TODO Add other local variables that should be updated
                         switch (_this.GameService.gameData.gameState) {
                             case "prepare":
-                                $scope.countdownTimer(3).then(function () {
+                                $scope.countdownTimer(3).catch(function () {
                                     _this.triggerAnswer();
                                 });
                                 break;
                             default:
                                 break;
                         }
+                        $scope.$applyAsync();
                     };
                     // newGameBoardState is triggered by a change to the GameBoard table
                     $scope.changeGameBoardData = function (gameBoardData) {
@@ -80,6 +84,7 @@ var Quizdom;
                         // TODO Add other local variables that should be updated
                         // assign gameBoard question to local this.question when questionState = "ask"
                         _this.GameService.question = _this.GameService.gameBoards[gbIndex];
+                        $scope.$applyAsync();
                     };
                     // newGamePlayerState is triggered by a change to the GamePlayer table
                     $scope.changeGamePlayerData = function (gamePlayerData) {
@@ -92,20 +97,23 @@ var Quizdom;
                         console.log("Game Player updated from DB", _this.GameService.players[pIndex]);
                         // TODO Add other local variables that should be updated
                         // Should we track when all players guess so we can cancel the countdown?
+                        $scope.$applyAsync();
                     };
+                    $scope.timer = 0;
                     $scope.countdownTimer = function (duration) {
                         var decreaseTimer = function () {
-                            _this.GameService.timer = duration;
-                            console.log("duration", duration, "this.timer", _this.GameService.timer);
+                            $scope.timer = duration;
+                            console.log("duration", duration, "timer", $scope.timer);
                             duration--;
                             if (duration <= 0) {
-                                _this.$interval.cancel(countdown);
+                                $interval.cancel(countdown);
                             }
                             ;
                         };
-                        var countdown = _this.$interval(decreaseTimer, 1000);
+                        var countdown = $interval(decreaseTimer, 1000);
                         return countdown;
                     };
+                    console.log("$scope", $scope);
                 }
                 // public getGameMessages() {
                 //   this.GameService.getAllGameMsgs().$promise

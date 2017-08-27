@@ -16,5 +16,6 @@ namespace Quizdom.Models
         public int prizePoints { get; set; }
         public int answer { get; set; }
         public int delay { get; set; }
+        public string playerState { get; set; }
     }
 }

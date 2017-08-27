@@ -7,6 +7,7 @@ namespace Quizdom.Models {
       public prizePoints?: number = 0;
       public answer?: number = 0;
       public delay?: number = 0;
+      public playerState?: string = "ready";
     }
 
     export interface IGamePlayer extends ng.resource.IResource<IGamePlayer> {
@@ -17,6 +18,7 @@ namespace Quizdom.Models {
       prizePoints?: number;
       answer?: number;
       delay?: number;
+      playerState?: string;
     }
 
     export interface IGamePlayerResource extends ng.resource.IResourceClass<IGamePlayer> {

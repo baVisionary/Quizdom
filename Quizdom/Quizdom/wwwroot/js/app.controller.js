@@ -23,7 +23,7 @@ var Quizdom;
         });
         Object.defineProperty(AppController.prototype, "user", {
             get: function () {
-                return this.AuthenticationService.getUser();
+                return this.AuthenticationService.User;
             },
             enumerable: true,
             configurable: true

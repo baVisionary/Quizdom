@@ -114,7 +114,7 @@ namespace Quizdom.Views.Invite {
       let firstPlayerIndex = this.GameService.randomInt(0, 2)
       this.GameService.gameData.gameState = "setup"
       this.GameService.gameData.activeUserId = this.GameService.gameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
-      this.GameService.updateGame(this.GameService.gameData).then(() => {
+      this.GameService.updateGamesTable(this.GameService.gameData).then(() => {
         this.$state.go(`Setup`);
       })
     }

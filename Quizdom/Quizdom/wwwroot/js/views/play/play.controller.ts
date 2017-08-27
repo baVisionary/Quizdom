@@ -1,7 +1,7 @@
 namespace Quizdom.Views.Play {
   export class PlayController {
     // public question: Models.GameBoardModel = new Models.GameBoardModel;
-    private guess: number;
+    private guessValue = ['A','B','C','D','None'];
 
     static $inject = [
       'AuthenticationService',
@@ -30,6 +30,7 @@ namespace Quizdom.Views.Play {
       // console.log(`this.$stateParams`, this.$stateParams);
       this.GameService.loadGame(this.$stateParams.gameId)
         .then(() => {
+          $scope.changeGameData(this.GameService.gameData);
           this.GameService.createGroup('game' + this.$stateParams.gameId);
           this.HubService.startHub();
 
@@ -59,18 +60,32 @@ namespace Quizdom.Views.Play {
       // newGameState is triggered by a change to the Games table
       $scope.changeGameData = (newGame) => {
         // update the values that can change over time
-        this.GameService.gameData = newGame;
+        this.GameService.gameData.activeUserId = newGame.activeUserId;
+        this.GameService.gameData.lastActiveUserId = newGame.lastActiveUserId;
+        this.GameService.gameData.gameBoardId = newGame.gameBoardId;
+        this.GameService.gameData.gameState = newGame.gameState;
         console.log(`Game updated from DB`, this.GameService.gameData);
 
         // TODO Add other local variables that should be updated
         switch (this.GameService.gameData.gameState) {
           case "prepare":
-            $scope.countdownTimer(3).catch(() => {
-              this.triggerAnswer();
+            this.GameService.guess = 4;
+            $scope.countdownTimer(3, 1000).catch(() => {
+              this.triggerAnswer(newGame.boardId);
             })
             break;
-
-          default:
+          case "answer":
+            this.GameService.startTime = Date.now();
+            $scope.countdownTimer(this.GameService.duration, 10)
+              // required since $interval sends error upon cancel
+              .catch(() => {
+                
+              })
+              .finally(() => {
+                console.log(`Guess: ${this.GameService.guess} Delay: ${this.GameService.endTime - this.GameService.startTime}`) ; 
+                console.log(`Time ran out`);
+                this.triggerGuess(4);
+              })
             break;
         }
         $scope.$applyAsync();
@@ -89,9 +104,15 @@ namespace Quizdom.Views.Play {
         this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
         console.log(`Game Board updated from DB`, this.GameService.gameBoards[gbIndex]);
 
-        // TODO Add other local variables that should be updated
+        // 
+        this.GameService.answerOrder = gameBoardData.answerOrder + 1;
+
         // assign gameBoard question to local this.question when questionState = "ask"
-        this.GameService.question = this.GameService.gameBoards[gbIndex];
+        console.log(`questionState includes ask/answer/results`,
+          ["ask", "answer", "results"].indexOf(this.GameService.gameBoards[gbIndex].questionState));
+        if (["ask", "answer", "result"].indexOf(this.GameService.gameBoards[gbIndex].questionState) > -1) {
+          this.GameService.question = this.GameService.gameBoards[gbIndex];
+        }
 
         $scope.$applyAsync();
 
@@ -117,37 +138,26 @@ namespace Quizdom.Views.Play {
 
       $scope.timer = 0;
 
-      $scope.countdownTimer = (duration: number) => {
-        let decreaseTimer = () => {
-          $scope.timer = duration
-          console.log(`duration`, duration, `timer`, $scope.timer);
-          duration--;
-          if (duration <= 0) { $interval.cancel(countdown) };
-        }
-
-        let countdown = $interval(decreaseTimer, 1000);
-        return countdown;
+      $scope.stopTimer = (name) => {
+        $interval.cancel(name)
       }
 
-      console.log(`$scope`, $scope);
+      $scope.countdownTimer = (duration: number, tick: number) => {
+        // duration in seconds (* 1000 = millisecs), decrement in milliseconds
+        $scope.timer = duration
+        let numDigits = Math.max(4 - tick.toString().length, 0);
+        let decreaseTimer = () => {
+          if ($scope.timer == Math.floor($scope.timer)) {
+            console.log(`timer`, $scope.timer);
+          }
+          $scope.timer = ($scope.timer - (tick / 1000)).toFixed(numDigits);
+          if ($scope.timer <= 0) { $scope.stopTimer(countdown) };
+        }
+
+        let countdown = $interval(decreaseTimer, tick);
+        return countdown;
+      }
     }
-
-    // public getGameMessages() {
-    //   this.GameService.getAllGameMsgs().$promise
-    //     .then((messages) => {
-    //       // console.log(`messages`, messages);
-    //       this.addPostsList(messages)
-    //     });
-    // }
-
-    // public addPostsList(posts: Models.IMessage[]) {
-    //   this.gameChats.length = 0;
-    //   posts.forEach(post => {
-    //     this.gameChats.push(post);
-    //   });
-    //   this.gameChats.sort((a, b) => { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1 })
-    //   // console.log(this.posts);
-    // }
 
     // method to identify which sections to display based on gameState
     // result is boolean used as the value for ng-show
@@ -160,18 +170,14 @@ namespace Quizdom.Views.Play {
     // old method to color answers based on player selection
     public answerClass(index: number): string {
       let classes = "blue lighten-2 black-text";
-      if (index == this.guess) {
+      if (index == this.GameService.guess) {
         classes = 'blue darken-2 white-text';
       }
-      // if (this.showCorrect) {
-      //   if (index == this.guess) {
-      //     classes = 'red lighten-2 grey-text text-darken-1';
-      //   }
-      //   if (index == this.question.correctAnswer) {
-      //     classes = 'green darken-3 green-text text-lighten-3';
-      //   }
-      // }
       return classes;
+    }
+
+    public get myUserName() {
+      return this.AuthenticationService.User.userName;
     }
 
     // sets the style of gameBoards when used in ng-class
@@ -183,7 +189,7 @@ namespace Quizdom.Views.Play {
 
     // 
     public get activeIsMe() {
-      return this.GameService.gameData.activeUserId == this.AuthenticationService.User.userName;
+      return this.GameService.gameData.activeUserId == this.myUserName;
     }
 
     /* "trigger" methods respond to user action on elements to update the DB via APIs */
@@ -193,7 +199,7 @@ namespace Quizdom.Views.Play {
     public triggerGameMessage = () => {
       var gameMsg = {
         content: $("#textInput").val(),
-        userName: this.AuthenticationService.User.userName,
+        userName: this.myUserName,
         group: this.GameService.groupName,
         gameId: this.GameService.gameId
       };
@@ -212,7 +218,7 @@ namespace Quizdom.Views.Play {
       // Games - update gameState to "welcome"
       let newGameData = this.GameService.gameData;
       newGameData.gameState = "welcome";
-      this.GameService.updateGame(newGameData);
+      this.GameService.updateGamesTable(newGameData);
       // GameBoard - no change
       // GamePlayers - no change
     }
@@ -222,7 +228,7 @@ namespace Quizdom.Views.Play {
       // Games - update gameState to "pick"
       let newGameData = this.GameService.gameData;
       newGameData.gameState = "pick";
-      this.GameService.updateGame(newGameData)
+      this.GameService.updateGamesTable(newGameData)
 
       // GameBoard - no change
       // GamePlayers - no change
@@ -239,20 +245,18 @@ namespace Quizdom.Views.Play {
         if (newGameBoardData.questionState == "new") {
           newGameBoardData.questionState = "ask";
           newGameBoardData.answerOrder = this.GameService.answerOrder;
-          this.GameService.updateGameBoard(newGameBoardData)
-          // TODO move this to GameService.newGameBoardData method
-          // this.GameService.answerOrder++;
+          this.GameService.updateGameBoardsTable(newGameBoardData)
 
           // Games - update gameState to "prepare"
           let newGameData = this.GameService.gameData;
           newGameData.gameState = "prepare";
-          this.GameService.updateGame(newGameData)
+          this.GameService.updateGamesTable(newGameData)
 
-          // GamePlayers - update all answer to null and delay to null (always wrong)
+          // GamePlayers - update all answer to 4 (always wrong), delay to GameService.duration (max)
           this.GameService.players.forEach(newPlayerData => {
-            newPlayerData.answer = 0;
-            newPlayerData.delay = 0;
-            this.GameService.updateGamePlayer(newPlayerData)
+            newPlayerData.answer = 4;
+            newPlayerData.delay = this.GameService.duration;
+            this.GameService.updateGamePlayersTable(newPlayerData)
           })
         } else {
           console.log(`Game Board retired`);
@@ -264,56 +268,61 @@ namespace Quizdom.Views.Play {
     }
 
     // show Q&A to all players
-    public triggerAnswer() {
+    public triggerAnswer(boardId) {
+
       // Games - update gameState to "answer"
       let newGameData = this.GameService.gameData;
       newGameData.gameState = "answer";
-      this.GameService.updateGame(newGameData);
+      this.GameService.updateGamesTable(newGameData);
 
-      // GameBoard - update selected gameBoard to questionState "asked", add answerOrder
+      // GameBoard - if gameBoard is "new", questionState to "ask", add answerOrder
+      let newGameBoardData = this.GameService.gameBoards.find(gb => { return gb.id == boardId });
+      newGameBoardData.questionState = "answer";
+      newGameBoardData.answerOrder = this.GameService.answerOrder;
+      this.GameService.updateGameBoardsTable(newGameBoardData)
 
-      // GamePlayers - update answer & delay value
-
+      // GamePlayers - no change
     }
 
-    // every player can click on "answer" element to guess - stored in this.guess
+    // every player can select an "answer" to guess - $index stored in GameService.gamePlayers
     // store timeStamp in endTime to calculate delay
     public triggerGuess(guess) {
-      // Games - no change
-      // GameBoard - no change
-      // GamePlayers - update all answer to 4 (always wrong) and delay to max
+      if (this.GameService.gameState == "answer") {
+        this.GameService.guess = guess;
+        this.GameService.endTime = Date.now();
+        console.log(`Guess: ${guess} Delay: ${this.GameService.endTime - this.GameService.startTime}`);
+        
+        // Games - no change
+        // GameBoard - no change
+  
+        // GamePlayers - update answer & delay value
+        let newPlayerData = this.GameService.players.find(p => { return p.userName == this.myUserName });
+        newPlayerData.answer = guess;
+        newPlayerData.delay = this.GameService.endTime - this.GameService.startTime;
+        // console.log(`newPlayerData`, newPlayerData);
+        this.GameService.updateGamePlayersTable(newPlayerData);
+      }
 
     }
 
+    // We cannot change the gameState when the current player countdown ends since another player might be running behind
+    // We have to check that all players finished before changing states - do we need another field?
+    // Games table gameState to "results", lastActiveUserId = activeUserId, player who earned prizePoints set to activeUserId
+    // Select gameBoard questionState to "retired", set answeredCorrectlyUserId
+    // All gamePlayers answers & delay are compared correct in shortest time earns prizePoints
+    public triggerResults(boardId) {
+      
+      
+      // Games table gameState to "results", lastActiveUserId = activeUserId, player who earned prizePoints set to activeUserId
+      let newGameData = this.GameService.gameData;
+      newGameData.gameState = "results";
+      this.GameService.updateGamesTable(newGameData);
+      
+      // Select gameBoard questionState to "retired"
 
-    // public ShowCorrectAnswer(gameBoard) {
-    //   // find the local gameBoard by id
-    //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
-    //   // update to the proper state
-    //   this.question.questionState = "correct";
-    //   if (this.guess == this.question.correctAnswer) {
-    //     this.question.answeredCorrectlyUserId = gameBoard.answeredCorrectlyUserId;
-    //   };
-    //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.correctAnswer} is ${this.question.questionState}`);
-    // }
+      // GamePlayers - no change
 
-    // public AddPrizePoints(gamePlayer) {
-    //   // find the local gamePlayer by id
-    //   let player = this.GameService.players.find(p => { return p.playerId == gamePlayer.id });
-    //   // update to the proper state
-    //   player.prizePoints = gamePlayer.prizePoints;
-    //   console.log(`GamePlayer: ${gamePlayer.id} new score is ${player.prizePoints}`);
-    // }
-
-    // public RetireGameBoard(gameBoard) {
-    //   // find the local gameBoard by id
-    //   this.question = this.GameService.gameBoards.find(q => { return q.id == gameBoard.id });
-    //   // update to the proper state
-    //   this.question.questionState = "retired";
-    //   this.guess = 4;
-    //   console.log(`GameBoard: ${gameBoard.id} questionState: ${this.question.questionState}`);
-    // }
-
+    }
 
   }
 }

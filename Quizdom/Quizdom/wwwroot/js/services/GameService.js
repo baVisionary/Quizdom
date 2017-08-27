@@ -27,7 +27,8 @@ var Quizdom;
                 /* variables that define the initial game state */
                 this.gameData = new Quizdom.Models.GameModel;
                 this.gamePlayerId = 0;
-                this.duration = 6 * 1000;
+                // Time to answer each question in seconds (* 1000 = millisecs)
+                this.duration = 6;
                 this.players = [];
                 this.gameCategories = [];
                 this.gameCatClass = 'col s12';
@@ -155,9 +156,10 @@ var Quizdom;
                     _this.gameData = _this._Resource_game.get({ gameId: gameId });
                     _this.gameData.$promise
                         .then(function () {
-                        _this.gameData.gameState = "welcome";
-                        _this.gameData.$update;
                         res('New game loaded to local model');
+                        // this.gameData.gameState = "welcome"
+                        // this.gameData.$update.then(() => {
+                        // })
                     });
                 });
                 return newGameLoaded;
@@ -341,6 +343,11 @@ var Quizdom;
                                         return new Promise(function (resBoard, err) {
                                             var cat = _this.allCategories.find(function (cat) { return cat.id == gameBoard.categoryId; });
                                             gameBoard.catLong = cat.longDescription;
+                                            if (gameBoard.questionState == "ask" || gameBoard.questionState == "answer" || gameBoard.questionState == "results") {
+                                                _this.gameData.gameBoardId = gameBoard.id;
+                                                _this.question = gameBoard;
+                                            }
+                                            _this.answerOrder = Math.max(_this.answerOrder, gameBoard.answerOrder + 1);
                                             _this.gameBoards.push(gameBoard);
                                             resBoard("Another gameBoard loaded");
                                         });
@@ -649,7 +656,7 @@ var Quizdom;
                 return gameBoardsSetup;
             };
             // SignalR methods to update the tables
-            GameService.prototype.updateGame = function (newGameData) {
+            GameService.prototype.updateGamesTable = function (newGameData) {
                 var _this = this;
                 var gameUpdated = new Promise(function (res) {
                     console.log("Updating Game...", newGameData);
@@ -661,19 +668,19 @@ var Quizdom;
                 });
                 return gameUpdated;
             };
-            GameService.prototype.updateGameBoard = function (newGameBoardData) {
+            GameService.prototype.updateGameBoardsTable = function (newGameBoardData) {
                 var _this = this;
                 var gameBoardUpdated = new Promise(function (res) {
                     console.log("Updating Game Board...", newGameBoardData);
                     _this._Resource_gameBoard.update({ id: newGameBoardData.id }, newGameBoardData).$promise.then(function (gameBoardData) {
                         // TODO - remove once SignalR is triggering the method!
-                        _this.changeGameBoardData(gameBoardData);
+                        // this.changeGameBoardData(gameBoardData);
                         res("Game Board update sent to DB");
                     });
                 });
                 return gameBoardUpdated;
             };
-            GameService.prototype.updateGamePlayer = function (newPlayerData) {
+            GameService.prototype.updateGamePlayersTable = function (newPlayerData) {
                 var _this = this;
                 var gamePlayerUpdated = new Promise(function (res) {
                     //  we have to whittle player down to gamePlayer properties
@@ -688,7 +695,7 @@ var Quizdom;
                     console.log("Updating Game Player...", newGamePlayer);
                     _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function (gamePlayerData) {
                         // TODO - remove once SignalR is triggering the method!
-                        _this.changeGamePlayerData(gamePlayerData);
+                        // this.changeGamePlayerData(gamePlayerData);
                         res("Game Player update sent to DB");
                     });
                 });
@@ -697,62 +704,58 @@ var Quizdom;
             GameService.prototype.setGameActiveUserId = function (userName) {
                 this.gameData.lastActiveUserId = this.gameData.activeUserId;
                 this.gameData.activeUserId = userName;
-                return this.updateGame(this.gameData);
+                return this.updateGamesTable(this.gameData);
             };
-            // newGameState is triggered by a change to the Games table
-            GameService.prototype.changeGameData = function (newGame) {
-                // update the values that can change over time
-                this.gameData = newGame;
-                console.log("Game updated from DB", this.gameData);
-                // TODO Add other local variables that should be updated
-                switch (this.gameData.gameState) {
-                    case "prepare":
-                        this.countdownTimer(3).then(function () {
-                        });
-                        break;
-                    default:
-                        break;
-                }
-            };
-            // newGameBoardState is triggered by a change to the GameBoard table
-            GameService.prototype.changeGameBoardData = function (gameBoardData) {
-                // find the local gameBoard data in the array
-                var gbIndex = this.gameBoards.findIndex(function (gb) { return gb.id == gameBoardData.id; });
-                // update the values that can change over time
-                this.gameBoards[gbIndex].questionState = gameBoardData.questionState;
-                this.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
-                this.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
-                console.log("Game Board updated from DB", this.gameBoards[gbIndex]);
-                // TODO Add other local variables that should be updated
-                // assign gameBoard question to local this.question when questionState = "ask"
-                this.question = this.gameBoards[gbIndex];
-            };
-            // newGamePlayerState is triggered by a change to the GamePlayer table
-            GameService.prototype.changeGamePlayerData = function (gamePlayerData) {
-                // find the local gamePlayer data in the array
-                var pIndex = this.players.findIndex(function (p) { return p.playerId == gamePlayerData.id; });
-                // update the values that can change over time
-                this.players[pIndex].prizePoints = gamePlayerData.prizePoints;
-                this.players[pIndex].answer = gamePlayerData.answer;
-                this.players[pIndex].delay = gamePlayerData.delay;
-                console.log("Game Player updated from DB", this.players[pIndex]);
-                // TODO Add other local variables that should be updated
-                // Should we track when all players guess so we can cancel the countdown?
-            };
-            GameService.prototype.countdownTimer = function (duration) {
-                var _this = this;
-                var decreaseTimer = function () {
-                    _this.timer = duration;
-                    console.log("duration", duration, "this.timer", _this.timer);
-                    duration--;
-                    if (duration <= 0) {
-                        _this.$interval.cancel(countdown);
-                    }
-                    ;
-                };
-                var countdown = this.$interval(decreaseTimer, 1000);
-                return countdown;
-            };
+            // // newGameState is triggered by a change to the Games table
+            // public changeGameData(newGame) {
+            //   // update the values that can change over time
+            //   this.gameData = newGame;
+            //   console.log(`Game updated from DB`, this.gameData);
+            //   // TODO Add other local variables that should be updated
+            //   switch (this.gameData.gameState) {
+            //     case "prepare":
+            //       this.countdownTimer(3).then(() => {
+            //       })
+            //       break;
+            //     default:
+            //       break;
+            //   }
+            // }
+            // // newGameBoardState is triggered by a change to the GameBoard table
+            // public changeGameBoardData(gameBoardData) {
+            //   // find the local gameBoard data in the array
+            //   let gbIndex = this.gameBoards.findIndex(gb => { return gb.id == gameBoardData.id });
+            //   // update the values that can change over time
+            //   this.gameBoards[gbIndex].questionState = gameBoardData.questionState;
+            //   this.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
+            //   this.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
+            //   console.log(`Game Board updated from DB`, this.gameBoards[gbIndex]);
+            //   // TODO Add other local variables that should be updated
+            //   // assign gameBoard question to local this.question when questionState = "ask"
+            //   this.question = this.gameBoards[gbIndex];
+            // }
+            // // newGamePlayerState is triggered by a change to the GamePlayer table
+            // public changeGamePlayerData(gamePlayerData) {
+            //   // find the local gamePlayer data in the array
+            //   let pIndex = this.players.findIndex(p => { return p.playerId == gamePlayerData.id });
+            //   // update the values that can change over time
+            //   this.players[pIndex].prizePoints = gamePlayerData.prizePoints;
+            //   this.players[pIndex].answer = gamePlayerData.answer;
+            //   this.players[pIndex].delay = gamePlayerData.delay;
+            //   console.log(`Game Player updated from DB`, this.players[pIndex]);
+            //   // TODO Add other local variables that should be updated
+            //   // Should we track when all players guess so we can cancel the countdown?
+            // }
+            // public countdownTimer(duration: number) {
+            //   let decreaseTimer = () => {
+            //     this.timer = duration
+            //     console.log(`duration`, duration, `this.timer`, this.timer);
+            //     duration--;
+            //     if (duration <= 0) { this.$interval.cancel(countdown) };
+            //   }
+            //   let countdown = this.$interval(decreaseTimer, 1000);
+            //   return countdown;
+            // }
             // research into how to use promise resolution to delay for loop action - SUCCESS!
             GameService.prototype.testLoopPromise = function (loops) {
                 var _this = this;

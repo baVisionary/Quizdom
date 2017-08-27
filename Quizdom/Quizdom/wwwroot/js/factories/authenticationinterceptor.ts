@@ -15,7 +15,7 @@ namespace Quizdom.Factories {
         return <ng.IHttpInterceptor>{
             request: (config: ng.IRequestConfig) => {
                 config.headers = config.headers || {};
-                let authUser = AuthenticationService.getUser() || new Models.UserModel;
+                let authUser = AuthenticationService.User || new Models.UserModel;
                 config.headers['Username'] = authUser.userName;
                 config.headers['Role'] = (authUser.isAdmin) ? 'Admin' : (authUser.userName == 'Guest') ? 'Guest' : 'Normal';
 

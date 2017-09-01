@@ -27,7 +27,8 @@ var Quizdom;
                 /* variables that define the initial game state */
                 this.gameData = new Quizdom.Models.GameModel;
                 this.gamePlayerId = 0;
-                this.duration = 6 * 1000;
+                // Time to answer each question in seconds (* 1000 = millisecs)
+                this.duration = 10;
                 this.players = [];
                 this.gameCategories = [];
                 this.gameCatClass = 'col s12';
@@ -36,8 +37,15 @@ var Quizdom;
                 // in game chat support
                 this.group = '';
                 this.gameChats = [];
+                this.showSection = "";
+                // I do not understand why I cannot type this as IGameBoard?!?
+                this.question = new Quizdom.Models.GameBoardModel;
                 // the order in which questions are selected
                 this.answerOrder = 0;
+                // the player's guess as to the answer of the question
+                this.guess = 4;
+                this.delay = this.duration;
+                this.winner = "";
                 // manage 'Games' table
                 this._Resource_game = this.$resource('/api/game/:gameId', null, {
                     'update': {
@@ -89,6 +97,24 @@ var Quizdom;
             GameService.prototype.getAllGameMsgs = function () {
                 return this._Resource_gameMessage.query({ gameId: this.gameId });
             };
+            GameService.prototype.getGameMessages = function () {
+                var _this = this;
+                this.getAllGameMsgs().$promise
+                    .then(function (messages) {
+                    // console.log(`messages`, messages);
+                    _this.addGameMsgList(messages);
+                });
+            };
+            GameService.prototype.addGameMsgList = function (posts) {
+                var _this = this;
+                this.gameChats.length = 0;
+                posts.forEach(function (post) {
+                    _this.gameChats.push(post);
+                });
+                this.gameChats.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
+                // console.log(this.posts);
+            };
+            // SignalR game chat support
             GameService.prototype.postGameMsg = function (gameMsg) {
                 return this._Resource_gameMessage.save(gameMsg);
             };
@@ -128,68 +154,42 @@ var Quizdom;
             GameService.prototype.isActive = function (userName) {
                 return userName == this.gameData.activeUserId;
             };
-            GameService.prototype.getGameMessages = function () {
-                var _this = this;
-                this.getAllGameMsgs().$promise
-                    .then(function (messages) {
-                    // console.log(`messages`, messages);
-                    _this.addGameMsgList(messages);
-                });
-            };
-            GameService.prototype.addGameMsgList = function (posts) {
-                var _this = this;
-                this.gameChats.length = 0;
-                posts.forEach(function (post) {
-                    _this.gameChats.push(post);
-                });
-                this.gameChats.sort(function (a, b) { return new Date(a.timestamp) > new Date(b.timestamp) ? 1 : -1; });
-                // console.log(this.posts);
-            };
             // Should we limit each user to initiating only one game (and replace any other games?)
-            GameService.prototype.findLastGame = function (user) {
-                return this._Resource_game.search({ username: user.userName });
-            };
-            GameService.prototype.loadNewGameData = function (gameId) {
-                var _this = this;
-                var newGameLoaded = new Promise(function (res) {
-                    _this.gameData = _this._Resource_game.get({ gameId: gameId });
-                    _this.gameData.$promise
-                        .then(function () {
-                        _this.gameData.gameState = "welcome";
-                        _this.gameData.$update;
-                        res('New game loaded to local model');
-                    });
-                });
-                return newGameLoaded;
+            GameService.prototype.findLastGame = function (userName) {
+                return this._Resource_game.search({ username: userName });
             };
             // Create new gameId
             // Check if user already has active game
             // YES - use last gameId again
             // NO - create new game resource
-            GameService.prototype.loadMyGameData = function (user) {
+            GameService.prototype.loadMyGameData = function (userName) {
                 var _this = this;
                 var myGameLoaded = new Promise(function (res, err) {
-                    _this.findLastGame(user).$promise
-                        .then(function (lastGame) {
-                        // console.log(`lastGame`, lastGame);
-                        if (lastGame.hasOwnProperty('initiatorUserId')) {
-                            _this.gameData = lastGame;
-                            res("Previous game loaded");
-                        }
-                        else {
-                            var newGame = new Quizdom.Models.GameModel;
-                            newGame.initiatorUserId = user.userName;
-                            _this._Resource_game.save(newGame).$promise
-                                .then(function (newGame) {
-                                // console.log(`newGame`, newGame);
-                                _this.gameData.id = newGame.id;
-                                res('New game created');
-                            })
-                                .catch(function (error) {
-                                console.log(error);
-                            });
-                        }
-                    });
+                    if (_this.gameData.initiatorUserId == userName) {
+                        res('Previous game already in local model');
+                    }
+                    else {
+                        _this.findLastGame(userName).$promise.then(function (lastGame) {
+                            // console.log(`lastGame`, lastGame);
+                            // check if previous game found
+                            if (lastGame.hasOwnProperty('initiatorUserId')) {
+                                _this.gameData = lastGame;
+                                res("Previous game loaded");
+                            }
+                            else {
+                                var newGame = new Quizdom.Models.GameModel;
+                                newGame.initiatorUserId = userName;
+                                _this._Resource_game.save(newGame).$promise.then(function (newGame) {
+                                    // console.log(`newGame`, newGame);
+                                    _this.gameData.id = newGame.id;
+                                    res('New game created');
+                                })
+                                    .catch(function (error) {
+                                    console.log(error);
+                                });
+                            }
+                        });
+                    }
                 });
                 return myGameLoaded;
             };
@@ -208,83 +208,83 @@ var Quizdom;
                 configurable: true
             });
             // Load all game data from DB based on given gameId (allows other players to load new game)
-            GameService.prototype.loadGame = function (gameId) {
+            GameService.prototype.loadGame = function (gameId, userName) {
                 var _this = this;
-                var gameLoaded = this.$q.when();
-                gameLoaded = gameLoaded.then(function () {
-                    return new Promise(function (resCats) {
-                        _this.getAllCats().then(function (message) {
-                            resCats(message);
+                var gameLoaded = new Promise(function (resAll) {
+                    var gamePromises = _this.$q.when();
+                    gamePromises = gamePromises.then(function () {
+                        return new Promise(function (resCats) {
+                            _this.getAllCats().then(function (message) {
+                                resCats(message);
+                            });
                         });
                     });
-                });
-                var gameTablesLoaded = [];
-                gameTablesLoaded.push(this.loadNewGameData(gameId));
-                gameTablesLoaded.push(this.loadGameCategories(gameId));
-                gameTablesLoaded.push(this.loadPlayers(gameId));
-                gameTablesLoaded.push(this.loadGameBoards(gameId));
-                gameLoaded = gameLoaded.then(function () {
-                    return _this.$q.all(gameTablesLoaded);
-                });
-                this.$q.when(gameLoaded).then(function () {
-                    // console.log(`Game`, this.newGameData);
-                    console.log("Game " + _this.gameId + " fully loaded", _this.gameData);
-                })
-                    .catch(function (errors) {
-                    console.log("It was bad, dude");
-                    console.log("errors", errors);
+                    var gameTablesLoaded = [];
+                    gameTablesLoaded.push(_this.loadGameData(gameId));
+                    gameTablesLoaded.push(_this.loadGameCategories(gameId));
+                    gameTablesLoaded.push(_this.loadPlayers(gameId, userName));
+                    gameTablesLoaded.push(_this.loadGameBoards(gameId));
+                    gamePromises = gamePromises.then(function () {
+                        return _this.$q.all(gameTablesLoaded);
+                    });
+                    _this.$q.when(gamePromises)
+                        .then(function () {
+                        // console.log(`Game`, this.newGameData);
+                        _this.showSection = _this.gameState;
+                        console.log("AnswerOrder:", _this.answerOrder);
+                        if (_this.gameData.gameBoardId > 0) {
+                            var gameBoard = _this.gameBoards.find(function (gb) { return gb.id == _this.gameData.gameBoardId; });
+                            _this.question = gameBoard;
+                            _this.winner = gameBoard.answeredCorrectlyUserId;
+                            var player = _this.players.find(function (p) { return p.playerId == _this.myGamePlayerId; });
+                            if (_this.gameState == "question") {
+                                _this.showSection = player.playerState;
+                            }
+                            console.log("Question", _this.question, "My guess:", _this.guess, "My delay:", _this.delay, "Winner", _this.winner);
+                        }
+                        console.log("Game " + _this.gameId + " fully loaded", _this.gameData);
+                        resAll("Game fully loaded");
+                    })
+                        .catch(function (errors) {
+                        console.log("It was bad, dude");
+                        console.log("errors", errors);
+                    });
+                    return gamePromises;
                 });
                 return gameLoaded;
             };
+            // TODO trigger once gameState "summary" is finished
             GameService.prototype.destroyGame = function () {
                 var _this = this;
                 this._Resource_game.remove({ gameId: this.gameId }).$promise
                     .then(function (gameData) {
-                    _this.gameData = new Quizdom.Models.GameModel;
-                    _this.players = [];
-                    _this.gameCategories = [];
                     _this.gameDifficulty = 'all';
+                    _this.gameData = new Quizdom.Models.GameModel;
+                    _this.players.length = 0;
+                    _this.gameCategories.length = 0;
                     _this.gameBoards.length = 0;
+                    _this.group = '';
+                    _this.gameChats.length = 0;
+                    _this.question = new Quizdom.Models.GameBoardModel;
+                    _this.answerOrder = 0;
+                    _this.guess = 4;
                 })
                     .catch(function (error) {
                     console.log("error", error);
                 });
             };
-            // Show the players assigned to the current gameId
-            GameService.prototype.loadPlayers = function (gameId) {
+            // Used only when loading a game in the "play" state
+            GameService.prototype.loadGameData = function (gameId) {
                 var _this = this;
-                var gamePlayersLoaded = new Promise(function (resAll) {
-                    _this.players.length = 0;
-                    var gamePlayersPromises = _this.$q.when();
-                    gamePlayersPromises = gamePlayersPromises.then(function () {
-                        return new Promise(function (resPlayers) {
-                            _this._Resource_game_players.query({ id: gameId }).$promise
-                                .then(function (gameplayers) {
-                                resPlayers('Players loaded from DB');
-                                gameplayers.forEach(function (gp) {
-                                    gamePlayersPromises = gamePlayersPromises.then(function () {
-                                        return new Promise(function (resLoop) {
-                                            _this.PlayerService.findByUserName(gp.userId)
-                                                .then(function (p) {
-                                                var player = new Quizdom.Models.PlayerModel(p, gp);
-                                                // console.log(`Player ${p.userName} added`);
-                                                _this.players.push(player);
-                                                resLoop('Player added');
-                                            });
-                                        });
-                                    });
-                                });
-                                _this.$q.when(gamePlayersPromises)
-                                    .then(function () {
-                                    console.log("Game Players", _this.players);
-                                    resAll("Game players loaded to local model");
-                                });
-                            });
-                        });
+                var newGameLoaded = new Promise(function (res) {
+                    _this.gameData = _this._Resource_game.get({ gameId: gameId });
+                    _this.gameData.$promise
+                        .then(function () {
+                        console.log("Game Data loaded");
+                        res('Game loaded to local model');
                     });
-                    return gamePlayersPromises;
                 });
-                return gamePlayersLoaded;
+                return newGameLoaded;
             };
             // Show the gamecategories assigned to the current gameId
             GameService.prototype.loadGameCategories = function (gameId) {
@@ -326,6 +326,47 @@ var Quizdom;
                 });
                 return gameCategoriesLoaded;
             };
+            // Show the players assigned to the current gameId
+            GameService.prototype.loadPlayers = function (gameId, userName) {
+                var _this = this;
+                var gamePlayersLoaded = new Promise(function (resAll) {
+                    _this.players.length = 0;
+                    var gamePlayersPromises = _this.$q.when();
+                    gamePlayersPromises = gamePlayersPromises.then(function () {
+                        return new Promise(function (resPlayers) {
+                            _this._Resource_game_players.query({ id: gameId }).$promise
+                                .then(function (gameplayers) {
+                                resPlayers('Players loaded from DB');
+                                gameplayers.forEach(function (gp) {
+                                    gamePlayersPromises = gamePlayersPromises.then(function () {
+                                        return new Promise(function (resLoop) {
+                                            _this.PlayerService.findByUserName(gp.userId)
+                                                .then(function (p) {
+                                                var player = new Quizdom.Models.PlayerModel(p, gp);
+                                                if (player.userName == userName) {
+                                                    _this.gamePlayerId = player.playerId;
+                                                    _this.guess = player.answer;
+                                                    _this.delay = player.delay;
+                                                }
+                                                // console.log(`Player ${p.userName} added`);
+                                                _this.players.push(player);
+                                                resLoop('Player added');
+                                            });
+                                        });
+                                    });
+                                });
+                                _this.$q.when(gamePlayersPromises)
+                                    .then(function () {
+                                    console.log("Game Players", _this.players);
+                                    resAll("Game players loaded to local model");
+                                });
+                            });
+                        });
+                    });
+                    return gamePlayersPromises;
+                });
+                return gamePlayersLoaded;
+            };
             // Show the gameBoards assigned to the current gameId
             GameService.prototype.loadGameBoards = function (gameId) {
                 var _this = this;
@@ -341,6 +382,7 @@ var Quizdom;
                                         return new Promise(function (resBoard, err) {
                                             var cat = _this.allCategories.find(function (cat) { return cat.id == gameBoard.categoryId; });
                                             gameBoard.catLong = cat.longDescription;
+                                            _this.answerOrder = Math.max(_this.answerOrder, gameBoard.answerOrder);
                                             _this.gameBoards.push(gameBoard);
                                             resBoard("Another gameBoard loaded");
                                         });
@@ -649,109 +691,95 @@ var Quizdom;
                 return gameBoardsSetup;
             };
             // SignalR methods to update the tables
-            GameService.prototype.updateGame = function (newGameData) {
+            GameService.prototype.updateGamesTable = function (newGameData) {
                 var _this = this;
                 var gameUpdated = new Promise(function (res) {
-                    console.log("Updating Game...", newGameData);
-                    _this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then(function (gameData) {
-                        // TODO - remove once SignalR is triggering the method!
-                        // this.changeGameData(gameData);
-                        res("Game update sent to DB");
-                    });
+                    // console.log(`newGameData`, newGameData);
+                    // console.log(`this.gameData`, this.gameData);
+                    // check whether any values actually changed
+                    var matches = true;
+                    for (var prop in newGameData) {
+                        if (newGameData.hasOwnProperty(prop)) {
+                            matches = matches && (newGameData[prop] == _this.gameData[prop]);
+                        }
+                    }
+                    if (matches) {
+                        console.log("No Game update required");
+                        res("No Game update required");
+                    }
+                    else {
+                        console.log("Updating Game...", newGameData);
+                        _this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then(function (gameData) {
+                            res("Game update sent to DB");
+                        });
+                    }
                 });
                 return gameUpdated;
             };
-            GameService.prototype.updateGameBoard = function (newGameBoardData) {
+            GameService.prototype.updateGameBoardsTable = function (newGameBoardData) {
                 var _this = this;
                 var gameBoardUpdated = new Promise(function (res) {
-                    console.log("Updating Game Board...", newGameBoardData);
-                    _this._Resource_gameBoard.update({ id: newGameBoardData.id }, newGameBoardData).$promise.then(function (gameBoardData) {
-                        // TODO - remove once SignalR is triggering the method!
-                        _this.changeGameBoardData(gameBoardData);
-                        res("Game Board update sent to DB");
-                    });
+                    // check whether any values actually changed
+                    var oldGameBoardData = _this.gameBoards.find(function (gb) { return gb.id == newGameBoardData.id; });
+                    var matches = true;
+                    for (var prop in newGameBoardData) {
+                        if (newGameBoardData.hasOwnProperty(prop)) {
+                            matches = matches && (newGameBoardData[prop] == oldGameBoardData[prop]);
+                        }
+                    }
+                    if (matches) {
+                        console.log("No Game Board update required");
+                        res("No Game Board update required");
+                    }
+                    else {
+                        console.log("Updating Game Board...", newGameBoardData);
+                        _this._Resource_gameBoard.update({ id: newGameBoardData.id }, newGameBoardData).$promise.then(function (gameBoardData) {
+                            res("Game Board update sent to DB");
+                        });
+                    }
                 });
                 return gameBoardUpdated;
             };
-            GameService.prototype.updateGamePlayer = function (newPlayerData) {
+            GameService.prototype.updateGamePlayersTable = function (newPlayerData) {
                 var _this = this;
                 var gamePlayerUpdated = new Promise(function (res) {
-                    //  we have to whittle player down to gamePlayer properties
-                    var newGamePlayer = new _this._Resource_game_players;
-                    newGamePlayer.gameId = newPlayerData.gameId;
-                    newGamePlayer.id = newPlayerData.playerId;
-                    newGamePlayer.initiator = newPlayerData.initiator;
-                    newGamePlayer.userId = newPlayerData.userName;
-                    newGamePlayer.prizePoints = newPlayerData.prizePoints;
-                    newGamePlayer.answer = newPlayerData.answer;
-                    newGamePlayer.delay = newPlayerData.delay;
-                    console.log("Updating Game Player...", newGamePlayer);
-                    _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function (gamePlayerData) {
-                        // TODO - remove once SignalR is triggering the method!
-                        _this.changeGamePlayerData(gamePlayerData);
-                        res("Game Player update sent to DB");
-                    });
+                    // check whether any values actually changed
+                    var oldPlayerData = _this.players.find(function (p) { return p.playerId == newPlayerData.playerId; });
+                    // console.log(`oldPlayerData`, oldPlayerData);
+                    // console.log(`newPlayerData`, newPlayerData);
+                    var matches = true;
+                    for (var prop in newPlayerData) {
+                        if (newPlayerData.hasOwnProperty(prop)) {
+                            matches = matches && (newPlayerData[prop] == oldPlayerData[prop]);
+                        }
+                    }
+                    if (matches) {
+                        console.log("No Game Player update required");
+                        res("No Game Player update required");
+                    }
+                    else {
+                        //  we have to whittle player down to gamePlayer properties
+                        var newGamePlayer = new _this._Resource_game_players;
+                        newGamePlayer.gameId = newPlayerData.gameId;
+                        newGamePlayer.id = newPlayerData.playerId;
+                        newGamePlayer.initiator = newPlayerData.initiator;
+                        newGamePlayer.userId = newPlayerData.userName;
+                        newGamePlayer.prizePoints = newPlayerData.prizePoints;
+                        newGamePlayer.answer = newPlayerData.answer;
+                        newGamePlayer.delay = newPlayerData.delay;
+                        newGamePlayer.playerState = newPlayerData.playerState;
+                        console.log("Updating Game Player...", newGamePlayer);
+                        _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function () {
+                            res("Game Player update sent to DB");
+                        });
+                    }
                 });
                 return gamePlayerUpdated;
             };
             GameService.prototype.setGameActiveUserId = function (userName) {
                 this.gameData.lastActiveUserId = this.gameData.activeUserId;
                 this.gameData.activeUserId = userName;
-                return this.updateGame(this.gameData);
-            };
-            // newGameState is triggered by a change to the Games table
-            GameService.prototype.changeGameData = function (newGame) {
-                // update the values that can change over time
-                this.gameData = newGame;
-                console.log("Game updated from DB", this.gameData);
-                // TODO Add other local variables that should be updated
-                switch (this.gameData.gameState) {
-                    case "prepare":
-                        this.countdownTimer(3).then(function () {
-                        });
-                        break;
-                    default:
-                        break;
-                }
-            };
-            // newGameBoardState is triggered by a change to the GameBoard table
-            GameService.prototype.changeGameBoardData = function (gameBoardData) {
-                // find the local gameBoard data in the array
-                var gbIndex = this.gameBoards.findIndex(function (gb) { return gb.id == gameBoardData.id; });
-                // update the values that can change over time
-                this.gameBoards[gbIndex].questionState = gameBoardData.questionState;
-                this.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
-                this.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
-                console.log("Game Board updated from DB", this.gameBoards[gbIndex]);
-                // TODO Add other local variables that should be updated
-                // assign gameBoard question to local this.question when questionState = "ask"
-                this.question = this.gameBoards[gbIndex];
-            };
-            // newGamePlayerState is triggered by a change to the GamePlayer table
-            GameService.prototype.changeGamePlayerData = function (gamePlayerData) {
-                // find the local gamePlayer data in the array
-                var pIndex = this.players.findIndex(function (p) { return p.playerId == gamePlayerData.id; });
-                // update the values that can change over time
-                this.players[pIndex].prizePoints = gamePlayerData.prizePoints;
-                this.players[pIndex].answer = gamePlayerData.answer;
-                this.players[pIndex].delay = gamePlayerData.delay;
-                console.log("Game Player updated from DB", this.players[pIndex]);
-                // TODO Add other local variables that should be updated
-                // Should we track when all players guess so we can cancel the countdown?
-            };
-            GameService.prototype.countdownTimer = function (duration) {
-                var _this = this;
-                var decreaseTimer = function () {
-                    _this.timer = duration;
-                    console.log("duration", duration, "this.timer", _this.timer);
-                    duration--;
-                    if (duration <= 0) {
-                        _this.$interval.cancel(countdown);
-                    }
-                    ;
-                };
-                var countdown = this.$interval(decreaseTimer, 1000);
-                return countdown;
+                return this.updateGamesTable(this.gameData);
             };
             // research into how to use promise resolution to delay for loop action - SUCCESS!
             GameService.prototype.testLoopPromise = function (loops) {

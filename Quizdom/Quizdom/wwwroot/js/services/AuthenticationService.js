@@ -6,10 +6,10 @@ var Quizdom;
             function AuthenticationService() {
                 this.isUserLoggedIn = false;
             }
-            AuthenticationService.prototype.getUser = function () {
-                return this.authUser;
-            };
             Object.defineProperty(AuthenticationService.prototype, "User", {
+                // public getUser() {
+                //   return this.authUser;
+                // }
                 get: function () {
                     return this.authUser;
                 },

@@ -29,7 +29,7 @@ namespace Quizdom {
         }
 
         public get user(): Models.UserModel {
-            return this.AuthenticationService.getUser();
+            return this.AuthenticationService.User;
         }
 
         public logOut(): void {

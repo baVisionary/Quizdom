@@ -22,15 +22,7 @@
                 </div>
 
               </div>
-              <!-- category titles -->
-              <div class="row" id="categories" ng-show="vm.showMe('pick')" >
-                <div class="col" ng-class="vm.GameService.gameCatClass" ng-repeat="cat in vm.GameService.gameCategories">
-                  <div class="card-panel blue darken-4">
-                    <span class="card-title center-align">{{cat.shortDescription}}</span>
-                  </div>
-                </div>
-              </div>
-              <!-- hidden section that appears to prepare players for question 3 sec countdown -->
+              <!-- Prepare to answer question from category appears for 3 sec countdown -->
               <div class="card grey-text text-darken-4" id='prepare' ng-show="vm.showMe('prepare')">
                 <div class="card-content center-align">
                   <span class="card-title">{{ vm.GameService.question.catLong }}</span>
@@ -39,7 +31,7 @@
                 </div>
               </div>
               <!-- hidden section that appears to display question & answers -->
-              <div class="card grey-text text-darken-4" id='answer' ng-show="vm.showMe('answer')">
+              <div class="card grey-text text-darken-4" id='answer' ng-show="vm.showMe('ask') || vm.showMe('guess')">
                 <div class="card-content">
                   <!-- questionId, questionText, answers -->
                   <span class="card-title">{{ vm.GameService.question.questionId }}. {{vm.GameService.question.questionText}}</span>
@@ -48,7 +40,53 @@
                       <div class="card" ng-class="vm.answerClass($index)" ng-click="vm.triggerGuess($index)">
                         <div class="card-content" value={{$index}}>
                           <span>{{ "ABCD"[$index] }}. {{answer}}</span>
-                          <a class="btn green darken-4 white-text right" ng-show="vm.showCorrect && $index == vm.GameService.question.correctAnswer"><i class="material-icons">plus</i> ${{ vm.question.prizePoints }}</a>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <h6 ng-show="vm.timer != '0'">{{ vm.timer }} s to answer</h6>
+                  <h6>Answer: {{ vm.guessValue[vm.GameService.guess] }} <span ng-show="vm.GameService.guess < 4">in {{ vm.GameService.delay/1000 }} s</span></h6>
+                </div>
+              </div>
+              <!-- hidden section that appears to display results -->
+              <div class="card grey-text text-darken-4" id='results' ng-show="vm.showMe('results')">
+                <div class="card-content">
+                  <!-- questionId, questionText, answers -->
+                  <span class="card-title">{{ vm.GameService.question.questionId }}. {{vm.GameService.question.questionText}}</span>
+                  <div class="row" ng-repeat="answer in [vm.GameService.question.answerA, vm.GameService.question.answerB, vm.GameService.question.answerC, vm.GameService.question.answerD]">
+                    <div class="col s12">
+                      <div class="card blue lighten-2 black-text" ng-class="{ 'red darken-3 white-text': $index == vm.GameService.guess, 'green darken-2 white-text': $index == vm.GameService.question.correctAnswer }">
+                        <div class="card-content valign-wrapper" value={{$index}}>
+                          <div class="col s11">{{ "ABCD"[$index] }}. {{answer}}</div>
+                          <div class="col s1 right-align">
+                            <i ng-show="$index == vm.GameService.guess && $index != vm.GameService.question.correctAnswer" class="material-icons">close</i>
+                            <i ng-show="$index == vm.GameService.question.correctAnswer" class="material-icons">check</i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row" ng-show="vm.GameService.winner == 'No player'">
+                    <div class="col s12">
+                      <div class="card" ng-class="vm.resultsClass()" ng-click="vm.triggerReview()">
+                        <div class="card-content center-align">
+                          <span class="card-title">No player wins so {{ vm.GameService.gameData.activeUserId }} picks again</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col s4" ng-repeat="player in vm.GameService.players">
+                      <div class="card white-text center-align" ng-class="(player.userName == vm.GameService.winner) ? 'green darken-2' : 'red darken-4'">
+                        <div class="card-content">
+                          <div class="chip" tag={{player.userName}} id={{player.playerId}}>
+                            <img src="/images/{{player.avatarUrl}}" alt="player">
+                            <div class="valign-wrapper">{{player.userName}}</div>
+                          </div>
+                          <div>
+                            <p>{{ vm.guessValue[player.answer] }}<span ng-show="player.answer < 4"> in {{ player.delay/1000 }} s</span></p>
+                            <a ng-show="player.userName == vm.GameService.winner" class="btn green darken-4 white-text" ng-click="vm.triggerReview()"><i class="material-icons left">add</i> {{ vm.GameService.question.prizePoints }}</a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -56,19 +94,23 @@
                 </div>
               </div>
               <!-- 3 rows of 6 columns of gameBoards AKA questions showing prizePoints -->
+              <div class="row" id="categories" ng-show="vm.showMe('pick')">
+                <div class="col" ng-class="vm.GameService.gameCatClass" ng-repeat="cat in vm.GameService.gameCategories">
+                  <div class="card-panel blue darken-4">
+                    <span class="card-title center-align">{{cat.shortDescription}}</span>
+                  </div>
+                </div>
+              </div>
               <div class="row" ng-repeat="row in [0,1,2]" id='pick' ng-show="vm.showMe('pick')">
                 <div class="game-question col s4 m2" ng-repeat="gb in vm.GameService.gameBoards | filter: {boardRow:row}">
                   <div class="card" ng-class="vm.gameBoardClass(gb)" ng-click="vm.triggerPrepare(gb.id)">
                     <div class="center-align">
-                      <i class="large material-icons">live_help</i>
+                      <!-- <i class="large material-icons">live_help</i> -->
                       <!-- <img src="/images/avatar_generic.png"> -->
                     </div>
                     <div class="card-content">
                       <span class="center-align">
                       <h5 class="">{{ gb.prizePoints }}</h5>
-                      <!-- <p class="">R{{ q.boardRow }} C{{ q.boardColumn }}:</p> -->
-                      <!-- <p class="">{{ q.categoryId }}-{{ q.difficulty.substring(0,4) }}</p> -->
-                      <!-- <span class="">{{ q.difficulty }}</span> -->
                       </span>
                     </div>
                   </div>
@@ -77,7 +119,7 @@
             </div>
           </div>
           <!-- Game players -->
-          <p>Active player: {{ vm.GameService.gameData.activeUserId }}</p>          
+          <p>Active player: {{ vm.GameService.gameData.activeUserId }}</p>
           <div class="row">
             <div ng-repeat="player in vm.GameService.players">
               <qz-player player="player"></qz-player>

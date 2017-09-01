@@ -1,12 +1,12 @@
 <div class="col s4">
   <div class="card blue darken-4 center-align qzPlayer">
+    <div class="card-content white-text text-darken-1 center-align">
+      <h4>{{player.prizePoints}}</h4>
+      <span class="card-title">{{player.userName}}</span>
+      <!-- <p>${{player.prizePoints}}</p> -->
+    </div>
     <div class="avatar">
       <img ng-cloak ng-src="/images/{{player.avatarUrl}}" alt="Avatar" class="circle">
     </div>
-    <div class="card-content white-text text-darken-1 center-align">
-      <span class="card-title">{{player.userName}}</span>
-      <p>${{player.prizePoints}}</p>
-    </div>
-    <!-- <div class="card-action"></div> -->
   </div>
 </div>

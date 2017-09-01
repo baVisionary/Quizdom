@@ -10,6 +10,7 @@ var Quizdom;
                 this.prizePoints = 0;
                 this.answer = 0;
                 this.delay = 0;
+                // playing (gameState: pick) prepare/ask/guess/results (gameState: question) winner/loser (gameState: summary)
                 this.playerState = "ready";
             }
             return GamePlayerModel;

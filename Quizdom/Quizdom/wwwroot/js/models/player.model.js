@@ -20,6 +20,7 @@ var Quizdom;
                 _this.prizePoints = 0;
                 _this.answer = 0;
                 _this.delay = 0;
+                _this.playerState = 'ready';
                 _this.userName = user.userName;
                 _this.email = user.email;
                 _this.avatarId = user.avatarId;
@@ -32,6 +33,8 @@ var Quizdom;
                 _this.prizePoints = gamePlayer.prizePoints;
                 _this.answer = gamePlayer.answer;
                 _this.delay = gamePlayer.delay;
+                // ready (gameState: pick) prepare/ask/guess/results (gameState: question) winner/loser (gameState: summary)
+                _this.playerState = gamePlayer.playerState;
                 return _this;
             }
             return PlayerModel;

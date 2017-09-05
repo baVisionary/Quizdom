@@ -37,12 +37,30 @@ namespace Quizdom.Views.Setup {
     }
 
     public playQuizdom() {
+
+      // Games - initialize new game data
       let newGameData = angular.copy(this.GameService.gameData);
-      let firstPlayerIndex = this.GameService.randomInt(0, this.GameService.players.length-1)
+      let firstPlayerIndex = this.GameService.randomInt(0, this.GameService.players.length - 1)
       newGameData.activeUserId = newGameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
+      newGameData.gameBoardId = 0;
       newGameData.gameState = "welcome";
 
+      let gamePlayerPromises: any = this.$q.when();
+
+      // GamePlayers - set all prizePoints to 0
+      this.GameService.players.forEach(playerData => {
+        // copy each player to update values
+        let newPlayerData = angular.copy(playerData);
+        newPlayerData.prizePoints = 0;
+
+        gamePlayerPromises = gamePlayerPromises.then(() => {
+          return this.GameService.updateGamePlayersTable(newPlayerData);
+        })
+        
+      })
+
       let gameReady = [];
+      gameReady.push(this.$q.when(gamePlayerPromises));
       gameReady.push(this.GameService.setupGameBoards());
       gameReady.push(this.GameService.updateGamesTable(newGameData));
 
@@ -50,6 +68,6 @@ namespace Quizdom.Views.Setup {
         this.$state.go(`Play`, { gameId: this.GameService.gameId });
       })
     }
-    
+
   }
 }

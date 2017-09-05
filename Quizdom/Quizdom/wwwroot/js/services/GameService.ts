@@ -52,7 +52,9 @@ namespace Quizdom.Services {
     public endTime: number;
     public delay: number = this.duration;
 
+    /* variables to summarize game */
     public winner: string = "";
+    public playerResults = [];
 
     static $inject = [
       'PlayerService',
@@ -414,6 +416,9 @@ namespace Quizdom.Services {
                       let cat = this.allCategories.find(cat => { return cat.id == gameBoard.categoryId });
                       gameBoard.catLong = cat.longDescription;
                       this.answerOrder = Math.max(this.answerOrder, gameBoard.answerOrder);
+                      if (this.answerOrder == gameBoard.answerOrder) {
+                        this.winner = gameBoard.answeredCorrectlyUserId
+                      }
                       this.gameBoards.push(gameBoard);
                       resBoard(`Another gameBoard loaded`)
                     })
@@ -675,6 +680,7 @@ namespace Quizdom.Services {
     // Build the game board using the categories
     public setupGameBoards() {
       console.log(`Creating GameBoards...`);
+      this.answerOrder = 0;
       this.gameBoards.length = 0;
       console.log(`Local Game Boards deleted`);
       let gameBoardsSetup = new Promise((resAll, err) => {

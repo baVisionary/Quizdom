@@ -45,7 +45,9 @@ var Quizdom;
                 // the player's guess as to the answer of the question
                 this.guess = 4;
                 this.delay = this.duration;
+                /* variables to summarize game */
                 this.winner = "";
+                this.playerResults = [];
                 // manage 'Games' table
                 this._Resource_game = this.$resource('/api/game/:gameId', null, {
                     'update': {
@@ -383,6 +385,9 @@ var Quizdom;
                                             var cat = _this.allCategories.find(function (cat) { return cat.id == gameBoard.categoryId; });
                                             gameBoard.catLong = cat.longDescription;
                                             _this.answerOrder = Math.max(_this.answerOrder, gameBoard.answerOrder);
+                                            if (_this.answerOrder == gameBoard.answerOrder) {
+                                                _this.winner = gameBoard.answeredCorrectlyUserId;
+                                            }
                                             _this.gameBoards.push(gameBoard);
                                             resBoard("Another gameBoard loaded");
                                         });
@@ -645,6 +650,7 @@ var Quizdom;
             GameService.prototype.setupGameBoards = function () {
                 var _this = this;
                 console.log("Creating GameBoards...");
+                this.answerOrder = 0;
                 this.gameBoards.length = 0;
                 console.log("Local Game Boards deleted");
                 var gameBoardsSetup = new Promise(function (resAll, err) {

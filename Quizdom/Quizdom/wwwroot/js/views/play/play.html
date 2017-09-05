@@ -27,7 +27,7 @@
                 <div class="card-content center-align">
                   <span class="card-title">{{ vm.GameService.question.catLong }}</span>
                   <span>Get ready to answer</span>
-                  <h1>{{ timer }}</h1>
+                  <h1>{{ vm.timer }}</h1>
                 </div>
               </div>
               <!-- hidden section that appears to display question & answers -->
@@ -85,7 +85,7 @@
                           </div>
                           <div>
                             <p>{{ vm.guessValue[player.answer] }}<span ng-show="player.answer < 4"> in {{ player.delay/1000 }} s</span></p>
-                            <a ng-show="player.userName == vm.GameService.winner" class="btn green darken-4 white-text" ng-click="vm.triggerReview()"><i class="material-icons left">add</i> {{ vm.GameService.question.prizePoints }}</a>
+                            <a ng-show="player.userName == vm.GameService.winner" class="btn green darken-4 white-text" ng-click="vm.triggerReview()">+ {{ vm.GameService.question.prizePoints }}</a>
                           </div>
                         </div>
                       </div>
@@ -117,6 +117,13 @@
                 </div>
               </div>
             </div>
+          </div>
+          <!-- Game Summary - hidden section that appears after game -->
+          <div class="card grey-text text-darken-4" id='results' ng-show="vm.showMe('summary')">
+              <div class="card-content">
+                <span class="card-title">{{ vm.GameService.winner }} wins!</span>
+                
+              </div>
           </div>
           <!-- Game players -->
           <p>Active player: {{ vm.GameService.gameData.activeUserId }}</p>

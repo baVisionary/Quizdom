@@ -86,7 +86,7 @@ namespace Quizdom.Views.Play {
         if (this.GameService.gameState != "question") {
           this.GameService.showSection = this.GameService.gameState;
           console.log(`Show section`, this.GameService.showSection);
-        }    
+        }
 
         $scope.$applyAsync();
       }
@@ -104,12 +104,13 @@ namespace Quizdom.Views.Play {
         // update the values that can change over time
         this.GameService.gameBoards[gbIndex].questionState = gameBoardData.questionState;
         this.GameService.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
-        this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId;
+        this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId || "";
         console.log(`GameBoard updated from DB`, this.GameService.gameBoards[gbIndex]);
 
         // assign gameBoard question to local question if questionState = "asking"
         if (gameBoardData.questionState == "asking") {
           this.GameService.question = this.GameService.gameBoards[gbIndex];
+          this.GameService.winner = gameBoardData.answeredCorrectlyUserId;
         }
 
         $scope.$applyAsync();
@@ -130,20 +131,27 @@ namespace Quizdom.Views.Play {
 
         // Set visual state based on playerState
         if (this.GameService.gameState == "question") {
-          this.GameService.showSection = gamePlayerData.playerState;
-          console.log(`Show section`, this.GameService.showSection);
+
+          if (gamePlayerData.userId == this.myUserName) {
+
+            this.GameService.showSection = gamePlayerData.playerState;
+            console.log(`Show section`, this.GameService.showSection);
+
+            if (gamePlayerData.playerState == "prepare") {
+              this.triggerPrepareTimer();
+            } else if (gamePlayerData.playerState == "ask") {
+              this.triggerAskTimer();
+            }
+          }
+
+          if (gamePlayerData.playerState == "guess") {
+            this.checkPlayersInGuess();
+          }
         }
 
-        // Should we track when all players guess so we can cancel the countdown?
-        if (this.GameService.gameState == "question") {
-          this.checkPlayersInGuess();
-        }
-        
-        if (gamePlayerData.playerState == "prepare") {
-          this.triggerPrepareTimer();
-        }
         $scope.$applyAsync();
       }
+
     }
 
     public stopTimer(name) {
@@ -152,32 +160,45 @@ namespace Quizdom.Views.Play {
 
     // duration in seconds (* 1000 = millisecs), tick in milliseconds (+ counts up, - counts down)
     public showTimer(duration: number, tick: number) {
+
       console.log(`Timer started for ${duration} seconds`);
-      let counter = 0;
 
       // calculates number of meaningful digits based on tick value (1000+ ms = 0 digits)
       let numDigits = Math.max(4 - Math.abs(tick).toString().length, 0);
-      this.timer = counter.toFixed(numDigits);
 
-      // timer always counts up then adjusts output based on tick +/-
-      let changeTimer = () => {
+      let counter = 0;
+
+      // showing value based on timer direction using tick +/-
+      if (tick > 0) {
+        this.timer = counter.toFixed(numDigits);
+      } else {
+        this.timer = (duration - counter).toFixed(numDigits);
+      }
+
+      let tickTock = this.$interval(() => {
+
+        // inc/decrements timer value and cleans up result to meaningful digits
+        counter += (Math.abs(tick) / 1000);
+
+        // prints timer value to console every second (when it is integer)
+        if (counter == Math.floor(counter)) {
+          console.log(`Timer:`, this.timer);
+        }
+
+        // showing value based on timer direction using tick +/-
         if (tick > 0) {
           this.timer = counter.toFixed(numDigits);
         } else {
           this.timer = (duration - counter).toFixed(numDigits);
         }
-        // prints timer value to console every second (when it is integer)
-        if (counter == Math.floor(counter)) {
-          console.log(`timer`, this.timer, `numDigits`, numDigits);
-        }
-        // inc/decrements timer value and cleans up result to meaningful digits
-        counter += (Math.abs(tick) / 1000);
+      }, Math.abs(tick));
 
-        // checks whether duration has expired and cancels activeTimer promise
-        if (counter >= duration) { this.stopTimer(activeTimer) };
-      }
 
-      let activeTimer = this.$interval(changeTimer, tick);
+      var activeTimer = this.$timeout(() => {
+        this.$interval.cancel(tickTock);
+        console.log(`Timer finished after ${duration} s`);
+      }, duration * 1000);
+
       return activeTimer;
     }
 
@@ -271,7 +292,7 @@ namespace Quizdom.Views.Play {
             this.triggerPrepareTimer();
             break;
           case "ask":
-            this.triggerAsk();
+            this.triggerAskTimer();
             break;
           case "guess":
             this.checkPlayersInGuess();
@@ -284,17 +305,28 @@ namespace Quizdom.Views.Play {
 
     // initial state of game shows How to play
     public triggerWelcome() {
+
       // Games - update gameState to "welcome"
       let newGameData = this.GameService.gameData;
       newGameData.gameState = "welcome";
       this.GameService.updateGamesTable(newGameData);
+
       // GameBoard - no change
 
-      // GamePlayers - no change
+      // GamePlayers - set all prizePoints to 0
+      this.GameService.players.forEach(playerData => {
+
+        // copy each player to update values
+        let newPlayerData = angular.copy(playerData);
+
+        newPlayerData.prizePoints = 0;
+        this.GameService.updateGamePlayersTable(newPlayerData)
+
+      })
 
     }
 
-    // only the active player can click a button to display the gameboard    
+    // Any player clicking "How to play" starts the game
     public triggerPlay() {
 
       // Games - update gameState to "pick"
@@ -325,10 +357,11 @@ namespace Quizdom.Views.Play {
           newGameData.gameBoardId = boardId;
           this.GameService.updateGamesTable(newGameData)
 
-          // GamePlayers - update all answer to 4 (always wrong), delay to GameService.duration (max)
+          // GamePlayers - all playerState to "prepare", answer to 4 (always wrong), delay to GameService.duration (max)
           this.GameService.guess = 4;
           this.GameService.players.forEach(playerData => {
 
+            // copy each player to update values
             let newPlayerData = angular.copy(playerData);
             // valid answers are 0-3 so 4 = "None" as in no answer selected
             newPlayerData.answer = this.GameService.guess;
@@ -336,6 +369,7 @@ namespace Quizdom.Views.Play {
             newPlayerData.delay = this.GameService.duration * 1000;
             newPlayerData.playerState = "prepare";
             this.GameService.updateGamePlayersTable(newPlayerData)
+
           })
 
           // this.triggerPrepareTimer();
@@ -349,45 +383,51 @@ namespace Quizdom.Views.Play {
       }
     }
 
+    // Triggered by playerState changing to "prepare"
     public triggerPrepareTimer() {
+
       // Start a countdown from 3 secs
-      this.showTimer(3, -1000).finally(() => {
-        console.log(`Reveal question`);
-        this.triggerAsk();
+      this.showTimer(3, -1000).then(() => {
+
+        // Games - no change
+        // GameBoard - no change
+
+        // GamePlayers - update only this playerState to "ask"
+        let newPlayerData = angular.copy(this.GameService.players.find(p => { return p.userName == this.myUserName }));
+        newPlayerData.playerState = 'ask';
+        this.GameService.updateGamePlayersTable(newPlayerData);
       })
     }
 
-    // Updating only this GamePlayer playerState to "ask"  and local variables
-    public triggerAsk() {
-      // Games - no change
-      // GameBoard - no change
-
-      // GamePlayers - update only this playerState to "ask"
-      let newPlayerData = angular.copy(this.GameService.players.find(p => { return p.userName == this.myUserName }));
-      newPlayerData.playerState = 'ask';
-      this.GameService.updateGamePlayersTable(newPlayerData);
+    // Triggered by playerState changing to "ask"
+    public triggerAskTimer() {
 
       // Set other local variables to track player's guess
       this.GameService.startTime = Date.now();
       this.GameService.endTime = this.GameService.startTime;
 
-      // Start a countdown timer from the stored duration (we could add this to Games table)
-      this.showTimer(this.GameService.duration, -10).finally(() => {
-        console.log(`Guess: ${this.GameService.guess} Delay: ${this.GameService.endTime - this.GameService.startTime}`);
-        this.triggerSaveGuess();
+      // start a countdown from duration with a tick value of 10 ms
+      this.showTimer(this.GameService.duration, -10).then(() => {
+
+        console.log(`Saved - Guess: ${this.GameService.guess} Delay: ${this.GameService.delay}`);
+
+        // Triggered by duration timer expiring
+        // This does not change gameState since other players with slow connections might still be within duration timer
+        // Update only this gamePlayer with locally stored guess & calculated delay
+
+        // GamePlayers - update answer & calculate delay value, playerState to "guess"
+        let newPlayerData = angular.copy(this.GameService.players.find(p => { return p.userName == this.myUserName }));
+        newPlayerData.answer = this.GameService.guess;
+        newPlayerData.delay = this.GameService.delay;
+        newPlayerData.playerState = 'guess';
+        this.GameService.updateGamePlayersTable(newPlayerData);
+
+        // Games - no change
+        // GameBoard - no change
       })
-
     }
 
-    public checkPlayersInGuess() {
-      // Should we track when all players guess so we can cancel the countdown?
-      console.log(`Players in 'Guess'`, this.playersInState("guess") + this.playersInState("results"));
-      if (this.playersInState("guess") + this.playersInState("results") == this.GameService.players.length) {
-        this.triggerResults();
-      }
-    }
-
-    // Available only when questionState = "ask" - All actions stored in local model until duration timer expires
+    // Available only when playerState = "guess" - All actions stored in local model until duration timer expires
     // each player selects an "answer" to store in GameService.guess
     // store timeStamp in endTime to calculate delay
     public triggerGuess(guess) {
@@ -406,7 +446,6 @@ namespace Quizdom.Views.Play {
       }
     }
 
-    // Triggered by duration timer expiring
     // This does not change gameState since other players with slow connections might still be within duration timer
     // Update only this gamePlayer with locally stored guess & calculated delay
     public triggerSaveGuess() {
@@ -415,13 +454,22 @@ namespace Quizdom.Views.Play {
       // Games - no change
       // GameBoard - no change
 
-      // GamePlayers - update answer & calculate delay value, playerState to "guess"
+      // GamePlayers - update only this player answer & delay value, playerState to "results"
       let newPlayerData = angular.copy(this.GameService.players.find(p => { return p.userName == this.myUserName }));
       newPlayerData.answer = this.GameService.guess;
       newPlayerData.delay = this.GameService.delay;
       newPlayerData.playerState = 'guess';
       this.GameService.updateGamePlayersTable(newPlayerData);
 
+    }
+
+    public checkPlayersInGuess() {
+      // Should we track when all players guess so we can cancel the countdown?
+      console.log(`Players in 'guess'`, this.playersInState("guess"));
+      // Check to see results not yet reported (gameState "question") and if all players submitted a guess (poss by timing out) 
+      if (this.GameService.gameState == "question" && this.playersInState("guess") == this.GameService.players.length) {
+        this.triggerResults();
+      }
     }
 
     // We cannot change the gameState when the current player countdown ends since another player might be running behind
@@ -433,38 +481,29 @@ namespace Quizdom.Views.Play {
       // figure out the winner
       this.GameService.winner = this.questionWinner();
 
-      // copy the current gameBoard data
-      let newGameBoardData = angular.copy(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.gameBoardId }));
+      // Only the game inititor updates gameState & gameBoard questionState
+      if (this.GameService.gameData.initiatorUserId == this.myUserName) {
 
-      // Check to see if results already reported
-      if (this.GameService.gameState == "question") {
+        // copy the current game data
+        let newGameData = angular.copy(this.GameService.gameData);
 
-        // Only the game inititor updates gameState & gameBoard questionState
-        if (this.GameService.gameData.initiatorUserId == this.myUserName) {
-
-          // copy the current game data
-          let newGameData = angular.copy(this.GameService.gameData);
-
-          if (this.GameService.winner != "No player") {
-            // Games - player who earned prizePoints set to activeUserId
-            newGameData.lastActiveUserId = newGameData.activeUserId;
-            newGameData.activeUserId = this.GameService.winner
-          }
-          newGameData.gameState = "results";
-          this.GameService.updateGamesTable(newGameData);
-
-          // GameBoard - update answeredCorrectlyUserId with the winning player's username
-          newGameBoardData.answeredCorrectlyUserId = this.GameService.winner;
-          // newGameBoardData.questionState = "results"
-          this.GameService.updateGameBoardsTable(newGameBoardData)
+        if (this.GameService.winner != "No player") {
+          // Games - player who earned prizePoints set to activeUserId
+          newGameData.lastActiveUserId = newGameData.activeUserId;
+          newGameData.activeUserId = this.GameService.winner
         }
+        newGameData.gameState = "results";
+        this.GameService.updateGamesTable(newGameData);
+
+        // copy the current gameBoard data
+        let newGameBoardData = angular.copy(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.gameBoardId }));
+
+        // GameBoard - update answeredCorrectlyUserId with the winning player's username
+        newGameBoardData.answeredCorrectlyUserId = this.GameService.winner;
+        // newGameBoardData.questionState = "results"
+        this.GameService.updateGameBoardsTable(newGameBoardData)
+
       }
-
-      // GamePlayers - update playerState to "results"
-      // let myNewPlayerData = angular.copy(this.GameService.players.find(p => { return p.userName == this.myUserName }));
-      // myNewPlayerData.playerState = "results";
-      // this.GameService.updateGamePlayersTable(myNewPlayerData);
-
     }
 
     // update gamePlayer prizePoints, gameBoard questionsState to "retired", check for end of game
@@ -473,7 +512,7 @@ namespace Quizdom.Views.Play {
       console.log(`AnswerOrder:`, this.GameService.answerOrder);
 
       // GameBoards - retire gameBoard listed in gameData
-        
+
       // copy the current gameBoard data
       let newGameBoardData = angular.copy(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.gameBoardId }));
 
@@ -499,10 +538,24 @@ namespace Quizdom.Views.Play {
         this.GameService.updateGamePlayersTable(newPlayerData)
       })
 
-      this.triggerPlay();
+      if (this.GameService.answerOrder < 18) {
+        this.triggerPlay();
+      } else {
+        this.triggerSummary();
+      }
     }
 
     public triggerSummary() {
+      this.GameService.players.forEach(playerData => {
+
+        let player = {
+          userName: playerData.userName,
+          correct: 0
+        };
+        player.correct = this.GameService.gameBoards.filter(gb => { return gb.answeredCorrectlyUserId == playerData.userName }).length;
+
+        this.GameService.playerResults.push(player);
+      })
 
     }
 

@@ -8,9 +8,10 @@ using Quizdom.Data;
 namespace Quizdom.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20170907181614_playerStats")]
+    partial class playerStats
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
             modelBuilder
                 .HasAnnotation("ProductVersion", "1.1.2");
@@ -396,10 +397,6 @@ namespace Quizdom.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<int>("gamesPlayed");
-
-                    b.Property<int>("gamesWon");
 
                     b.Property<int>("questionsRight");
 

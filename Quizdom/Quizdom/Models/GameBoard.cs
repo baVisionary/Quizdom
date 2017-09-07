@@ -26,5 +26,6 @@ namespace Quizdom.Models
         public int answerOrder { get; set; }
         public string difficulty { get; set; }
         public int categoryId { get; set; }
+        public int answeredCorrectlyDelay { get; set; }
     }
 }

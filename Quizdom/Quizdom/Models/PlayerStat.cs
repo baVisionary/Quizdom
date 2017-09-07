@@ -12,5 +12,7 @@ namespace Quizdom.Models
         public int questionsWon { get; set; }
         public int questionsRight { get; set; }
         public int questionsRightDelay { get; set; }
+        public int gamesPlayed { get; set; }
+        public int gamesWon { get; set; }
     }
 }

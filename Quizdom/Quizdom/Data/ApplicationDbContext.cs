@@ -32,7 +32,7 @@ namespace Quizdom.Data
         public DbSet<GameCategories> GameCategories { get; set; }
         public DbSet<Friend> Friends { get; set; }
         public DbSet<UserActivity> UserActivity { get; set; }
-
+        public DbSet<PlayerStat> PlayerStats { get; set; }
 
     }
 }

@@ -649,8 +649,8 @@ var Quizdom;
             // Build the game board using the categories
             GameService.prototype.setupGameBoards = function () {
                 var _this = this;
-                console.log("Creating GameBoards...");
                 this.answerOrder = 0;
+                console.log("Creating GameBoards...");
                 this.gameBoards.length = 0;
                 console.log("Local Game Boards deleted");
                 var gameBoardsSetup = new Promise(function (resAll, err) {

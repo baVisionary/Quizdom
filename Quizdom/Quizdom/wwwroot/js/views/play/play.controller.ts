@@ -262,6 +262,43 @@ namespace Quizdom.Views.Play {
       return this.GameService.winner;
     }
 
+    // calculates the game winner based on prizePoints using questions answered correctly then average answerDelay as tie-breakers
+    public gameWinner(): string {
+      this.GameService.winner = "Tie";
+
+      this.GameService.players.forEach(playerData => {
+
+        let player = {
+          userName: playerData.userName,
+          prizePoints: playerData.prizePoints,
+          answerCorrect: 0,
+          answerDelay: 0
+        };
+
+        // tally the number of questions answered correctly
+        let myCorrect = this.GameService.gameBoards.filter(gb => { return gb.answeredCorrectlyUserId == playerData.userName });
+        player.answerCorrect = myCorrect.length;
+
+        // player.answerDelay = myCorrect.reduce((a, b) => {
+        //   return a.answeredCorrectlyDelay + b.answeredCorrectlyDelay;
+        // }, 0)
+
+        this.GameService.playerResults.push(player);
+      })
+
+      this.GameService.playerResults.sort((a, b) => {
+        if (a.prizePoints != b.prizePoints) {
+          return (a.prizePoints > b.prizePoints) ? -1 : 1;
+        }
+        if (a.answerCorrect != b.answerCorrect) {
+          return (a.answerCorrect > b.answerCorrect) ? -1 : 1;
+        }
+        // return (a.answerDelay < b.answerDelay) ? -1 : 1;
+      })
+
+      return this.GameService.playerResults[0].userName;
+    }
+
     /* "trigger" methods respond to user action on DOM elements to update the DB via APIs */
 
     // send new gameMsg to GameMessage table
@@ -312,17 +349,17 @@ namespace Quizdom.Views.Play {
       this.GameService.updateGamesTable(newGameData);
 
       // GameBoard - no change
+      // GamePlayers - no change
 
-      // GamePlayers - set all prizePoints to 0
-      this.GameService.players.forEach(playerData => {
+      // this.GameService.players.forEach(playerData => {
 
-        // copy each player to update values
-        let newPlayerData = angular.copy(playerData);
+      //   // copy each player to update values
+      //   let newPlayerData = angular.copy(playerData);
 
-        newPlayerData.prizePoints = 0;
-        this.GameService.updateGamePlayersTable(newPlayerData)
+      //   newPlayerData.prizePoints = 0;
+      //   this.GameService.updateGamePlayersTable(newPlayerData)
 
-      })
+      // })
 
     }
 
@@ -546,16 +583,25 @@ namespace Quizdom.Views.Play {
     }
 
     public triggerSummary() {
-      this.GameService.players.forEach(playerData => {
 
-        let player = {
-          userName: playerData.userName,
-          correct: 0
-        };
-        player.correct = this.GameService.gameBoards.filter(gb => { return gb.answeredCorrectlyUserId == playerData.userName }).length;
+      // figure out the winner
+      this.GameService.winner = this.gameWinner();
 
-        this.GameService.playerResults.push(player);
-      })
+      // Only the game inititor updates gameState & gameBoard questionState
+      if (this.GameService.gameData.initiatorUserId == this.myUserName) {
+
+        // copy the current game data
+        let newGameData = angular.copy(this.GameService.gameData);
+
+        newGameData.gameState = "summary";
+        this.GameService.updateGamesTable(newGameData);
+
+        // 
+        let newGameBoardData = angular.copy(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.gameBoardId }));
+
+        // this.GameService.updateGameBoardsTable(newGameBoardData)
+
+      }
 
     }
 

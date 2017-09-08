@@ -214,6 +214,36 @@ var Quizdom;
                     console.log("Winner", this.GameService.winner);
                     return this.GameService.winner;
                 };
+                // calculates the game winner based on prizePoints using questions answered correctly then average answerDelay as tie-breakers
+                PlayController.prototype.gameWinner = function () {
+                    var _this = this;
+                    this.GameService.winner = "Tie";
+                    this.GameService.players.forEach(function (playerData) {
+                        var player = {
+                            userName: playerData.userName,
+                            prizePoints: playerData.prizePoints,
+                            answerCorrect: 0,
+                            answerDelay: 0
+                        };
+                        // tally the number of questions answered correctly
+                        var myCorrect = _this.GameService.gameBoards.filter(function (gb) { return gb.answeredCorrectlyUserId == playerData.userName; });
+                        player.answerCorrect = myCorrect.length;
+                        // player.answerDelay = myCorrect.reduce((a, b) => {
+                        //   return a.answeredCorrectlyDelay + b.answeredCorrectlyDelay;
+                        // }, 0)
+                        _this.GameService.playerResults.push(player);
+                    });
+                    this.GameService.playerResults.sort(function (a, b) {
+                        if (a.prizePoints != b.prizePoints) {
+                            return (a.prizePoints > b.prizePoints) ? -1 : 1;
+                        }
+                        if (a.answerCorrect != b.answerCorrect) {
+                            return (a.answerCorrect > b.answerCorrect) ? -1 : 1;
+                        }
+                        // return (a.answerDelay < b.answerDelay) ? -1 : 1;
+                    });
+                    return this.GameService.playerResults[0].userName;
+                };
                 /* "trigger" methods respond to user action on DOM elements to update the DB via APIs */
                 // send new gameMsg to GameMessage table
                 PlayController.prototype.triggerGameMessage = function () {
@@ -252,19 +282,18 @@ var Quizdom;
                 };
                 // initial state of game shows How to play
                 PlayController.prototype.triggerWelcome = function () {
-                    var _this = this;
                     // Games - update gameState to "welcome"
                     var newGameData = this.GameService.gameData;
                     newGameData.gameState = "welcome";
                     this.GameService.updateGamesTable(newGameData);
                     // GameBoard - no change
-                    // GamePlayers - set all prizePoints to 0
-                    this.GameService.players.forEach(function (playerData) {
-                        // copy each player to update values
-                        var newPlayerData = angular.copy(playerData);
-                        newPlayerData.prizePoints = 0;
-                        _this.GameService.updateGamePlayersTable(newPlayerData);
-                    });
+                    // GamePlayers - no change
+                    // this.GameService.players.forEach(playerData => {
+                    //   // copy each player to update values
+                    //   let newPlayerData = angular.copy(playerData);
+                    //   newPlayerData.prizePoints = 0;
+                    //   this.GameService.updateGamePlayersTable(newPlayerData)
+                    // })
                 };
                 // Any player clicking "How to play" starts the game
                 PlayController.prototype.triggerPlay = function () {
@@ -446,14 +475,18 @@ var Quizdom;
                 };
                 PlayController.prototype.triggerSummary = function () {
                     var _this = this;
-                    this.GameService.players.forEach(function (playerData) {
-                        var player = {
-                            userName: playerData.userName,
-                            correct: 0
-                        };
-                        player.correct = _this.GameService.gameBoards.filter(function (gb) { return gb.answeredCorrectlyUserId == playerData.userName; }).length;
-                        _this.GameService.playerResults.push(player);
-                    });
+                    // figure out the winner
+                    this.GameService.winner = this.gameWinner();
+                    // Only the game inititor updates gameState & gameBoard questionState
+                    if (this.GameService.gameData.initiatorUserId == this.myUserName) {
+                        // copy the current game data
+                        var newGameData = angular.copy(this.GameService.gameData);
+                        newGameData.gameState = "summary";
+                        this.GameService.updateGamesTable(newGameData);
+                        // 
+                        var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
+                        // this.GameService.updateGameBoardsTable(newGameBoardData)
+                    }
                 };
                 PlayController.$inject = [
                     'AuthenticationService',

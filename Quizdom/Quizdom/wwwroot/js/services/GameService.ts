@@ -679,8 +679,8 @@ namespace Quizdom.Services {
 
     // Build the game board using the categories
     public setupGameBoards() {
-      console.log(`Creating GameBoards...`);
       this.answerOrder = 0;
+      console.log(`Creating GameBoards...`);
       this.gameBoards.length = 0;
       console.log(`Local Game Boards deleted`);
       let gameBoardsSetup = new Promise((resAll, err) => {

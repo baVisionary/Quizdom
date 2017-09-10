@@ -57,7 +57,7 @@ var Quizdom;
                         }
                         if (_this.GameService.gameState == "pick") {
                             _this.GameService.guess = 4;
-                            _this.GameService.delay = _this.GameService.duration;
+                            _this.GameService.delay = _this.GameService.duration * 1000;
                         }
                         if (_this.GameService.gameState != "question") {
                             _this.GameService.showSection = _this.GameService.gameState;
@@ -99,20 +99,18 @@ var Quizdom;
                         _this.GameService.players[_this.pIndex].questionsWon = gamePlayerData.questionsWon;
                         console.log("Player updated from DB", _this.GameService.players[_this.pIndex]);
                         // Set visual state based on playerState
-                        if (_this.GameService.gameState == "question") {
-                            if (gamePlayerData.userId == _this.myUserName) {
-                                _this.GameService.showSection = gamePlayerData.playerState;
-                                console.log("Show section", _this.GameService.showSection);
-                                if (gamePlayerData.playerState == "prepare") {
-                                    _this.triggerPrepareTimer();
-                                }
-                                else if (gamePlayerData.playerState == "ask") {
-                                    _this.triggerAskTimer();
-                                }
+                        if (gamePlayerData.userId == _this.myUserName) {
+                            _this.GameService.showSection = gamePlayerData.playerState;
+                            console.log("Show section", _this.GameService.showSection);
+                            if (gamePlayerData.playerState == "prepare") {
+                                _this.triggerPrepareTimer();
                             }
-                            if (gamePlayerData.playerState == "guess") {
-                                _this.checkPlayersInGuess();
+                            else if (gamePlayerData.playerState == "ask") {
+                                _this.triggerAskTimer();
                             }
+                        }
+                        if (gamePlayerData.playerState == "guess") {
+                            _this.checkPlayersInGuess();
                         }
                         $scope.$applyAsync();
                     };
@@ -487,7 +485,7 @@ var Quizdom;
                         newPlayerData.answer = 4;
                         // duration = total time allowed in Sec * 1000 to get millisecs 
                         newPlayerData.delay = _this.GameService.duration * 1000;
-                        newPlayerData.playerState = "ready";
+                        newPlayerData.playerState = "pick";
                         _this.GameService.updateGamePlayersTable(newPlayerData);
                     });
                     if (this.GameService.answerOrder < 18) {

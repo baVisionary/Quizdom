@@ -17,12 +17,6 @@ namespace Quizdom.Services {
 
     }
 
-    private _Resource_player_stats = <Models.IPlayerStatsResource>this.$resource('/api/game/:gameId', null, {
-      'update': {
-        method: 'PUT'
-      }
-    });
-
     public findByEmail(email: string) {
       this.newFriend = this._Resource_find_player.get({ verb: 'searchuserbyemail', email: email });
       return this.newFriend.$promise;

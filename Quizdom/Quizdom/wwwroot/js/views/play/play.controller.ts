@@ -79,7 +79,7 @@ namespace Quizdom.Views.Play {
 
         if (this.GameService.gameState == "pick") {
           this.GameService.guess = 4;
-          this.GameService.delay = this.GameService.duration;
+          this.GameService.delay = this.GameService.duration * 1000;
         }
 
         if (this.GameService.gameState != "question") {
@@ -133,24 +133,22 @@ namespace Quizdom.Views.Play {
         console.log(`Player updated from DB`, this.GameService.players[this.pIndex]);
 
         // Set visual state based on playerState
-        if (this.GameService.gameState == "question") {
+        if (gamePlayerData.userId == this.myUserName) {
 
-          if (gamePlayerData.userId == this.myUserName) {
+          this.GameService.showSection = gamePlayerData.playerState;
+          console.log(`Show section`, this.GameService.showSection);
 
-            this.GameService.showSection = gamePlayerData.playerState;
-            console.log(`Show section`, this.GameService.showSection);
-
-            if (gamePlayerData.playerState == "prepare") {
-              this.triggerPrepareTimer();
-            } else if (gamePlayerData.playerState == "ask") {
-              this.triggerAskTimer();
-            }
-          }
-
-          if (gamePlayerData.playerState == "guess") {
-            this.checkPlayersInGuess();
+          if (gamePlayerData.playerState == "prepare") {
+            this.triggerPrepareTimer();
+          } else if (gamePlayerData.playerState == "ask") {
+            this.triggerAskTimer();
           }
         }
+
+        if (gamePlayerData.playerState == "guess") {
+          this.checkPlayersInGuess();
+        }
+
 
         $scope.$applyAsync();
       }
@@ -604,7 +602,7 @@ namespace Quizdom.Views.Play {
 
         // duration = total time allowed in Sec * 1000 to get millisecs 
         newPlayerData.delay = this.GameService.duration * 1000;
-        newPlayerData.playerState = "ready";
+        newPlayerData.playerState = "pick";
         this.GameService.updateGamePlayersTable(newPlayerData);
       })
 

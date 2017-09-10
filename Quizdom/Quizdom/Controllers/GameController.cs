@@ -258,6 +258,97 @@ namespace Quizdom.Controllers
             return NoContent();
         }
 
+                                                                                    //PLAYERSTATS
+
+        // POST /api/game/playerstats  ** Add new playerstats record
+        [HttpPost("playerstats")]
+        public IActionResult Post([FromBody]PlayerStat playerstats)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+            
+            _context.PlayerStats.Add(playerstats);
+            _context.SaveChanges();
+
+            return Created("api/game/playerstats/" + playerstats.Id, playerstats.Id);
+        }
+
+
+        // GET: /api/game/playerstats  * get's playerstats
+        [HttpGet("playerstats")]
+        public IEnumerable<PlayerStat> PlayerStats()
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            return _context.PlayerStats.ToList();
+        }
+
+        // GET /api/game/playerstats/1   - get's all records for a specific playerstat
+        [HttpGet("playerstats/{id}")]
+        public IActionResult GetPlayerstatsById(int id)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.PlayerStats
+                          where c.Id == id
+                          select c).ToList();
+
+            return Ok(record);
+        }
+
+        // GET /api/game/playerstats/1   - get's all playerstats by username
+        [HttpGet("playerstats/{username}")]
+        public IActionResult GetPlayerstatsByUsername(string username)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record = (from c in _context.PlayerStats
+                          where c.userName == username
+                          select c).ToList();
+
+            return Ok(record);
+        }
+
+
+        // PUT /api/game/playerstats/1   ** updates playerstats record by id
+        [HttpPut("playerstats/{id}")]
+        public IActionResult Put(int id, [FromBody]PlayerStat playerstat)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+
+            var record2 = _context.PlayerStats.Where(c => c.Id == id).Count();
+
+
+            if (record2 == 0)
+            {
+                return NoContent();
+            }
+
+            playerstat.Id = id;
+            _context.PlayerStats.Update(playerstat);
+            _context.SaveChanges();
+
+
+            return Ok(playerstat);
+        }
+
+        // DELETE /api/game/playerstats/1  ** Delete PlayerStats record by id
+        [HttpDelete("playerstats/{id}")]
+        public IActionResult DeletePlayerstats(int id)
+        {
+            // UPDATE USER TRACKING INFORMATION
+            userTracker.UpdateUserActivity(Request);
+            
+            _context.Remove(_context.PlayerStats.SingleOrDefault<PlayerStat>(c => c.Id == id));
+            _context.SaveChanges();
+            return NoContent();
+        }
+
+
         // GET: /api/game/players  * get's all game players
         [HttpGet("players")]
         public IEnumerable<GamePlayers> Gameplayers()

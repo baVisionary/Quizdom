@@ -14,5 +14,16 @@ namespace Quizdom.Models
         public int questionsRightDelay { get; set; }
         public int gamesPlayed { get; set; }
         public int gamesWon { get; set; }
+
+        public PlayerStat()
+        {
+            questionsWon = 0;
+            questionsRight = 0;
+            questionsRightDelay = 0;
+            gamesPlayed = 0;
+            gamesWon = 0;
+        }
     }
+
+
 }

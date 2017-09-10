@@ -67,8 +67,23 @@ namespace Quizdom.Controllers
                         userTracker.UpdateUserActivity(Request);
 
                         authUser.AvatarUrl = record.ImageUrl;
-                        
-                            return Ok(authUser);
+
+                        var record2 = (from c in _context.PlayerStats
+                                      where c.userName == authUser.UserName
+                                      select c).FirstOrDefault();
+                        if (record2 == null)
+                        {
+                            record2 = new PlayerStat();
+
+                        }
+                        authUser.gamesPlayed = record2.gamesPlayed;
+                        authUser.gamesWon = record2.gamesWon;
+                        authUser.questionsRight = record2.questionsRight;
+                        authUser.questionsRightDelay= record2.questionsRightDelay;
+                        authUser.questionsWon = record2.questionsWon;
+
+
+                        return Ok(authUser);
                     }
                 }
 
@@ -150,10 +165,23 @@ namespace Quizdom.Controllers
 
             var authUser = await GetUser(user);
             authUser = await GetUser(friend);
-            var record2 = (from c in _context.Avatars
+            var record = (from c in _context.Avatars
                            where c.Id == authUser.AvatarId
                            select c).FirstOrDefault();
-            authUser.AvatarUrl = record2.ImageUrl;
+            authUser.AvatarUrl = record.ImageUrl;
+            var record2 = (from c in _context.PlayerStats
+                           where c.userName == authUser.UserName
+                           select c).FirstOrDefault();
+            if (record2 == null)
+            {
+                record2 = new PlayerStat();
+
+            }
+            authUser.gamesPlayed = record2.gamesPlayed;
+            authUser.gamesWon = record2.gamesWon;
+            authUser.questionsRight = record2.questionsRight;
+            authUser.questionsRightDelay = record2.questionsRightDelay;
+            authUser.questionsWon = record2.questionsWon;
 
             return Ok(authUser);
         }
@@ -171,10 +199,25 @@ namespace Quizdom.Controllers
                 return NoContent();
             }
             var authUser = await GetUser(user);
-            var record2 = (from c in _context.Avatars
+            var record = (from c in _context.Avatars
                            where c.Id == authUser.AvatarId
                            select c).FirstOrDefault();
-            authUser.AvatarUrl = record2.ImageUrl;
+            authUser.AvatarUrl = record.ImageUrl;
+
+            var record2 = (from c in _context.PlayerStats
+                           where c.userName == authUser.UserName
+                           select c).FirstOrDefault();
+            if (record2 == null)
+            {
+                record2 = new PlayerStat();
+
+            }
+            authUser.gamesPlayed = record2.gamesPlayed;
+            authUser.gamesWon = record2.gamesWon;
+            authUser.questionsRight = record2.questionsRight;
+            authUser.questionsRightDelay = record2.questionsRightDelay;
+            authUser.questionsWon = record2.questionsWon;
+
             return Ok(authUser);
         }
 
@@ -201,10 +244,25 @@ namespace Quizdom.Controllers
                     {
                         var friend = await _userManager.FindByNameAsync(item.friendUserName);
                         authUser = await GetUser(friend);
-                        var record2 = (from c in _context.Avatars
+                        var record = (from c in _context.Avatars
                                        where c.Id == authUser.AvatarId
                                        select c).FirstOrDefault();
-                        authUser.AvatarUrl = record2.ImageUrl;
+
+                        var record2 = (from c in _context.PlayerStats
+                                       where c.userName == authUser.UserName
+                                       select c).FirstOrDefault();
+                        if (record2 == null)
+                        {
+                            record2 = new PlayerStat();
+
+                        }
+                        authUser.gamesPlayed = record2.gamesPlayed;
+                        authUser.gamesWon = record2.gamesWon;
+                        authUser.questionsRight = record2.questionsRight;
+                        authUser.questionsRightDelay = record2.questionsRightDelay;
+                        authUser.questionsWon = record2.questionsWon;
+
+                        authUser.AvatarUrl = record.ImageUrl;
                     }
                     catch
                     {
@@ -302,10 +360,26 @@ namespace Quizdom.Controllers
                 if (user != null)
                 {
                     authUser = await GetUser(user);
-                    var record2 = (from c in _context.Avatars
+                    var record = (from c in _context.Avatars
                                    where c.Id == authUser.AvatarId
                                    select c).FirstOrDefault();
-                    authUser.AvatarUrl = record2.ImageUrl;
+                    authUser.AvatarUrl = record.ImageUrl;
+
+                    var record2 = (from c in _context.PlayerStats
+                                   where c.userName == authUser.UserName
+                                   select c).FirstOrDefault();
+                    if (record2 == null)
+                    {
+                        record2 = new PlayerStat();
+
+                    }
+
+                    authUser.gamesPlayed = record2.gamesPlayed;
+                    authUser.gamesWon = record2.gamesWon;
+                    authUser.questionsRight = record2.questionsRight;
+                    authUser.questionsRightDelay = record2.questionsRightDelay;
+                    authUser.questionsWon = record2.questionsWon;
+
                     authModel.Add(authUser);
                 }
             }

@@ -774,6 +774,9 @@ var Quizdom;
                         newGamePlayer.answer = newPlayerData.answer;
                         newGamePlayer.delay = newPlayerData.delay;
                         newGamePlayer.playerState = newPlayerData.playerState;
+                        newGamePlayer.questionsRight = newPlayerData.questionsRight;
+                        newGamePlayer.questionsRightDelay = newPlayerData.questionsRightDelay;
+                        newGamePlayer.questionsWon = newPlayerData.questionsWon;
                         console.log("Updating Game Player...", newGamePlayer);
                         _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function () {
                             res("Game Player update sent to DB");

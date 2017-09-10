@@ -7,6 +7,11 @@ var Quizdom;
                 this.$resource = $resource;
                 this.friends = [];
                 this._Resource_find_player = this.$resource('/api/Account/:verb');
+                this._Resource_player_stats = this.$resource('/api/game/:gameId', null, {
+                    'update': {
+                        method: 'PUT'
+                    }
+                });
             }
             PlayerService.prototype.findByEmail = function (email) {
                 this.newFriend = this._Resource_find_player.get({ verb: 'searchuserbyemail', email: email });

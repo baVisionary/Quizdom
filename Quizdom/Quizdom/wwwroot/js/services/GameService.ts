@@ -370,7 +370,7 @@ namespace Quizdom.Services {
             this._Resource_game_players.query({ id: gameId }).$promise
               .then((gameplayers) => {
                 resPlayers('Players loaded from DB')
-                gameplayers.forEach((gp) => {
+                gameplayers.forEach(gp => {
                   gamePlayersPromises = gamePlayersPromises.then(() => {
                     return new Promise((resLoop) => {
                       this.PlayerService.findByUserName(gp.userId)
@@ -810,6 +810,9 @@ namespace Quizdom.Services {
           newGamePlayer.answer = newPlayerData.answer;
           newGamePlayer.delay = newPlayerData.delay;
           newGamePlayer.playerState = newPlayerData.playerState;
+          newGamePlayer.questionsRight = newPlayerData.questionsRight;
+          newGamePlayer.questionsRightDelay = newPlayerData.questionsRightDelay;
+          newGamePlayer.questionsWon = newPlayerData.questionsWon;
 
           console.log(`Updating Game Player...`, newGamePlayer);
           this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(() => {

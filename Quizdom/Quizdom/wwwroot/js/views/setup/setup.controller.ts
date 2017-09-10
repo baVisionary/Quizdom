@@ -52,6 +52,9 @@ namespace Quizdom.Views.Setup {
         // copy each player to update values
         let newPlayerData = angular.copy(playerData);
         newPlayerData.prizePoints = 0;
+        newPlayerData.questionsRight = 0;
+        newPlayerData.questionsRightDelay = 0;
+        newPlayerData.questionsWon = 0;
 
         gamePlayerPromises = gamePlayerPromises.then(() => {
           return this.GameService.updateGamePlayersTable(newPlayerData);

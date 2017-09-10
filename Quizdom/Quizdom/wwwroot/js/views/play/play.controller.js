@@ -30,12 +30,10 @@ var Quizdom;
                         _this.HubService.connection.broadcaster.client.changeGamePlayerData = $scope.changeGamePlayerData;
                         _this.HubService.startGroup(_this.GameService.groupName).then(function () {
                             _this.GameService.getGameMessages();
+                            // checks the gameState and playerState to ensure the gmae progresses properly after a refresh
                             _this.triggerRefresh();
-                            // this.GameService.updateGamesTable(this.GameService.gameData);
-                            // this.GameService.updateGamePlayersTable(this.GameService.players.find(p => { return p.playerId == this.GameService.myGamePlayerId }));
-                            // this.GameService.updateGameBoardsTable(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.boardId }));
                             console.log("showSection", _this.GameService.showSection);
-                            console.log("question", _this.GameService.question);
+                            // console.log(`question`, this.GameService.question);
                         });
                     });
                     // confirming how to relocate onto $scope if necessary for SignalR async
@@ -78,6 +76,7 @@ var Quizdom;
                         _this.GameService.gameBoards[gbIndex].questionState = gameBoardData.questionState;
                         _this.GameService.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
                         _this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId || "";
+                        _this.GameService.gameBoards[gbIndex].answeredCorrectlyDelay = gameBoardData.answeredCorrectlyDelay || 0;
                         console.log("GameBoard updated from DB", _this.GameService.gameBoards[gbIndex]);
                         // assign gameBoard question to local question if questionState = "asking"
                         if (gameBoardData.questionState == "asking") {
@@ -95,6 +94,9 @@ var Quizdom;
                         _this.GameService.players[_this.pIndex].answer = gamePlayerData.answer;
                         _this.GameService.players[_this.pIndex].delay = gamePlayerData.delay;
                         _this.GameService.players[_this.pIndex].playerState = gamePlayerData.playerState;
+                        _this.GameService.players[_this.pIndex].questionsRight = gamePlayerData.questionsRight;
+                        _this.GameService.players[_this.pIndex].questionsRightDelay = gamePlayerData.questionsRightDelay;
+                        _this.GameService.players[_this.pIndex].questionsWon = gamePlayerData.questionsWon;
                         console.log("Player updated from DB", _this.GameService.players[_this.pIndex]);
                         // Set visual state based on playerState
                         if (_this.GameService.gameState == "question") {
@@ -240,7 +242,7 @@ var Quizdom;
                         if (a.answerCorrect != b.answerCorrect) {
                             return (a.answerCorrect > b.answerCorrect) ? -1 : 1;
                         }
-                        // return (a.answerDelay < b.answerDelay) ? -1 : 1;
+                        return (a.answerDelay < b.answerDelay) ? -1 : 1;
                     });
                     return this.GameService.playerResults[0].userName;
                 };
@@ -288,12 +290,6 @@ var Quizdom;
                     this.GameService.updateGamesTable(newGameData);
                     // GameBoard - no change
                     // GamePlayers - no change
-                    // this.GameService.players.forEach(playerData => {
-                    //   // copy each player to update values
-                    //   let newPlayerData = angular.copy(playerData);
-                    //   newPlayerData.prizePoints = 0;
-                    //   this.GameService.updateGamePlayersTable(newPlayerData)
-                    // })
                 };
                 // Any player clicking "How to play" starts the game
                 PlayController.prototype.triggerPlay = function () {
@@ -367,14 +363,14 @@ var Quizdom;
                         // Triggered by duration timer expiring
                         // This does not change gameState since other players with slow connections might still be within duration timer
                         // Update only this gamePlayer with locally stored guess & calculated delay
+                        // Games - no change
+                        // GameBoard - no change
                         // GamePlayers - update answer & calculate delay value, playerState to "guess"
                         var newPlayerData = angular.copy(_this.GameService.players.find(function (p) { return p.userName == _this.myUserName; }));
                         newPlayerData.answer = _this.GameService.guess;
                         newPlayerData.delay = _this.GameService.delay;
                         newPlayerData.playerState = 'guess';
                         _this.GameService.updateGamePlayersTable(newPlayerData);
-                        // Games - no change
-                        // GameBoard - no change
                     });
                 };
                 // Available only when playerState = "guess" - All actions stored in local model until duration timer expires
@@ -421,10 +417,32 @@ var Quizdom;
                 // Set gameBoard answeredCorrectlyUserId to winner
                 PlayController.prototype.triggerResults = function () {
                     var _this = this;
-                    // figure out the winner
-                    this.GameService.winner = this.questionWinner();
-                    // Only the game inititor updates gameState & gameBoard questionState
+                    // Only the game inititor updates the tables
                     if (this.GameService.gameData.initiatorUserId == this.myUserName) {
+                        // figure out the winner
+                        this.GameService.winner = "No player";
+                        var fastest_2 = this.GameService.duration * 1000;
+                        var correctPlayers_1 = 0;
+                        this.GameService.players.forEach(function (playerData) {
+                            var newPlayerData = angular.copy(playerData);
+                            if (newPlayerData.answer == _this.GameService.question.correctAnswer) {
+                                correctPlayers_1++;
+                                // update playerState to reflect whether player answered correctly
+                                newPlayerData.playerState = "right";
+                                // store the fastest (lowest) correct answer delay
+                                fastest_2 = Math.min(fastest_2, newPlayerData.delay);
+                            }
+                            else {
+                                // update playerState to reflect whether player answered correctly
+                                newPlayerData.playerState = "wrong";
+                            }
+                            _this.GameService.updateGamePlayersTable(newPlayerData);
+                        });
+                        // check if any  player answered correctly and note the fastest correct guess
+                        if (correctPlayers_1 > 0) {
+                            console.log("fastest", fastest_2);
+                            this.GameService.winner = this.GameService.players.find(function (p) { return p.delay == fastest_2; }).userName;
+                        }
                         // copy the current game data
                         var newGameData = angular.copy(this.GameService.gameData);
                         if (this.GameService.winner != "No player") {
@@ -438,6 +456,7 @@ var Quizdom;
                         var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
                         // GameBoard - update answeredCorrectlyUserId with the winning player's username
                         newGameBoardData.answeredCorrectlyUserId = this.GameService.winner;
+                        newGameBoardData.answeredCorrectlyDelay = this.GameService.delay;
                         // newGameBoardData.questionState = "results"
                         this.GameService.updateGameBoardsTable(newGameBoardData);
                     }
@@ -451,13 +470,18 @@ var Quizdom;
                     var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
                     newGameBoardData.questionState = "retired";
                     this.GameService.updateGameBoardsTable(newGameBoardData);
-                    // GamePlayers - update each player's playerState to "ready"
+                    // GamePlayers - first player to click increments questionsRight, questionsRightDelay, questionsWon, updates every playerState to "ready"
                     this.GameService.players.forEach(function (playerData) {
                         // copy each player's data
                         var newPlayerData = angular.copy(playerData);
-                        if (newPlayerData.userName == _this.GameService.winner) {
+                        if (newPlayerData.playerState == "right") {
                             newPlayerData.prizePoints += _this.GameService.question.prizePoints;
-                            console.log("Adding " + _this.GameService.question.prizePoints + " to " + _this.GameService.winner);
+                            console.log("Adding " + _this.GameService.question.prizePoints + " to " + newPlayerData.userName);
+                            newPlayerData.questionsRight += 1;
+                            newPlayerData.questionsRightDelay += newPlayerData.delay;
+                            if (newPlayerData.userName == _this.GameService.winner) {
+                                newPlayerData.questionsWon += 1;
+                            }
                         }
                         // valid answers are 0-3 so 4 = "None" as in no answer selected
                         newPlayerData.answer = 4;

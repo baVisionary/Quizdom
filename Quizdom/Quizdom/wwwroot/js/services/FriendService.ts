@@ -25,27 +25,8 @@ namespace Quizdom.Services {
 
     public getMyFriends(userName: string): Array<Models.UserModel> {
       this.friends = this._Resource_find_friends.query({ verb: 'getfriendsbyprimaryusername', userName: userName });
-      // this.friendsById = this._Resource_friendsById.query({ userName: userName });
-      // console.log(this.friends);
-      // .$promise.then((friends) => {
-      //   this.friends = friends;
-      //   this.friends.forEach(friend => {
-      //     friend.avatarUrl = this.AvatarService.getAvatarUrl(friend.avatarId);
-      //     console.log(friend);
-      //   });
-      // });
       return this.friends;
     }
-
-    // public findByEmail(email: string) {
-    //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyemail', email: email });
-    //   return this.newFriend.$promise;
-    // }
-
-    // public findByUserName(userName: string) {
-    //   this.newFriend = this._Resource_find_friends.get({ verb: 'searchuserbyname', userName: userName });
-    //   return this.newFriend.$promise;
-    // }
 
     public addFriend(primaryUserName: string, friend: Models.IUser) {
       this.newFriend = this._Resource_friend.save({ primaryUserName: primaryUserName, friendUserName: friend.userName });

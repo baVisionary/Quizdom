@@ -17,6 +17,9 @@ namespace Quizdom.Models {
     public userId: string = '';
     public avatarId: number = 0;
     public categoryId: number = 0;
+    public answerDelay: number = 0;
+    public answerCorrectly: number = 0;
+    public askedInGame: number = 0;
 
   }
 
@@ -37,6 +40,9 @@ namespace Quizdom.Models {
     userId: string;
     avatarId: number;
     categoryId: number;
+    answerDelay: number;
+    answerCorrectly: number;
+    askedInGame: number;
   }
 
   export interface IQuizResource extends ng.resource.IResourceClass<IQuiz> {

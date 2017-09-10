@@ -20,6 +20,7 @@ namespace Quizdom.Models {
     // possible states: new/asking/retired
     public questionState: string = "new";
     public answeredCorrectlyUserId?: string = "";
+    public answeredCorrectlyDelay?: number = 0;
     public answerOrder?: number = 0;
     public catLong?: string;
   }
@@ -44,6 +45,7 @@ namespace Quizdom.Models {
     // possible states: new/asking/results/retired
     questionState: string;
     answeredCorrectlyUserId?: string;
+    answeredCorrectlyDelay?: number;
     answerOrder?: number;
     catLong?: string;
   }

@@ -22,5 +22,8 @@ namespace Quizdom.Models
         public string UserId { get; set; }
         public int? AvatarId { get; set; }
         public int? CategoryId { get; set; }
+        public int askedInGame { get; set; }
+        public int answeredCorrectly { get; set; }
+        public int answerDelay { get; set; }
     }
 }

@@ -10,6 +10,7 @@ var Quizdom;
                 this.activeUserId = '';
                 this.lastActiveUserId = '';
                 this.startDateTime = new Date();
+                // cycles through setup/welcome/pick/question/results/summary
                 this.gameState = "setup";
                 this.gameBoardId = 0;
             }

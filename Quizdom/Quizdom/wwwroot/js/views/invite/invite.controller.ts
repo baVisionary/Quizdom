@@ -26,11 +26,11 @@ namespace Quizdom.Views.Invite {
 
       this.loadMyFriends();
       this.loadActiveUsers();
-
-      this.GameService.loadMyGameData(this.AuthenticationService.User)
+      this.GameService.gameData = new Models.GameModel;
+      this.GameService.loadMyGameData(this.AuthenticationService.User.userName)
         .then(() => {
           console.log(`Loading Game ${this.GameService.gameId} Players from DB...`);
-          this.GameService.loadPlayers(this.GameService.gameId)
+          this.GameService.loadPlayers(this.GameService.gameId, this.AuthenticationService.User.userName)
             .then(() => {
               if (this.GameService.players.length == 0) {
                 this.GameService.addPlayer(this.GameService.gameId, this.AuthenticationService.User, true)
@@ -111,12 +111,7 @@ namespace Quizdom.Views.Invite {
     }
 
     public goToSetup() {
-      let firstPlayerIndex = this.GameService.randomInt(0, 2)
-      this.GameService.gameData.gameState = "setup"
-      this.GameService.gameData.activeUserId = this.GameService.gameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
-      this.GameService.updateGame(this.GameService.gameData).then(() => {
-        this.$state.go(`Setup`);
-      })
+      this.$state.go(`Setup`);
     }
 
     // public sendFriendEmail(friendEmail) {

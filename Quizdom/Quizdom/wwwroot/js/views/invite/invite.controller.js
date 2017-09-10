@@ -20,10 +20,11 @@ var Quizdom;
                     }
                     this.loadMyFriends();
                     this.loadActiveUsers();
-                    this.GameService.loadMyGameData(this.AuthenticationService.User)
+                    this.GameService.gameData = new Quizdom.Models.GameModel;
+                    this.GameService.loadMyGameData(this.AuthenticationService.User.userName)
                         .then(function () {
                         console.log("Loading Game " + _this.GameService.gameId + " Players from DB...");
-                        _this.GameService.loadPlayers(_this.GameService.gameId)
+                        _this.GameService.loadPlayers(_this.GameService.gameId, _this.AuthenticationService.User.userName)
                             .then(function () {
                             if (_this.GameService.players.length == 0) {
                                 _this.GameService.addPlayer(_this.GameService.gameId, _this.AuthenticationService.User, true);
@@ -100,13 +101,7 @@ var Quizdom;
                     this.GameService.removePlayer(playerId);
                 };
                 InviteController.prototype.goToSetup = function () {
-                    var _this = this;
-                    var firstPlayerIndex = this.GameService.randomInt(0, 2);
-                    this.GameService.gameData.gameState = "setup";
-                    this.GameService.gameData.activeUserId = this.GameService.gameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
-                    this.GameService.updateGame(this.GameService.gameData).then(function () {
-                        _this.$state.go("Setup");
-                    });
+                    this.$state.go("Setup");
                 };
                 InviteController.$inject = [
                     'AuthenticationService',

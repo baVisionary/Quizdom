@@ -10,9 +10,9 @@ namespace Quizdom.Services {
 
     }
 
-    public getUser() {
-      return this.authUser;
-    }
+    // public getUser() {
+    //   return this.authUser;
+    // }
 
     public get User() {
       return this.authUser

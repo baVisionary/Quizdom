@@ -19,9 +19,10 @@ var Quizdom;
                 this.answerD = "D";
                 //  values: 0-3
                 this.correctAnswer = 0;
-                // possible states: new/ask/answers/guess/correct/retired
+                // possible states: new/asking/retired
                 this.questionState = "new";
                 this.answeredCorrectlyUserId = "";
+                this.answeredCorrectlyDelay = 0;
                 this.answerOrder = 0;
             }
             return GameBoardModel;

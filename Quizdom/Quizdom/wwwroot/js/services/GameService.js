@@ -45,7 +45,9 @@ var Quizdom;
                 // the player's guess as to the answer of the question
                 this.guess = 4;
                 this.delay = this.duration;
+                /* variables to summarize game */
                 this.winner = "";
+                this.playerResults = [];
                 // manage 'Games' table
                 this._Resource_game = this.$resource('/api/game/:gameId', null, {
                     'update': {
@@ -383,6 +385,9 @@ var Quizdom;
                                             var cat = _this.allCategories.find(function (cat) { return cat.id == gameBoard.categoryId; });
                                             gameBoard.catLong = cat.longDescription;
                                             _this.answerOrder = Math.max(_this.answerOrder, gameBoard.answerOrder);
+                                            if (_this.answerOrder == gameBoard.answerOrder) {
+                                                _this.winner = gameBoard.answeredCorrectlyUserId;
+                                            }
                                             _this.gameBoards.push(gameBoard);
                                             resBoard("Another gameBoard loaded");
                                         });
@@ -644,6 +649,7 @@ var Quizdom;
             // Build the game board using the categories
             GameService.prototype.setupGameBoards = function () {
                 var _this = this;
+                this.answerOrder = 0;
                 console.log("Creating GameBoards...");
                 this.gameBoards.length = 0;
                 console.log("Local Game Boards deleted");
@@ -768,6 +774,9 @@ var Quizdom;
                         newGamePlayer.answer = newPlayerData.answer;
                         newGamePlayer.delay = newPlayerData.delay;
                         newGamePlayer.playerState = newPlayerData.playerState;
+                        newGamePlayer.questionsRight = newPlayerData.questionsRight;
+                        newGamePlayer.questionsRightDelay = newPlayerData.questionsRightDelay;
+                        newGamePlayer.questionsWon = newPlayerData.questionsWon;
                         console.log("Updating Game Player...", newGamePlayer);
                         _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function () {
                             res("Game Player update sent to DB");

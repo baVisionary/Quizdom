@@ -17,6 +17,9 @@ namespace Quizdom.Models {
       public answer?: number = 0;
       public delay?: number = 0;
       public playerState?: string = 'ready';
+      public questionsRight?: number = 0;
+      public questionsRightDelay?: number = 0;
+      public questionsWon?: number = 0;
 
       constructor(user, gamePlayer?) {
         super();
@@ -34,6 +37,9 @@ namespace Quizdom.Models {
         this.delay = gamePlayer.delay;
         // ready (gameState: pick) prepare/ask/guess/results (gameState: question) winner/loser (gameState: summary)
         this.playerState = gamePlayer.playerState;
+        this.questionsRight = gamePlayer.questionsRight;
+        this.questionsRightDelay = gamePlayer.questionsRightDelay;
+        this.questionsWon = gamePlayer.questionsWon;
 
       }
 
@@ -56,6 +62,9 @@ namespace Quizdom.Models {
       answer?: number;
       delay?: number;
       playerState?: string;
+      questionsRight?: number;
+      questionsRightDelay?: number;
+      questionsWon?: number;
     }
 
     export interface IPlayerResource extends ng.resource.IResourceClass<IPlayer> {

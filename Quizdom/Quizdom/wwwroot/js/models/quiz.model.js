@@ -19,6 +19,9 @@ var Quizdom;
                 this.userId = '';
                 this.avatarId = 0;
                 this.categoryId = 0;
+                this.answerDelay = 0;
+                this.answerCorrectly = 0;
+                this.askedInGame = 0;
             }
             return QuizModel;
         }());

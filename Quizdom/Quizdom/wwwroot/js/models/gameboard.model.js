@@ -22,6 +22,7 @@ var Quizdom;
                 // possible states: new/asking/retired
                 this.questionState = "new";
                 this.answeredCorrectlyUserId = "";
+                this.answeredCorrectlyDelay = 0;
                 this.answerOrder = 0;
             }
             return GameBoardModel;

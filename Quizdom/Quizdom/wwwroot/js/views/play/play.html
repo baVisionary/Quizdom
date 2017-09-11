@@ -45,6 +45,7 @@
                     </div>
                   </div>
                   <h6 ng-show="vm.timer != '0'">{{ vm.timer }} s to answer</h6>
+                  <input type="range" ng-model="parseFloat(vm.timer)" min="0" max="vm.GameService.duration * 1000" >
                   <h6>Answer: {{ vm.guessValue[vm.GameService.guess] }} <span ng-show="vm.GameService.guess < 4">in {{ vm.GameService.delay/1000 }} s</span></h6>
                 </div>
               </div>
@@ -122,25 +123,28 @@
           <!-- Game Summary - hidden section that appears after game -->
           <div class="card grey-text text-darken-4" id='results' ng-show="vm.showMe('summary')">
             <div class="card-content">
-              <span class="card-title">{{ vm.GameService.winner }} wins!</span>
               <div class="row">
-                <div class="col s12" ng-repeat="playerResult in vm.GameService.playerResults">
-                  <div class="card blue lighten-2 black-text">
-                    <div class="card-content">
-                      <div class="col s4">
-                        <span class="card-title">{{ $index+1 }}. {{ playerResult.userName }}</span>
-                      </div>
-                      <div class="col s2">
-                        <span>{{ playerResult.prizePoints }}</span>
-                      </div>
-                      <div class="col s2">
-                        <span>{{ playerResult.answerCorrect }}</span>
-                      </div>
-                      <div class="col s2">
-                        <span>{{ playerResult.answerCorrectDelay }}</span>
-                      </div>
-                    </div>
-                  </div>
+                <div class="col s12">
+                  <table class="bordered highlight gray-text">
+                    <thead>
+                      <tr class="">
+                        <th class="s1"><i class="material-icons">format_list_numbered</i></th>
+                        <th class="s5">Player</th>
+                        <th class="s2 center-align">Points</th>
+                        <th class="s2 center-align">Correct</th>
+                        <th class="s2">Response</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="" ng-repeat="playerResult in vm.GameService.playerResults">
+                        <td class="s1">{{ $index + 1 }}<sup>{{ ["st", "nd", "rd", "th"][$index] }}</sup></td>
+                        <td class="s5"><span class="card-title">{{ playerResult.userName }}</span></td>
+                        <td class="s2 center-align">{{ playerResult.prizePoints }}</td>
+                        <td class="s2 center-align">{{ playerResult.questionsRight }}</td>
+                        <td class="s2">{{ playerResult.questionsRightDelay / playerResult.questionsRight / 1000 | number:3 }} s</td>
+                      </tr>
+                    </tbody>
+                  </table>
                 </div>
               </div>
             </div>

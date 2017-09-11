@@ -102,6 +102,13 @@ namespace Quizdom.Services {
       }
     });
 
+    // manage 'PlayerStats' table to store stats created by playing game
+    private _Resource_player_stats = <Models.IPlayerStatsResource>this.$resource('/api/game/playerstats:id', null, {
+      'update': {
+        method: 'PUT'
+      }
+    });
+
     // access 'Categories' to correlate categoryId to short & long name
     private _Resource_categories = <Models.ICategoryResource>this.$resource('/api/game/categories/:id', null, {
       'update': {
@@ -149,7 +156,6 @@ namespace Quizdom.Services {
       // console.log(this.posts);
     }
 
-
     // SignalR game chat support
     public postGameMsg(gameMsg) {
       return this._Resource_gameMessage.save(gameMsg);
@@ -191,6 +197,19 @@ namespace Quizdom.Services {
     // Should we limit each user to initiating only one game (and replace any other games?)
     private findLastGame(userName: string) {
       return this._Resource_game.search({ username: userName });
+    }
+
+    private findPlayerStats(userName: string) {
+      return this._Resource_player_stats.get({ username: userName });
+    }
+
+    public loadPlayerStats(userName: string): any {
+      this.findPlayerStats(userName).$promise.then((oldPlayerStats) => {
+        if (oldPlayerStats[0].hasOwnproperty('gamesWon')) {
+          return oldPlayerStats[0];
+        }
+        return new this._Resource_player_stats();
+      })
     }
 
     // Create new gameId
@@ -237,7 +256,7 @@ namespace Quizdom.Services {
 
     // Load all game data from DB based on given gameId (allows other players to load new game)
     public loadGame(gameId: number, userName: string) {
-      
+
       let gameLoaded = new Promise((resAll) => {
         let gamePromises: any = this.$q.when();
         gamePromises = gamePromises.then(() => {
@@ -750,7 +769,7 @@ namespace Quizdom.Services {
         } else {
           console.log(`Updating Game...`, newGameData);
           this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then((gameData) => {
-            res(`Game update sent to DB`)
+            res(`Game update sent to Quizdom`)
           })
         }
       })
@@ -774,7 +793,7 @@ namespace Quizdom.Services {
         } else {
           console.log(`Updating Game Board...`, newGameBoardData);
           this._Resource_gameBoard.update({ id: newGameBoardData.id }, newGameBoardData).$promise.then((gameBoardData) => {
-            res(`Game Board update sent to DB`)
+            res(`Game Board update sent to Quizdom`)
           })
         }
       })
@@ -816,12 +835,38 @@ namespace Quizdom.Services {
 
           console.log(`Updating Game Player...`, newGamePlayer);
           this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(() => {
-            res(`Game Player update sent to DB`)
+            res(`Game Player update sent to Quizdom`)
           })
         }
 
       })
       return gamePlayerUpdated;
+    }
+
+    public updatePlayerStatsTable(newPlayerStats) {
+      let playerStatsUpdated = new Promise((res) => {
+
+        // check whether any values actually changed
+        let oldPlayerStats = this.players.find(p => { return p.playerId == newPlayerStats.playerId })
+
+        let matches = true;
+        for (var prop in newPlayerStats) {
+          if (newPlayerStats.hasOwnProperty(prop)) {
+            matches = matches && (newPlayerStats[prop] == oldPlayerStats[prop]);
+          }
+        }
+        if (matches) {
+          console.log(`No Player Stats update required`);
+          res(`No Player Stats update required`);
+        } else {
+          console.log(`Updating Player Stats...`, newPlayerStats);
+          this._Resource_player_stats.update({ id: newPlayerStats.id }, newPlayerStats).$promise.then(() => {
+            res(`Player Stats update sent to Quizdom`)
+          })
+        }
+
+      })
+      return playerStatsUpdated;
     }
 
     public setGameActiveUserId(userName: string): any {

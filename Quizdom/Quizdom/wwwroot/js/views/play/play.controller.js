@@ -30,13 +30,13 @@ var Quizdom;
                         _this.HubService.connection.broadcaster.client.changeGamePlayerData = $scope.changeGamePlayerData;
                         _this.HubService.startGroup(_this.GameService.groupName).then(function () {
                             _this.GameService.getGameMessages();
-                            // checks the gameState and playerState to ensure the gmae progresses properly after a refresh
-                            _this.triggerRefresh();
                             console.log("showSection", _this.GameService.showSection);
-                            // console.log(`question`, this.GameService.question);
+                            // checks the gameState and playerState to ensure the game progresses properly after a refresh
+                            _this.triggerRefresh();
                         });
                     });
                     // confirming how to relocate onto $scope if necessary for SignalR async
+                    // SignalR method to add game message
                     $scope.addGameMsg = function (gameMsg) {
                         console.log('New post from server: ', gameMsg);
                         _this.GameService.gameChats.push(gameMsg);
@@ -50,8 +50,8 @@ var Quizdom;
                         _this.GameService.gameData.lastActiveUserId = newGame.lastActiveUserId;
                         _this.GameService.gameData.gameBoardId = newGame.gameBoardId;
                         _this.GameService.gameData.gameState = newGame.gameState;
-                        console.log("Game updated from DB", _this.GameService.gameData);
-                        // TODO Add other local variables that should be updated
+                        console.log("Game updated from Quizdom", _this.GameService.gameData);
+                        // Local variables get updated
                         if (_this.GameService.gameState == "welcome") {
                             _this.GameService.answerOrder = 0;
                         }
@@ -77,7 +77,7 @@ var Quizdom;
                         _this.GameService.gameBoards[gbIndex].answerOrder = gameBoardData.answerOrder;
                         _this.GameService.gameBoards[gbIndex].answeredCorrectlyUserId = gameBoardData.answeredCorrectlyUserId || "";
                         _this.GameService.gameBoards[gbIndex].answeredCorrectlyDelay = gameBoardData.answeredCorrectlyDelay || 0;
-                        console.log("GameBoard updated from DB", _this.GameService.gameBoards[gbIndex]);
+                        console.log("GameBoard updated from Quizdom", _this.GameService.gameBoards[gbIndex]);
                         // assign gameBoard question to local question if questionState = "asking"
                         if (gameBoardData.questionState == "asking") {
                             _this.GameService.question = _this.GameService.gameBoards[gbIndex];
@@ -97,7 +97,9 @@ var Quizdom;
                         _this.GameService.players[_this.pIndex].questionsRight = gamePlayerData.questionsRight;
                         _this.GameService.players[_this.pIndex].questionsRightDelay = gamePlayerData.questionsRightDelay;
                         _this.GameService.players[_this.pIndex].questionsWon = gamePlayerData.questionsWon;
-                        console.log("Player updated from DB", _this.GameService.players[_this.pIndex]);
+                        _this.GameService.players[_this.pIndex].gamesPlayed = gamePlayerData.gamesPlayed;
+                        _this.GameService.players[_this.pIndex].gamesWon = gamePlayerData.gamesWon;
+                        console.log("Player updated from Quizdom", _this.GameService.players[_this.pIndex]);
                         // Set visual state based on playerState
                         if (gamePlayerData.userId == _this.myUserName) {
                             _this.GameService.showSection = gamePlayerData.playerState;
@@ -160,15 +162,15 @@ var Quizdom;
                 };
                 // old method to color answers based on player selection
                 PlayController.prototype.answerClass = function (index) {
-                    var classes = "blue lighten-2 black-text";
-                    if (index == this.GameService.guess) {
-                        classes = 'blue darken-2 white-text';
-                    }
-                    return classes;
+                    return (index == this.GameService.guess)
+                        ? 'blue darken-2 white-text'
+                        : 'blue lighten-2 black-text';
                 };
                 // change the results button class based on winner
                 PlayController.prototype.resultsClass = function () {
-                    return (this.GameService.winner != 'No player') ? 'green darken-2 white-text' : 'yellow lighten-2 black-text';
+                    return (this.GameService.winner != 'No player')
+                        ? 'green darken-2 white-text'
+                        : 'yellow lighten-2 black-text';
                 };
                 Object.defineProperty(PlayController.prototype, "myUserName", {
                     get: function () {
@@ -216,52 +218,24 @@ var Quizdom;
                 };
                 // calculates the game winner based on prizePoints using questions answered correctly then average answerDelay as tie-breakers
                 PlayController.prototype.gameWinner = function () {
-                    var _this = this;
                     this.GameService.winner = "Tie";
-                    this.GameService.players.forEach(function (playerData) {
-                        var player = {
-                            userName: playerData.userName,
-                            prizePoints: playerData.prizePoints,
-                            answerCorrect: 0,
-                            answerDelay: 0
-                        };
-                        // tally the number of questions answered correctly
-                        var myCorrect = _this.GameService.gameBoards.filter(function (gb) { return gb.answeredCorrectlyUserId == playerData.userName; });
-                        player.answerCorrect = myCorrect.length;
-                        // player.answerDelay = myCorrect.reduce((a, b) => {
-                        //   return a.answeredCorrectlyDelay + b.answeredCorrectlyDelay;
-                        // }, 0)
-                        _this.GameService.playerResults.push(player);
-                    });
+                    this.GameService.playerResults = angular.copy(this.GameService.players);
                     this.GameService.playerResults.sort(function (a, b) {
                         if (a.prizePoints != b.prizePoints) {
                             return (a.prizePoints > b.prizePoints) ? -1 : 1;
                         }
-                        if (a.answerCorrect != b.answerCorrect) {
-                            return (a.answerCorrect > b.answerCorrect) ? -1 : 1;
+                        if (a.questionsRight != b.questionsRight) {
+                            return (a.questionsRight > b.questionsRight) ? -1 : 1;
                         }
-                        return (a.answerDelay < b.answerDelay) ? -1 : 1;
+                        return (a.questionsRightDelay / a.questionsRight < b.questionsRightDelay / b.questionsRight) ? -1 : 1;
                     });
+                    console.log("playerResults", this.GameService.playerResults);
                     return this.GameService.playerResults[0].userName;
                 };
-                /* "trigger" methods respond to user action on DOM elements to update the DB via APIs */
-                // send new gameMsg to GameMessage table
-                PlayController.prototype.triggerGameMessage = function () {
-                    var gameMsg = {
-                        content: $("#textInput").val(),
-                        userName: this.myUserName,
-                        group: this.GameService.groupName,
-                        gameId: this.GameService.gameId
-                    };
-                    this.GameService.postGameMsg(gameMsg).$promise
-                        .then(function () {
-                        // clean up UI
-                        $("#textInput").val("");
-                    })
-                        .catch(function (e) {
-                        console.log(e);
-                    });
-                };
+                /* "trigger" methods respond to user action on DOM elements to update the DB via APIs
+                Every method copies local variables, updates some of the properties, then updates the related table
+                All table updates should be ordered: Games > GameBoards > GamePlayers > GamePlayersEmails > GameCategories > GameMessage
+                */
                 // Keeps the game flowing when a user acccidentally refreshes the page
                 PlayController.prototype.triggerRefresh = function () {
                     var _this = this;
@@ -279,6 +253,26 @@ var Quizdom;
                                 break;
                         }
                     }
+                    else if (this.GameService.gameState == "summary") {
+                        this.triggerReview();
+                    }
+                };
+                // send new gameMsg to GameMessage table
+                PlayController.prototype.triggerGameMessage = function () {
+                    var gameMsg = {
+                        content: $("#textInput").val(),
+                        userName: this.myUserName,
+                        group: this.GameService.groupName,
+                        gameId: this.GameService.gameId
+                    };
+                    this.GameService.postGameMsg(gameMsg).$promise
+                        .then(function () {
+                        // clean up UI
+                        $("#textInput").val("");
+                    })
+                        .catch(function (e) {
+                        console.log(e);
+                    });
                 };
                 // initial state of game shows How to play
                 PlayController.prototype.triggerWelcome = function () {
@@ -305,15 +299,15 @@ var Quizdom;
                         var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == boardId; }));
                         // this has to be checked before changing the other tables
                         if (newGameBoardData.questionState == "new") {
-                            newGameBoardData.questionState = "asking";
-                            this.GameService.answerOrder += 1;
-                            newGameBoardData.answerOrder = this.GameService.answerOrder;
-                            this.GameService.updateGameBoardsTable(newGameBoardData);
                             // Games - update gameState to "question"
                             var newGameData = angular.copy(this.GameService.gameData);
                             newGameData.gameState = "question";
                             newGameData.gameBoardId = boardId;
                             this.GameService.updateGamesTable(newGameData);
+                            newGameBoardData.questionState = "asking";
+                            this.GameService.answerOrder += 1;
+                            newGameBoardData.answerOrder = this.GameService.answerOrder;
+                            this.GameService.updateGameBoardsTable(newGameBoardData);
                             // GamePlayers - all playerState to "prepare", answer to 4 (always wrong), delay to GameService.duration (max)
                             this.GameService.guess = 4;
                             this.GameService.players.forEach(function (playerData) {
@@ -333,6 +327,7 @@ var Quizdom;
                         }
                     }
                     else {
+                        // TODO make this error visible on the player's screen
                         console.log("Only active player " + this.GameService.gameData.activeUserId + " can pick");
                     }
                 };
@@ -371,9 +366,9 @@ var Quizdom;
                         _this.GameService.updateGamePlayersTable(newPlayerData);
                     });
                 };
-                // Available only when playerState = "guess" - All actions stored in local model until duration timer expires
+                // Available only when playerState = "ask" - All actions stored in local model until duration timer expires
                 // each player selects an "answer" to store in GameService.guess
-                // store timeStamp in endTime to calculate delay
+                // store timeStamp in endTime and calculate delay
                 PlayController.prototype.triggerGuess = function (guess) {
                     var _this = this;
                     var playerData = this.GameService.players.find(function (p) { return p.userName == _this.myUserName; });
@@ -424,6 +419,7 @@ var Quizdom;
                         this.GameService.players.forEach(function (playerData) {
                             var newPlayerData = angular.copy(playerData);
                             if (newPlayerData.answer == _this.GameService.question.correctAnswer) {
+                                // keep track of the number of players who guessed correctly
                                 correctPlayers_1++;
                                 // update playerState to reflect whether player answered correctly
                                 newPlayerData.playerState = "right";
@@ -436,26 +432,25 @@ var Quizdom;
                             }
                             _this.GameService.updateGamePlayersTable(newPlayerData);
                         });
-                        // check if any  player answered correctly and note the fastest correct guess
+                        // check if any player answered correctly and save the fastest correct player as winner
                         if (correctPlayers_1 > 0) {
                             console.log("fastest", fastest_2);
                             this.GameService.winner = this.GameService.players.find(function (p) { return p.delay == fastest_2; }).userName;
                         }
-                        // copy the current game data
+                        // Games - update gameState to "results"
                         var newGameData = angular.copy(this.GameService.gameData);
+                        newGameData.gameState = "results";
+                        // Games - update activeUserId to winner of this question
                         if (this.GameService.winner != "No player") {
-                            // Games - player who earned prizePoints set to activeUserId
                             newGameData.lastActiveUserId = newGameData.activeUserId;
                             newGameData.activeUserId = this.GameService.winner;
                         }
-                        newGameData.gameState = "results";
                         this.GameService.updateGamesTable(newGameData);
                         // copy the current gameBoard data
                         var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
                         // GameBoard - update answeredCorrectlyUserId with the winning player's username
                         newGameBoardData.answeredCorrectlyUserId = this.GameService.winner;
-                        newGameBoardData.answeredCorrectlyDelay = this.GameService.delay;
-                        // newGameBoardData.questionState = "results"
+                        newGameBoardData.answeredCorrectlyDelay = fastest_2;
                         this.GameService.updateGameBoardsTable(newGameBoardData);
                     }
                 };
@@ -464,10 +459,12 @@ var Quizdom;
                     var _this = this;
                     console.log("AnswerOrder:", this.GameService.answerOrder);
                     // GameBoards - retire gameBoard listed in gameData
-                    // copy the current gameBoard data
-                    var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
-                    newGameBoardData.questionState = "retired";
-                    this.GameService.updateGameBoardsTable(newGameBoardData);
+                    if (this.GameService.gameData.gameBoardId > 0) {
+                        // copy the current gameBoard data
+                        var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
+                        newGameBoardData.questionState = "retired";
+                        this.GameService.updateGameBoardsTable(newGameBoardData);
+                    }
                     // GamePlayers - first player to click increments questionsRight, questionsRightDelay, questionsWon, updates every playerState to "ready"
                     this.GameService.players.forEach(function (playerData) {
                         // copy each player's data
@@ -488,26 +485,30 @@ var Quizdom;
                         newPlayerData.playerState = "pick";
                         _this.GameService.updateGamePlayersTable(newPlayerData);
                     });
-                    if (this.GameService.answerOrder < 18) {
+                    if (this.GameService.answerOrder < this.GameService.gameData.gameLength) {
                         this.triggerPlay();
                     }
                     else {
                         this.triggerSummary();
                     }
                 };
+                //  Display the players ranked by performance, update gameState, udpate PlayerStats from gamePlayer, update Quiz stats from gameBoards;
                 PlayController.prototype.triggerSummary = function () {
                     var _this = this;
                     // figure out the winner
                     this.GameService.winner = this.gameWinner();
                     // Only the game inititor updates gameState & gameBoard questionState
                     if (this.GameService.gameData.initiatorUserId == this.myUserName) {
-                        // copy the current game data
+                        // Games - update gameState to "summary"
                         var newGameData = angular.copy(this.GameService.gameData);
+                        newGameData.gameBoardId = 0;
                         newGameData.gameState = "summary";
                         this.GameService.updateGamesTable(newGameData);
-                        // 
-                        var newGameBoardData = angular.copy(this.GameService.gameBoards.find(function (gb) { return gb.id == _this.GameService.gameData.gameBoardId; }));
-                        // this.GameService.updateGameBoardsTable(newGameBoardData)
+                        // PlayerStats - update with new stats from players
+                        this.GameService.players.forEach(function (player) {
+                            _this.GameService.loadPlayerStats(player.userName).then(function (oldPlayerStats) {
+                            });
+                        });
                     }
                 };
                 PlayController.$inject = [

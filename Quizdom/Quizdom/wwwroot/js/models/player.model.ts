@@ -1,13 +1,5 @@
 namespace Quizdom.Models {
     export class PlayerModel extends UserModel {
-      // from userModel
-      // public userName: string = 'Guest';
-      // public email: string = ',';
-      // public avatarId: number = 0;
-      // public avatarUrl?: string = "avatar_generic.png";
-      // public isAdmin?: boolean = false;
-      // public friendId?: number;
-
       // from gamePlayer
       public playerId?: number; // = gamePlayerId
       public userId?: string; // = userName
@@ -20,6 +12,11 @@ namespace Quizdom.Models {
       public questionsRight?: number = 0;
       public questionsRightDelay?: number = 0;
       public questionsWon?: number = 0;
+      public gamesQuestionsRight?: number = 0;
+      public gamesQuestionsRightDelay?: number = 0;
+      public gamesQuestionsWon?: number = 0;
+      public gamesPlayed?: number = 0;
+      public gamesWon?: number = 0;
 
       constructor(user, gamePlayer?) {
         super();
@@ -40,6 +37,11 @@ namespace Quizdom.Models {
         this.questionsRight = gamePlayer.questionsRight;
         this.questionsRightDelay = gamePlayer.questionsRightDelay;
         this.questionsWon = gamePlayer.questionsWon;
+        this.gamesQuestionsRight = 0;
+        this.gamesQuestionsRightDelay = 0;
+        this.gamesQuestionsWon = 0;
+        this.gamesPlayed = 0;
+        this.gamesWon = 0;
 
       }
 
@@ -65,6 +67,11 @@ namespace Quizdom.Models {
       questionsRight?: number;
       questionsRightDelay?: number;
       questionsWon?: number;
+      gamesQuestionsRight?: number;
+      gamesQuestionsRightDelay?: number;
+      gamesQuestionsWon?: number;
+      gamesPlayed?: number;
+      gamesWon?: number;
     }
 
     export interface IPlayerResource extends ng.resource.IResourceClass<IPlayer> {

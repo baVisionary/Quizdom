@@ -40,5 +40,7 @@ namespace Quizdom {
         public myState(current): boolean {
             return this.$state.current.name == current;
         }
+
     }
+
 }

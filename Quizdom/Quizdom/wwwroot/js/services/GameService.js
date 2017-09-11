@@ -70,6 +70,12 @@ var Quizdom;
                         method: 'PUT'
                     }
                 });
+                // manage 'PlayerStats' table to store stats created by playing game
+                this._Resource_player_stats = this.$resource('/api/game/playerstats:id', null, {
+                    'update': {
+                        method: 'PUT'
+                    }
+                });
                 // access 'Categories' to correlate categoryId to short & long name
                 this._Resource_categories = this.$resource('/api/game/categories/:id', null, {
                     'update': {
@@ -159,6 +165,18 @@ var Quizdom;
             // Should we limit each user to initiating only one game (and replace any other games?)
             GameService.prototype.findLastGame = function (userName) {
                 return this._Resource_game.search({ username: userName });
+            };
+            GameService.prototype.findPlayerStats = function (userName) {
+                return this._Resource_player_stats.get({ username: userName });
+            };
+            GameService.prototype.loadPlayerStats = function (userName) {
+                var _this = this;
+                this.findPlayerStats(userName).$promise.then(function (oldPlayerStats) {
+                    if (oldPlayerStats[0].hasOwnproperty('gamesWon')) {
+                        return oldPlayerStats[0];
+                    }
+                    return new _this._Resource_player_stats();
+                });
             };
             // Create new gameId
             // Check if user already has active game
@@ -716,7 +734,7 @@ var Quizdom;
                     else {
                         console.log("Updating Game...", newGameData);
                         _this._Resource_game.update({ gameId: newGameData.id }, newGameData).$promise.then(function (gameData) {
-                            res("Game update sent to DB");
+                            res("Game update sent to Quizdom");
                         });
                     }
                 });
@@ -740,7 +758,7 @@ var Quizdom;
                     else {
                         console.log("Updating Game Board...", newGameBoardData);
                         _this._Resource_gameBoard.update({ id: newGameBoardData.id }, newGameBoardData).$promise.then(function (gameBoardData) {
-                            res("Game Board update sent to DB");
+                            res("Game Board update sent to Quizdom");
                         });
                     }
                 });
@@ -779,11 +797,35 @@ var Quizdom;
                         newGamePlayer.questionsWon = newPlayerData.questionsWon;
                         console.log("Updating Game Player...", newGamePlayer);
                         _this._Resource_game_players.update({ id: newGamePlayer.id }, newGamePlayer).$promise.then(function () {
-                            res("Game Player update sent to DB");
+                            res("Game Player update sent to Quizdom");
                         });
                     }
                 });
                 return gamePlayerUpdated;
+            };
+            GameService.prototype.updatePlayerStatsTable = function (newPlayerStats) {
+                var _this = this;
+                var playerStatsUpdated = new Promise(function (res) {
+                    // check whether any values actually changed
+                    var oldPlayerStats = _this.players.find(function (p) { return p.playerId == newPlayerStats.playerId; });
+                    var matches = true;
+                    for (var prop in newPlayerStats) {
+                        if (newPlayerStats.hasOwnProperty(prop)) {
+                            matches = matches && (newPlayerStats[prop] == oldPlayerStats[prop]);
+                        }
+                    }
+                    if (matches) {
+                        console.log("No Player Stats update required");
+                        res("No Player Stats update required");
+                    }
+                    else {
+                        console.log("Updating Player Stats...", newPlayerStats);
+                        _this._Resource_player_stats.update({ id: newPlayerStats.id }, newPlayerStats).$promise.then(function () {
+                            res("Player Stats update sent to Quizdom");
+                        });
+                    }
+                });
+                return playerStatsUpdated;
             };
             GameService.prototype.setGameActiveUserId = function (userName) {
                 this.gameData.lastActiveUserId = this.gameData.activeUserId;

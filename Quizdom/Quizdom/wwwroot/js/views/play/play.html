@@ -45,7 +45,6 @@
                     </div>
                   </div>
                   <h6 ng-show="vm.timer != '0'">{{ vm.timer }} s to answer</h6>
-                  <input type="range" ng-model="parseFloat(vm.timer)" min="0" max="vm.GameService.duration * 1000" >
                   <h6>Answer: {{ vm.guessValue[vm.GameService.guess] }} <span ng-show="vm.GameService.guess < 4">in {{ vm.GameService.delay/1000 }} s</span></h6>
                 </div>
               </div>

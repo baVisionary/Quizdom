@@ -285,18 +285,18 @@ namespace Quizdom.Controllers
         }
 
         // GET /api/game/playerstats/1   - get's all records for a specific playerstat
-        [HttpGet("playerstats/{id}")]
-        public IActionResult GetPlayerstatsById(int id)
-        {
-            // UPDATE USER TRACKING INFORMATION
-            userTracker.UpdateUserActivity(Request);
+        //[HttpGet("playerstats/{id}")]
+        //public IActionResult GetPlayerstatsById(int id)
+        //{
+        //    // UPDATE USER TRACKING INFORMATION
+        //    userTracker.UpdateUserActivity(Request);
 
-            var record = (from c in _context.PlayerStats
-                          where c.Id == id
-                          select c).ToList();
+        //    var record = (from c in _context.PlayerStats
+        //                  where c.Id == id
+        //                  select c).ToList();
 
-            return Ok(record);
-        }
+        //    return Ok(record);
+        //}
 
         // GET /api/game/playerstats/1   - get's all playerstats by username
         [HttpGet("playerstats/{username}")]

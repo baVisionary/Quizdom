@@ -284,20 +284,6 @@ namespace Quizdom.Controllers
             return _context.PlayerStats.ToList();
         }
 
-        // GET /api/game/playerstats/1   - get's all records for a specific playerstat
-        //[HttpGet("playerstats/{id}")]
-        //public IActionResult GetPlayerstatsById(int id)
-        //{
-        //    // UPDATE USER TRACKING INFORMATION
-        //    userTracker.UpdateUserActivity(Request);
-
-        //    var record = (from c in _context.PlayerStats
-        //                  where c.Id == id
-        //                  select c).ToList();
-
-        //    return Ok(record);
-        //}
-
         // GET /api/game/playerstats/1   - get's all playerstats by username
         [HttpGet("playerstats/{username}")]
         public IActionResult GetPlayerstatsByUsername(string username)
@@ -307,7 +293,7 @@ namespace Quizdom.Controllers
 
             var record = (from c in _context.PlayerStats
                           where c.userName == username
-                          select c).ToList();
+                          select c).SingleOrDefault();
 
             return Ok(record);
         }

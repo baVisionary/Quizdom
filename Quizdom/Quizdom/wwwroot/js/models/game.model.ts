@@ -6,7 +6,7 @@ namespace Quizdom.Models {
     public activeUserId?: string = '';
     public lastActiveUserId?: string = '';
     public startDateTime?: Date = new Date();
-    // cycles through setup/welcome/pick/question/results/summary
+    // cycles through setup/rules/pick/question/results/summary
     public gameState?: string = "setup";
     public gameBoardId?: number = 0;
   }

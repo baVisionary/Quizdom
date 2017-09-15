@@ -36,7 +36,7 @@ var Quizdom;
                     var firstPlayerIndex = this.GameService.randomInt(0, this.GameService.players.length - 1);
                     newGameData.activeUserId = newGameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
                     newGameData.gameBoardId = 0;
-                    newGameData.gameState = "welcome";
+                    newGameData.gameState = "rules";
                     var gamePlayerPromises = this.$q.when();
                     // GamePlayers - set all prizePoints to 0
                     this.GameService.players.forEach(function (playerData) {
@@ -55,7 +55,7 @@ var Quizdom;
                     gameReady.push(this.GameService.setupGameBoards());
                     gameReady.push(this.GameService.updateGamesTable(newGameData));
                     this.$q.all(gameReady).then(function () {
-                        _this.$state.go("Play", { gameId: _this.GameService.gameId });
+                        _this.$state.go("Play.rules", { gameId: _this.GameService.gameId });
                     });
                 };
                 SetupController.$inject = [

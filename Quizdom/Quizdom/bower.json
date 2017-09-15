@@ -13,6 +13,7 @@
     "font-awesome": "^4.7.0",
     "angular-resource": "^1.6.4",
     "angularUtils-pagination": "angular-utils-pagination#^0.11.1",
+    "angularjs-slider": "^6.4.0",
     "signalr": "^2.2.2"
   }
 }

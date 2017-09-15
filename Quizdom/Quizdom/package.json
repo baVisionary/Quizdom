@@ -9,7 +9,6 @@
   },
   "author": "Rick Cohen, Davin Nathanson",
   "license": "MIT",
-  "dependencies": {},
   "devDependencies": {
     "@types/angular": "^1.6.25",
     "@types/angular-resource": "^1.5.9",
@@ -20,6 +19,7 @@
     "angular-resource": "^1.6.5",
     "angular-ui-router": "^1.0.3",
     "angular-utils-pagination": "^0.11.1",
+    "angularjs-slider": "^6.4.0",
     "gulp": "^3.9.1",
     "gulp-concat": "^2.6.1",
     "gulp-imagemin": "^3.3.0",
@@ -27,5 +27,8 @@
     "gulp-uglify": "^3.0.0",
     "jquery": "^3.2.1",
     "materialize": "^1.0.0"
+  },
+  "dependencies": {
+    "@types/angular-ui-bootstrap": "^0.13.44"
   }
 }

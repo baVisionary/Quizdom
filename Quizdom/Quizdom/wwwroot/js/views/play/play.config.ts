@@ -14,25 +14,23 @@ namespace Quizdom.Views.Play {
                 controller: 'PlayController',
                 controllerAs: 'vm'
             })
-            .state('play.welcome', <ng.ui.IState>{
-                url: '@',
-                templateUrl: 'js/views/play/play.welcome.html'
+            .state('Play.rules', <ng.ui.IState>{
+                templateUrl: 'js/views/play/play.rules.html'
             })
-            .state('play.pick', <ng.ui.IState>{
-                url: '@',
+            .state('Play.pick', <ng.ui.IState>{
                 templateUrl: 'js/views/play/play.pick.html'
             })
-            .state('play.prepare', <ng.ui.IState>{
-                url: '@',
+            .state('Play.prepare', <ng.ui.IState>{
                 templateUrl: 'js/views/play/play.prepare.html'
             })
-            .state('play.answer', <ng.ui.IState>{
-                url: '@',
-                templateUrl: 'js/views/play/play.answer.html'
+            .state('Play.ask', <ng.ui.IState>{
+                templateUrl: 'js/views/play/play.ask.html'
             })
-            .state('play.results', <ng.ui.IState>{
-                url: '@',
+            .state('Play.results', <ng.ui.IState>{
                 templateUrl: 'js/views/play/play.results.html'
+            })
+            .state('Play.summary', <ng.ui.IState>{
+                templateUrl: 'js/views/play/play.summary.html'
             })
     }
 }

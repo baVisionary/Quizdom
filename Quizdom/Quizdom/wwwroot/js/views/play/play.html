@@ -6,180 +6,44 @@
           <span class="card-title center-align">Play Quizdom</span>
           <div class="row">
             <div class="col s12">
-              <!-- Welcome to the game and rules -->
-              <div class="card grey-text text-darken-4" id='welcome' ng-show="vm.showMe('welcome')" ng-click="vm.triggerPlay()">
-                <div class="card-content">
-                  <span class="card-title center-align">How to play</span>
-                  <ol>
-                    <li>Active player picks a question</li>
-                    <li>A question with 4 answers is shown</li>
-                    <li>Every player tries to pick the correct answer</li>
-                    <li>The player who answers correctly & quickest is awarded prize points then gets to pick next question</li>
-                    <li>If nobody answers correctly the last active player picks again</li>
-                    <li>When all questions answered, player with the most prize points wins!</li>
-                  </ol>
 
-                </div>
+              <!-- Game state defined section -->
+              <div ui-view></div>
 
-              </div>
-              <!-- Prepare to answer question from category appears for 3 sec countdown -->
-              <div class="card grey-text text-darken-4" id='prepare' ng-show="vm.showMe('prepare')">
-                <div class="card-content center-align">
-                  <span class="card-title">{{ vm.GameService.question.catLong }}</span>
-                  <span>Get ready to answer</span>
-                  <h1>{{ vm.timer }}</h1>
-                </div>
-              </div>
-              <!-- hidden section that appears to display question & answers -->
-              <div class="card grey-text text-darken-4" id='answer' ng-show="vm.showMe('ask') || vm.showMe('guess')">
-                <div class="card-content">
-                  <!-- questionId, questionText, answers -->
-                  <span class="card-title">{{ vm.GameService.question.questionId }}. {{vm.GameService.question.questionText}}</span>
-                  <div class="row" ng-repeat="answer in [vm.GameService.question.answerA, vm.GameService.question.answerB, vm.GameService.question.answerC, vm.GameService.question.answerD]">
-                    <div class="col s12">
-                      <div class="card" ng-class="vm.answerClass($index)" ng-click="vm.triggerGuess($index)">
-                        <div class="card-content" value={{$index}}>
-                          <span>{{ "ABCD"[$index] }}. {{answer}}</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <h6 ng-show="vm.timer != '0'">{{ vm.timer }} s to answer</h6>
-                  <h6>Answer: {{ vm.guessValue[vm.GameService.guess] }} <span ng-show="vm.GameService.guess < 4">in {{ vm.GameService.delay/1000 }} s</span></h6>
-                </div>
-              </div>
-              <!-- hidden section that appears to display results -->
-              <div class="card grey-text text-darken-4" id='results' ng-show="vm.showMe('results')">
-                <div class="card-content">
-                  <!-- questionId, questionText, answers -->
-                  <span class="card-title">{{ vm.GameService.question.questionId }}. {{vm.GameService.question.questionText}}</span>
-                  <div class="row" ng-repeat="answer in [vm.GameService.question.answerA, vm.GameService.question.answerB, vm.GameService.question.answerC, vm.GameService.question.answerD]">
-                    <div class="col s12">
-                      <div class="card blue lighten-2 black-text" ng-class="{ 'red darken-3 white-text': $index == vm.GameService.guess, 'green darken-2 white-text': $index == vm.GameService.question.correctAnswer }">
-                        <div class="card-content valign-wrapper" value={{$index}}>
-                          <div class="col s11">{{ "ABCD"[$index] }}. {{answer}}</div>
-                          <div class="col s1 right-align">
-                            <i ng-show="$index == vm.GameService.guess && $index != vm.GameService.question.correctAnswer" class="material-icons">close</i>
-                            <i ng-show="$index == vm.GameService.question.correctAnswer" class="material-icons">check</i>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <!-- visible only if no player guessed correctly -->
-                  <div class="row" ng-show="vm.GameService.winner == 'No player'">
-                    <div class="col s12">
-                      <div class="card" ng-class="vm.resultsClass()" ng-click="vm.triggerReview()">
-                        <div class="card-content center-align">
-                          <span class="card-title">No player wins so {{ vm.GameService.gameData.activeUserId }} picks again</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="row">
-                    <div class="col s4" ng-repeat="player in vm.GameService.players">
-                      <div class="card white-text center-align" ng-class="(player.playerState == 'right') ? 'green darken-2' : 'red darken-4'">
-                        <div class="card-content">
-                          <div class="chip" tag={{player.userName}} id={{player.playerId}}>
-                            <img src="/images/{{player.avatarUrl}}" alt="player">
-                            <div class="valign-wrapper">{{player.userName}}</div>
-                          </div>
-                          <div>
-                            <p>{{ vm.guessValue[player.answer] }}<span ng-show="player.answer < 4"> in {{ player.delay/1000 }} s</span></p>
-                            <a ng-show="player.playerState == 'right'" class="btn green darken-4 white-text" ng-click="vm.triggerReview()">+ {{ vm.GameService.question.prizePoints }}</a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <!-- 3 rows of 6 columns of gameBoards AKA questions showing prizePoints -->
-              <div class="row" id="categories" ng-show="vm.showMe('pick')">
-                <div class="col" ng-class="vm.GameService.gameCatClass" ng-repeat="cat in vm.GameService.gameCategories">
-                  <div class="card-panel blue darken-4">
-                    <span class="card-title center-align">{{cat.shortDescription}}</span>
-                  </div>
-                </div>
-              </div>
-              <div class="row" ng-repeat="row in [0,1,2]" id='pick' ng-show="vm.showMe('pick')">
-                <div class="game-question col s4 m2" ng-repeat="gb in vm.GameService.gameBoards | filter: {boardRow:row}">
-                  <div class="card" ng-class="vm.gameBoardClass(gb)" ng-click="vm.triggerPrepare(gb.id)">
-                    <div class="center-align">
-                      <!-- <i class="large material-icons">live_help</i> -->
-                      <!-- <img src="/images/avatar_generic.png"> -->
-                    </div>
-                    <div class="card-content">
-                      <span class="center-align">
-                      <h5 class="">{{ gb.prizePoints }}</h5>
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- Game Summary - hidden section that appears after game -->
-          <div class="card grey-text text-darken-4" id='results' ng-show="vm.showMe('summary')">
-            <div class="card-content">
+              <!-- Game players -->
+              <p>Active player: {{ vm.GameService.gameData.activeUserId }}</p>
               <div class="row">
-                <div class="col s12">
-                  <table class="bordered highlight gray-text">
-                    <thead>
-                      <tr class="">
-                        <th class="s1"><i class="material-icons">format_list_numbered</i></th>
-                        <th class="s5">Player</th>
-                        <th class="s2 center-align">Points</th>
-                        <th class="s2 center-align">Correct</th>
-                        <th class="s2">Response</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <tr class="" ng-repeat="playerResult in vm.GameService.playerResults">
-                        <td class="s1">{{ $index + 1 }}<sup>{{ ["st", "nd", "rd", "th"][$index] }}</sup></td>
-                        <td class="s5"><span class="card-title">{{ playerResult.userName }}</span></td>
-                        <td class="s2 center-align">{{ playerResult.prizePoints }}</td>
-                        <td class="s2 center-align">{{ playerResult.questionsRight }}</td>
-                        <td class="s2">{{ playerResult.questionsRightDelay / playerResult.questionsRight / 1000 | number:3 }} s</td>
-                      </tr>
-                    </tbody>
-                  </table>
+                <div ng-repeat="player in vm.GameService.players">
+                  <qz-player player="player"></qz-player>
                 </div>
               </div>
-            </div>
-          </div>
-          <!-- Game players -->
-          <p>Active player: {{ vm.GameService.gameData.activeUserId }}</p>
-          <div class="row">
-            <div ng-repeat="player in vm.GameService.players">
-              <qz-player player="player"></qz-player>
-            </div>
-          </div>
 
-          <!-- chat view embedded -->
-          <div class="row">
-            <div class="col s12 offset-m1 m10">
-              <ul id="gameMessages">
-                <li ng-repeat="msg in vm.GameService.gameChats | limitTo : -5">
-                  <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{msg.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>
-                  <span>{{msg.userName}}: {{msg.content}}</span>
-                </li>
-              </ul>
-              <form class="chat-form row">
-                <div class="input-field">
-                  <div class="col s8 m9 l10">
-                    <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
-                  </div>
-                  <div class="col s4 m3 l2">
-                    <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.triggerGameMessage()">Send</button>
-                  </div>
+              <!-- Chat view embedded -->
+              <div class="row">
+                <div class="col s12 offset-m1 m10">
+                  <ul id="gameMessages">
+                    <li ng-repeat="msg in vm.GameService.gameChats | limitTo : -5">
+                      <span ng-show='vm.showDate' style="font-size: smaller; color: gray;">{{msg.timestamp | date : 'yyyy/MM/dd hh:mm:ss'}}&nbsp;</span>
+                      <span>{{msg.userName}}: {{msg.content}}</span>
+                    </li>
+                  </ul>
+                  <form class="chat-form row">
+                    <div class="input-field">
+                      <div class="col s8 m9 l10">
+                        <input id="textInput" type="text" placeholder="{{vm.AuthenticationService.User.userName}}" />
+                      </div>
+                      <div class="col s4 m3 l2">
+                        <button type="submit" class="btn btn-primary" id="publishPostButton" ng-click="vm.triggerGameMessage()">Send</button>
+                      </div>
+                    </div>
+                  </form>
                 </div>
-              </form>
+              </div>
+              <div class="card-action">
+                <a class="btn" ui-sref="Invite">Invite</a>
+                <a class="btn" ui-sref="Setup">Categories</a>
+              </div>
             </div>
-          </div>
-          <div class="card-action">
-            <a class="btn" ui-sref="Invite">Invite</a>
-            <a class="btn" ui-sref="Setup">Categories</a>
           </div>
         </div>
       </div>

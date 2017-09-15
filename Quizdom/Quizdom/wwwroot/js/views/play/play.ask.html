@@ -1,0 +1,21 @@
+<!-- hidden section that appears to display question & answers -->
+<div class="card grey-text text-darken-4" id='ask'>
+  <div class="card-content">
+    <!-- questionId, questionText, answers -->
+    <span class="card-title">{{ vm.GameService.question.questionId }}. {{vm.GameService.question.questionText}}</span>
+    <div class="row" ng-repeat="answer in [vm.GameService.question.answerA, vm.GameService.question.answerB, vm.GameService.question.answerC, vm.GameService.question.answerD]">
+      <div class="col s12">
+        <div class="card" ng-class="vm.answerClass($index)" ng-click="vm.triggerGuess($index)">
+          <div class="card-content" value={{$index}}>
+            <span>{{ "ABCD"[$index] }}. {{answer}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <h6 ng-show="slider.value > 0">{{ slider.value | number: 2 }} s to answer</h6>
+    <div>
+      <rzslider rz-slider-model="slider.value" rz-slider-options="slider.options"></rzslider>
+    </div>
+    <h6>Answer: {{ vm.guessValue[vm.GameService.guess] }} <span ng-show="vm.GameService.guess < 4">in {{ vm.GameService.delay/1000 }} s</span></h6>
+  </div>
+</div>

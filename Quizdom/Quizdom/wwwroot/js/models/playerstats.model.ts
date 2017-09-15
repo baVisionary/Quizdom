@@ -21,5 +21,6 @@ namespace Quizdom.Models {
 
     export interface IPlayerStatsResource extends ng.resource.IResourceClass<IPlayerStats> {
       update({id: number}, any: IPlayer): IPlayer;
+      search({username: string}): IPlayer;
     }
 }

@@ -2,6 +2,8 @@ namespace Quizdom.Views.Invite {
   export class InviteController {
     public player: string = "";
     public feedback: string = "";
+    public chipFriends = [];
+    public chipActive = [];
 
     static $inject = [
       'AuthenticationService',
@@ -24,8 +26,16 @@ namespace Quizdom.Views.Invite {
         this.$state.go('Login');
       }
 
-      this.loadMyFriends();
-      this.loadActiveUsers();
+      this.loadMyFriends().then(() => {
+        this.FriendService.friends.forEach(friend => {
+          this.chipFriends.push({tag: friend.userName})
+        })
+      });
+      this.loadActiveUsers().then(() => {
+        this.ActiveService.ActiveUsers.forEach(user => {
+          this.chipFriends.push({tag: user.userName})
+        })
+      });
       this.GameService.gameData = new Models.GameModel;
       this.GameService.loadMyGameData(this.AuthenticationService.User.userName)
         .then(() => {
@@ -41,23 +51,31 @@ namespace Quizdom.Views.Invite {
 
 
     public loadActiveUsers() {
-      this.ActiveService.getActiveUsers()
-        .then(() => {
-          console.log(`Active:`, this.ActiveService.ActiveUsers);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+      let activeUsersLoaded = new Promise((res) => {
+        this.ActiveService.getActiveUsers()
+          .then(() => {
+            console.log(`Active:`, this.ActiveService.ActiveUsers);
+            res(`Active users loaded`);
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      })
+      return activeUsersLoaded;
     }
 
     private loadMyFriends() {
-      this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
-        .then(() => {
-          console.log(`Friends:`, this.FriendService.friends);
-        })
-        .catch((error) => {
-          console.log(error);
-        })
+      let friendsLoaded = new Promise((res) => {
+        this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
+          .then(() => {
+            console.log(`Friends:`, this.FriendService.friends);
+            res(`Friends loaded`)
+          })
+          .catch((error) => {
+            console.log(error);
+          })
+      })
+      return friendsLoaded;
     }
 
     public findPlayer(search: string): any {

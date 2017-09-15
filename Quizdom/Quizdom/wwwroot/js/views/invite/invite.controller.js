@@ -15,11 +15,21 @@ var Quizdom;
                     this.$state = $state;
                     this.player = "";
                     this.feedback = "";
+                    this.chipFriends = [];
+                    this.chipActive = [];
                     if (!this.AuthenticationService.isLoggedIn) {
                         this.$state.go('Login');
                     }
-                    this.loadMyFriends();
-                    this.loadActiveUsers();
+                    this.loadMyFriends().then(function () {
+                        _this.FriendService.friends.forEach(function (friend) {
+                            _this.chipFriends.push({ tag: friend.userName });
+                        });
+                    });
+                    this.loadActiveUsers().then(function () {
+                        _this.ActiveService.ActiveUsers.forEach(function (user) {
+                            _this.chipFriends.push({ tag: user.userName });
+                        });
+                    });
                     this.GameService.gameData = new Quizdom.Models.GameModel;
                     this.GameService.loadMyGameData(this.AuthenticationService.User.userName)
                         .then(function () {
@@ -34,23 +44,31 @@ var Quizdom;
                 }
                 InviteController.prototype.loadActiveUsers = function () {
                     var _this = this;
-                    this.ActiveService.getActiveUsers()
-                        .then(function () {
-                        console.log("Active:", _this.ActiveService.ActiveUsers);
-                    })
-                        .catch(function (error) {
-                        console.log(error);
+                    var activeUsersLoaded = new Promise(function (res) {
+                        _this.ActiveService.getActiveUsers()
+                            .then(function () {
+                            console.log("Active:", _this.ActiveService.ActiveUsers);
+                            res("Active users loaded");
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                        });
                     });
+                    return activeUsersLoaded;
                 };
                 InviteController.prototype.loadMyFriends = function () {
                     var _this = this;
-                    this.FriendService.getMyFriends(this.AuthenticationService.User.userName).$promise
-                        .then(function () {
-                        console.log("Friends:", _this.FriendService.friends);
-                    })
-                        .catch(function (error) {
-                        console.log(error);
+                    var friendsLoaded = new Promise(function (res) {
+                        _this.FriendService.getMyFriends(_this.AuthenticationService.User.userName).$promise
+                            .then(function () {
+                            console.log("Friends:", _this.FriendService.friends);
+                            res("Friends loaded");
+                        })
+                            .catch(function (error) {
+                            console.log(error);
+                        });
                     });
+                    return friendsLoaded;
                 };
                 InviteController.prototype.findPlayer = function (search) {
                     var _this = this;

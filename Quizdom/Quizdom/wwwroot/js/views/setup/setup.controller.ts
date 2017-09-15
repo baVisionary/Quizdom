@@ -43,7 +43,7 @@ namespace Quizdom.Views.Setup {
       let firstPlayerIndex = this.GameService.randomInt(0, this.GameService.players.length - 1)
       newGameData.activeUserId = newGameData.lastActiveUserId = this.GameService.players[firstPlayerIndex].userName;
       newGameData.gameBoardId = 0;
-      newGameData.gameState = "welcome";
+      newGameData.gameState = "rules";
 
       let gamePlayerPromises: any = this.$q.when();
 
@@ -68,7 +68,7 @@ namespace Quizdom.Views.Setup {
       gameReady.push(this.GameService.updateGamesTable(newGameData));
 
       this.$q.all(gameReady).then(() => {
-        this.$state.go(`Play`, { gameId: this.GameService.gameId });
+        this.$state.go(`Play.rules`, { gameId: this.GameService.gameId });
       })
     }
 

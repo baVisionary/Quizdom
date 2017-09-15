@@ -2,7 +2,7 @@ namespace Quizdom.Views.Play {
   export class PlayController {
     private guessValue = ['A', 'B', 'C', 'D', 'None'];
     public pIndex: number;
-    public timer: string = "0";
+    public timer: number = 0;
 
     static $inject = [
       'AuthenticationService',
@@ -11,6 +11,7 @@ namespace Quizdom.Views.Play {
       '$http',
       '$q',
       '$scope',
+      '$state',
       '$stateParams',
       '$interval',
       '$timeout',
@@ -23,10 +24,10 @@ namespace Quizdom.Views.Play {
       private $http: ng.IHttpService,
       private $q: ng.IQService,
       private $scope: ng.IScope,
+      private $state: ng.ui.IStateService,
       private $stateParams: ng.ui.IStateParamsService,
       private $interval: ng.IIntervalService,
       private $timeout: ng.ITimeoutService,
-
     ) {
       this.GameService.loadGame(this.$stateParams.gameId, this.myUserName).then(() => {
 
@@ -45,14 +46,48 @@ namespace Quizdom.Views.Play {
         this.HubService.startGroup(this.GameService.groupName).then(() => {
           this.GameService.getGameMessages();
 
-          console.log(`showSection`, this.GameService.showSection);
           // checks the gameState and playerState to ensure the game progresses properly after a refresh
-          this.triggerRefresh();
+          $scope.slider.options.ceil = this.GameService.duration;
+          let newState = this.GameService.gameState;
+          if (newState == 'question') {
+            newState = this.GameService.players.find(p => p.userName == this.myUserName).playerState;
+          }
+          this.refreshState(newState);
         })
       })
 
+      $scope.slider = {
+        value: 0,
+        options: {
+          floor: 0,
+          ceil: 5,
+          step: 0.1,
+          precision: 1,
+          readOnly: true,
+          showSelectionBar: true,
+          getSelectionBarColor: function (value) {
+            if (value <= 2) {
+              return 'red';
+            } else if (value <= 4) {
+              return 'orange';
+            }
+            return '#0db9f';
+          },
+          getPointerColor: function (value) {
+            if (value <= 2) {
+              return 'red';
+            } else if (value <= 4) {
+              return 'orange';
+            }
+            return '#0db9f';
+          },
+          rightToLeft: true,
+          translate: function (value) {
+            return value + " s";
+          }
+        }
+      }
 
-      // confirming how to relocate onto $scope if necessary for SignalR async
       // SignalR method to add game message
       $scope.addGameMsg = (gameMsg) => {
         console.log('New post from server: ', gameMsg);
@@ -72,7 +107,7 @@ namespace Quizdom.Views.Play {
         console.log(`Game updated from Quizdom`, this.GameService.gameData);
 
         // Local variables get updated
-        if (this.GameService.gameState == "welcome") {
+        if (this.GameService.gameState == "rules") {
           this.GameService.answerOrder = 0;
         }
 
@@ -81,12 +116,19 @@ namespace Quizdom.Views.Play {
           this.GameService.delay = this.GameService.duration * 1000;
         }
 
-        if (this.GameService.gameState != "question") {
-          this.GameService.showSection = this.GameService.gameState;
-          console.log(`Show section`, this.GameService.showSection);
-        }
+        // showState old way to show correct UI in game
+        // if (this.GameService.gameState != "question") {
+        //   this.GameService.showState = this.GameService.gameState;
+        //   console.log(`Show section`, this.GameService.showState);
+        // }
 
         $scope.$applyAsync();
+
+        let newState = newGame.gameState;
+        if (this.GameService.showState != newState) {
+          this.GameService.showState = newState;
+          this.refreshState(newState);
+        }
       }
 
       // newGameBoardState is triggered by a change to the GameBoard table
@@ -133,26 +175,41 @@ namespace Quizdom.Views.Play {
         this.GameService.players[this.pIndex].gamesWon = gamePlayerData.gamesWon;
         console.log(`Player updated from Quizdom`, this.GameService.players[this.pIndex]);
 
+        // if (this.GameService.gameState == "question") {
         // Set visual state based on playerState
-        if (gamePlayerData.userId == this.myUserName) {
+        // if (gamePlayerData.userId == this.myUserName) {
+        // if (gamePlayerData.playerState == "prepare") {
+        //   this.triggerPrepareTimer();
+        // } else if (gamePlayerData.playerState == "ask") {
+        //   this.triggerAskTimer();
+        // }
+        // if (gamePlayerData.playerState == "guess") {
+        //   this.checkPlayersInGuess();
+        // }
 
-          this.GameService.showSection = gamePlayerData.playerState;
-          console.log(`Show section`, this.GameService.showSection);
-
-          if (gamePlayerData.playerState == "prepare") {
-            this.triggerPrepareTimer();
-          } else if (gamePlayerData.playerState == "ask") {
-            this.triggerAskTimer();
-          }
-        }
-
-        if (gamePlayerData.playerState == "guess") {
-          this.checkPlayersInGuess();
-        }
-
+        // if (gamePlayerData.playerState == "right" || gamePlayerData.playerState == "wrong") {
+        //   this.GameService.showState = "results"
+        // } else {
+        //   this.GameService.showState = gamePlayerData.playerState;
+        // }
+        //   }
+        // }
 
         $scope.$applyAsync();
+        let newState = gamePlayerData.playerState;
+        if (this.GameService.showState != newState || newState == 'guess' && newState != 'right' && newState != 'wrong') {
+          this.GameService.showState = newState;
+          this.refreshState(newState);
+        }
+
       }
+
+      // method to display slider 
+      $scope.refreshSlider = function () {
+        $timeout(function () {
+          $scope.$broadcast('rzSliderForceRender');
+        });
+      };
 
     }
 
@@ -164,40 +221,44 @@ namespace Quizdom.Views.Play {
     public showTimer(duration: number, tick: number) {
 
       console.log(`Timer started for ${duration} seconds`);
+      this.$scope.refreshSlider();
+
+      let updateTimer = (counter) => {
+        // showing value based on timer direction using tick +/-
+        if (tick > 0) {
+          this.timer = counter; // .toFixed(numDigits)
+        } else {
+          this.timer = (duration - counter); //.toFixed(numDigits)
+        }
+        this.$scope.slider.value = this.timer;
+      }
 
       // calculates number of meaningful digits based on tick value (1000+ ms = 0 digits)
       let numDigits = Math.max(4 - Math.abs(tick).toString().length, 0);
 
       let counter = 0;
 
-      // showing value based on timer direction using tick +/-
-      if (tick > 0) {
-        this.timer = counter.toFixed(numDigits);
-      } else {
-        this.timer = (duration - counter).toFixed(numDigits);
-      }
+      updateTimer(counter);
 
       let tickTock = this.$interval(() => {
 
-        // inc/decrements timer value and cleans up result to meaningful digits
+        // increments counter value
         counter += (Math.abs(tick) / 1000);
+        counter = parseFloat(counter.toFixed(numDigits));
 
         // prints timer value to console every second (when it is integer)
         if (counter == Math.floor(counter)) {
           console.log(`Timer:`, this.timer);
         }
 
-        // showing value based on timer direction using tick +/-
-        if (tick > 0) {
-          this.timer = counter.toFixed(numDigits);
-        } else {
-          this.timer = (duration - counter).toFixed(numDigits);
-        }
+        updateTimer(counter);
+
       }, Math.abs(tick));
 
 
       var activeTimer = this.$timeout(() => {
         this.$interval.cancel(tickTock);
+        updateTimer(duration);
         console.log(`Timer finished after ${duration} s`);
       }, duration * 1000);
 
@@ -207,7 +268,7 @@ namespace Quizdom.Views.Play {
     // method to identify which sections to display based on gameState
     // result is boolean used as the value for ng-show
     public showMe(section): boolean {
-      return (section == this.GameService.showSection);
+      return (section == this.GameService.showState);
     }
 
     // old method to color answers based on player selection
@@ -290,25 +351,41 @@ namespace Quizdom.Views.Play {
     */
 
     // Keeps the game flowing when a user acccidentally refreshes the page
-    public triggerRefresh() {
-      let playerData = this.GameService.players.find(p => { return p.userName == this.myUserName });
+    public refreshState(newState) {
 
+      console.log(`Current state:`, newState);
 
-      if (this.GameService.gameState == "question") {
-        switch (playerData.playerState) {
-          case "prepare":
-            this.triggerPrepareTimer();
-            break;
-          case "ask":
-            this.triggerAskTimer();
-            break;
-          case "guess":
-            this.checkPlayersInGuess();
-            break;
-        }
-      } else if (this.GameService.gameState == "summary") {
-        this.triggerReview();
+      switch (newState) {
+        case "rules":
+          this.$state.go(`Play.rules`, { gameId: this.GameService.gameId });
+          this.triggerRules();
+          break;
+        case "pick":
+          this.$state.go(`Play.pick`, { gameId: this.GameService.gameId });
+          this.triggerPlay();
+          break;
+        case "prepare":
+          this.$state.go(`Play.prepare`, { gameId: this.GameService.gameId });
+          this.triggerPrepareTimer();
+          break;
+        case "ask":
+          this.$state.go(`Play.ask`, { gameId: this.GameService.gameId });
+          this.triggerAskTimer();
+          break;
+        case "guess":
+          this.checkPlayersInGuess();
+          break;
+        case "results":
+          this.$state.go(`Play.results`, { gameId: this.GameService.gameId });
+          this.triggerResults();
+          break;
+        case "summary":
+          this.$state.go(`Play.summary`, { gameId: this.GameService.gameId });
+          this.triggerSummary();
+          break;
+
       }
+
     }
 
     // send new gameMsg to GameMessage table
@@ -330,11 +407,11 @@ namespace Quizdom.Views.Play {
     }
 
     // initial state of game shows How to play
-    public triggerWelcome() {
+    public triggerRules() {
 
-      // Games - update gameState to "welcome"
+      // Games - update gameState to "rules"
       let newGameData = this.GameService.gameData;
-      newGameData.gameState = "welcome";
+      newGameData.gameState = "rules";
       this.GameService.updateGamesTable(newGameData);
 
       // GameBoard - no change
@@ -355,6 +432,7 @@ namespace Quizdom.Views.Play {
 
     //  Only the active player can select a GameBoard (questionState = "new")
     public triggerPrepare(boardId) {
+
       if (this.activeIsMe) {
 
         // GameBoard - if gameBoard is "new", questionState to "asking", add answerOrder
@@ -388,9 +466,6 @@ namespace Quizdom.Views.Play {
             this.GameService.updateGamePlayersTable(newPlayerData)
 
           })
-
-          // this.triggerPrepareTimer();
-
         } else {
           console.log(`Game Board retired`);
         }
@@ -506,27 +581,17 @@ namespace Quizdom.Views.Play {
         let fastest = this.GameService.duration * 1000;
         let correctPlayers = 0;
 
+        // Check every player's guess and the fastest correct delay
         this.GameService.players.forEach(playerData => {
 
-          let newPlayerData = angular.copy(playerData);
-
-          if (newPlayerData.answer == this.GameService.question.correctAnswer) {
+          if (playerData.answer == this.GameService.question.correctAnswer) {
             // keep track of the number of players who guessed correctly
             correctPlayers++;
 
-            // update playerState to reflect whether player answered correctly
-            newPlayerData.playerState = "right";
-
             // store the fastest (lowest) correct answer delay
-            fastest = Math.min(fastest, newPlayerData.delay);
-
-          } else {
-
-            // update playerState to reflect whether player answered correctly
-            newPlayerData.playerState = "wrong";
+            fastest = Math.min(fastest, playerData.delay);
           }
 
-          this.GameService.updateGamePlayersTable(newPlayerData);
         })
 
         // check if any player answered correctly and save the fastest correct player as winner
@@ -554,6 +619,18 @@ namespace Quizdom.Views.Play {
         newGameBoardData.answeredCorrectlyDelay = fastest;
         this.GameService.updateGameBoardsTable(newGameBoardData)
 
+        this.GameService.players.forEach(playerData => {
+
+          //  copy the current gamePlayer data
+          let newPlayerData = angular.copy(playerData);
+
+          newPlayerData.playerState = (newPlayerData.answer == this.GameService.question.correctAnswer)
+            ? "right"
+            : "wrong";
+
+          this.GameService.updateGamePlayersTable(newPlayerData);
+        })
+
       }
     }
 
@@ -566,7 +643,7 @@ namespace Quizdom.Views.Play {
       if (this.GameService.gameData.gameBoardId > 0) {
         // copy the current gameBoard data
         let newGameBoardData = angular.copy(this.GameService.gameBoards.find(gb => { return gb.id == this.GameService.gameData.gameBoardId }));
-  
+
         newGameBoardData.questionState = "retired"
         this.GameService.updateGameBoardsTable(newGameBoardData)
       }
@@ -592,7 +669,6 @@ namespace Quizdom.Views.Play {
 
         // duration = total time allowed in Sec * 1000 to get millisecs 
         newPlayerData.delay = this.GameService.duration * 1000;
-        newPlayerData.playerState = "pick";
         this.GameService.updateGamePlayersTable(newPlayerData);
       })
 
@@ -600,7 +676,13 @@ namespace Quizdom.Views.Play {
       if (this.GameService.answerOrder < this.GameService.gameData.gameLength) {
         this.triggerPlay();
       } else {
-        this.triggerSummary();
+        // Games - update gameState to "summary"
+        let newGameData = angular.copy(this.GameService.gameData);
+
+        newGameData.gameBoardId = 0;
+        newGameData.gameState = "summary";
+        this.GameService.updateGamesTable(newGameData);
+
       }
     }
 
@@ -613,17 +695,10 @@ namespace Quizdom.Views.Play {
       // Only the game inititor updates gameState & gameBoard questionState
       if (this.GameService.gameData.initiatorUserId == this.myUserName) {
 
-        // Games - update gameState to "summary"
-        let newGameData = angular.copy(this.GameService.gameData);
-
-        newGameData.gameBoardId = 0;
-        newGameData.gameState = "summary";
-        this.GameService.updateGamesTable(newGameData);
-
         // PlayerStats - update with new stats from players
         this.GameService.players.forEach(player => {
-          this.GameService.loadPlayerStats(player.userName).then((oldPlayerStats) => {
-            
+          this.GameService.loadPlayerStats(player.userName).then((playerStats) => {
+            console.log(`playerStats`, playerStats);
           })
         })
 

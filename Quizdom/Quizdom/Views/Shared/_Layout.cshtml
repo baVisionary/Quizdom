@@ -14,12 +14,15 @@
         <!--Import materialize.css-->
         <link rel="stylesheet" href="~/lib/materialize/dist/css/materialize.min.css" media="screen,projection" />
         <link rel="stylesheet" href="~/lib/font-awesome/css/font-awesome.min.css">
+        <link rel="stylesheet" href="~/lib/angularjs-slider/dist/rzslider.min.css">
         <link rel="stylesheet" href="~/../dist/css/extra.css">
     </environment>
     <environment names="Staging,Production">
         <!--Import Google Icon Font-->
         <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.99.0/css/materialize.min.css" asp-fallback-href="~/css/materialize.min.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angularjs-slider/6.4.0/rzslider.min.css" >
         <link rel="stylesheet" href="~/../dist/css/extra.css" asp-append-version="true">
     </environment>
     @Html.Raw(JavaScriptSnippet.FullScript)
@@ -60,6 +63,8 @@
     <script src="~/lib/angular-ui-router/release/angular-ui-router.js"></script>
     <script src="~/lib/angular-resource/angular-resource.js"></script>
     <script src="~/lib/angularUtils-pagination/dirPagination.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-bootstrap/0.14.3/ui-bootstrap-tpls.js"></script>
+    <script src="~/lib/angularjs-slider/dist/rzslider.js"></script>
 
     <!--ajax & SignalR libraries  -->
     <script src="~/lib/signalr/jquery.signalR.min.js"></script>

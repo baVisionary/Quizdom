@@ -37,7 +37,7 @@ var Quizdom;
                 // in game chat support
                 this.group = '';
                 this.gameChats = [];
-                this.showSection = "";
+                this.showState = "";
                 // I do not understand why I cannot type this as IGameBoard?!?
                 this.question = new Quizdom.Models.GameBoardModel;
                 // the order in which questions are selected
@@ -71,9 +71,13 @@ var Quizdom;
                     }
                 });
                 // manage 'PlayerStats' table to store stats created by playing game
-                this._Resource_player_stats = this.$resource('/api/game/playerstats:id', null, {
+                this._Resource_player_stats = this.$resource('/api/game/playerstats/:id', null, {
                     'update': {
                         method: 'PUT'
+                    },
+                    'search': {
+                        method: 'GET',
+                        url: '/api/game/playerstats/:username',
                     }
                 });
                 // access 'Categories' to correlate categoryId to short & long name
@@ -167,13 +171,13 @@ var Quizdom;
                 return this._Resource_game.search({ username: userName });
             };
             GameService.prototype.findPlayerStats = function (userName) {
-                return this._Resource_player_stats.get({ username: userName });
+                return this._Resource_player_stats.search({ username: userName });
             };
             GameService.prototype.loadPlayerStats = function (userName) {
                 var _this = this;
                 this.findPlayerStats(userName).$promise.then(function (oldPlayerStats) {
-                    if (oldPlayerStats[0].hasOwnproperty('gamesWon')) {
-                        return oldPlayerStats[0];
+                    if (oldPlayerStats.hasOwnProperty('gamesWon')) {
+                        return oldPlayerStats;
                     }
                     return new _this._Resource_player_stats();
                 });
@@ -250,7 +254,7 @@ var Quizdom;
                     _this.$q.when(gamePromises)
                         .then(function () {
                         // console.log(`Game`, this.newGameData);
-                        _this.showSection = _this.gameState;
+                        _this.showState = _this.gameState;
                         console.log("AnswerOrder:", _this.answerOrder);
                         if (_this.gameData.gameBoardId > 0) {
                             var gameBoard = _this.gameBoards.find(function (gb) { return gb.id == _this.gameData.gameBoardId; });
@@ -258,7 +262,7 @@ var Quizdom;
                             _this.winner = gameBoard.answeredCorrectlyUserId;
                             var player = _this.players.find(function (p) { return p.playerId == _this.myGamePlayerId; });
                             if (_this.gameState == "question") {
-                                _this.showSection = player.playerState;
+                                _this.showState = player.playerState;
                             }
                             console.log("Question", _this.question, "My guess:", _this.guess, "My delay:", _this.delay, "Winner", _this.winner);
                         }
@@ -588,7 +592,7 @@ var Quizdom;
                         });
                     });
                     _this.$q.when(gameBoardPromises).then(function () {
-                        console.log("Cat & Diff Game Boards selected");
+                        // console.log(`Cat & Diff Game Boards selected`);
                         resAll("Cat & Diff Game Boards selected");
                     });
                 });
@@ -718,8 +722,8 @@ var Quizdom;
             GameService.prototype.updateGamesTable = function (newGameData) {
                 var _this = this;
                 var gameUpdated = new Promise(function (res) {
-                    // console.log(`newGameData`, newGameData);
                     // console.log(`this.gameData`, this.gameData);
+                    // console.log(`newGameData`, newGameData);
                     // check whether any values actually changed
                     var matches = true;
                     for (var prop in newGameData) {

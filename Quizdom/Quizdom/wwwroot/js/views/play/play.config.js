@@ -15,25 +15,23 @@ var Quizdom;
                     controller: 'PlayController',
                     controllerAs: 'vm'
                 })
-                    .state('play.welcome', {
-                    url: '@',
-                    templateUrl: 'js/views/play/play.welcome.html'
+                    .state('Play.rules', {
+                    templateUrl: 'js/views/play/play.rules.html'
                 })
-                    .state('play.pick', {
-                    url: '@',
+                    .state('Play.pick', {
                     templateUrl: 'js/views/play/play.pick.html'
                 })
-                    .state('play.prepare', {
-                    url: '@',
+                    .state('Play.prepare', {
                     templateUrl: 'js/views/play/play.prepare.html'
                 })
-                    .state('play.answer', {
-                    url: '@',
-                    templateUrl: 'js/views/play/play.answer.html'
+                    .state('Play.ask', {
+                    templateUrl: 'js/views/play/play.ask.html'
                 })
-                    .state('play.results', {
-                    url: '@',
+                    .state('Play.results', {
                     templateUrl: 'js/views/play/play.results.html'
+                })
+                    .state('Play.summary', {
+                    templateUrl: 'js/views/play/play.summary.html'
                 });
             }
             Play.Configuration = Configuration;

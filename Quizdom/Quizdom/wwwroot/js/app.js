@@ -5,7 +5,7 @@ var Quizdom;
         'ui.router',
         'ngResource',
         'angularUtils.directives.dirPagination',
-        // 'SignalR',
+        'rzModule',
         // Modules
         'Quizdom.Directives',
         'Quizdom.Factories',

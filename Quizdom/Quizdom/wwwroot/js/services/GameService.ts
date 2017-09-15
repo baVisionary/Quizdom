@@ -36,7 +36,7 @@ namespace Quizdom.Services {
     // in game chat support
     private group: string = '';
     public gameChats = [];
-    public showSection: string = "";
+    public showState: string = "";
 
     // I do not understand why I cannot type this as IGameBoard?!?
     public question: any = new Models.GameBoardModel;
@@ -103,9 +103,13 @@ namespace Quizdom.Services {
     });
 
     // manage 'PlayerStats' table to store stats created by playing game
-    private _Resource_player_stats = <Models.IPlayerStatsResource>this.$resource('/api/game/playerstats:id', null, {
+    private _Resource_player_stats = <Models.IPlayerStatsResource>this.$resource('/api/game/playerstats/:id', null, {
       'update': {
         method: 'PUT'
+      },
+      'search': {
+        method: 'GET',
+        url: '/api/game/playerstats/:username',
       }
     });
 
@@ -200,13 +204,13 @@ namespace Quizdom.Services {
     }
 
     private findPlayerStats(userName: string) {
-      return this._Resource_player_stats.get({ username: userName });
+      return this._Resource_player_stats.search({ username: userName });
     }
 
     public loadPlayerStats(userName: string): any {
       this.findPlayerStats(userName).$promise.then((oldPlayerStats) => {
-        if (oldPlayerStats[0].hasOwnproperty('gamesWon')) {
-          return oldPlayerStats[0];
+        if (oldPlayerStats.hasOwnProperty('gamesWon')) {
+          return oldPlayerStats;
         }
         return new this._Resource_player_stats();
       })
@@ -281,7 +285,7 @@ namespace Quizdom.Services {
         this.$q.when(gamePromises)
           .then(() => {
             // console.log(`Game`, this.newGameData);
-            this.showSection = this.gameState;
+            this.showState = this.gameState;
             console.log(`AnswerOrder:`, this.answerOrder)
             if (this.gameData.gameBoardId > 0) {
               let gameBoard = this.gameBoards.find(gb => { return gb.id == this.gameData.gameBoardId })
@@ -290,7 +294,7 @@ namespace Quizdom.Services {
 
               let player = this.players.find(p => { return p.playerId == this.myGamePlayerId });
               if (this.gameState == "question") {
-                this.showSection = player.playerState;
+                this.showState = player.playerState;
               }
               console.log(`Question`, this.question, `My guess:`, this.guess, `My delay:`, this.delay, `Winner`, this.winner);
             }
@@ -619,7 +623,7 @@ namespace Quizdom.Services {
           })
         })
         this.$q.when(gameBoardPromises).then(() => {
-          console.log(`Cat & Diff Game Boards selected`);
+          // console.log(`Cat & Diff Game Boards selected`);
           resAll(`Cat & Diff Game Boards selected`);
         })
       })
@@ -753,8 +757,8 @@ namespace Quizdom.Services {
     // SignalR methods to update the tables
     public updateGamesTable(newGameData) {
       let gameUpdated = new Promise((res) => {
-        // console.log(`newGameData`, newGameData);
         // console.log(`this.gameData`, this.gameData);
+        // console.log(`newGameData`, newGameData);
 
         // check whether any values actually changed
         var matches = true;

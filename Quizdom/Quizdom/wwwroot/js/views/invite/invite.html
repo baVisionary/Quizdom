@@ -5,14 +5,14 @@
         <div class="card-content black-text">
           <span class="card-title">Invite friends to play</span>
           <div class="row">
-            <div class="chip" ng-repeat="friend in vm.FriendService.friends" tag={{friend.userName}} id={{friend.friendId}} ng-click="vm.addPlayer(friend)">
+            <div class="chip" ng-repeat="friend in vm.FriendService.friends" data="{tag: user.userName}"data={{friend.userName}} id={{friend.friendId}} ng-click="vm.addPlayer(friend)">
               <img src="/images/{{friend.avatarUrl}}" alt="Friend">
               <div class="valign-wrapper">{{friend.userName}}</div>
             </div>
           </div>
           <div class="row">
             <h6>Active</h6>
-            <div class="chip" ng-repeat="user in vm.ActiveService.ActiveUsers" tag={{user.userName}} id={{user.friendId}} ng-click="vm.addPlayer(user)">
+            <div class="chip" ng-repeat="user in vm.ActiveService.ActiveUsers" data="{tag: user.userName}" id={{user.friendId}} ng-click="vm.addPlayer(user)">
               <img src="/images/{{user.avatarUrl}}" alt="User">
               <div class="valign-wrapper">
                 &nbsp;{{user.userName}}&nbsp;
